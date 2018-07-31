@@ -1,7 +1,6 @@
 pro load_kernel
   message, '>>> spice kernel loading started.', /info
   set_env
-
   path=!KERNELDATADIR
   kernels=file_search(path,'*/*.*')
   message, '>>> loaded kernels:', /info
