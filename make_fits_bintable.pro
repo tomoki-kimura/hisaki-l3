@@ -73,8 +73,8 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    KEY_DATE     = 'DATE'
    KEY_NEXTEND  = 'NEXTEND'
    KEY_EXTNAME  = 'EXTNAME'
-;   KEY_NINTTIME = 'NINTTIME'
-   KEY_NINTTIME = 'INT_TIME'
+;   KEY_NINTTIME = 'NINTTIME';L2
+   KEY_NINTTIME = 'INT_TIME';L2prime
    
    COMMENT_L2PATH    = 'Path/Dir of Input L2 file.'
    COMMENT_TBLAPATH = 'Path of TableA.'
@@ -125,13 +125,11 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    end
 
    ; 出力パスの生成
-   out_path_elm = strsplit(out_path, '\', /extract)
-   l2_path_elm = strsplit(l2_path, '\', /extract)
-   l2_name = l2_path_elm[-1]
-   if stregex(out_path_elm[-1],'fits$',/boolean) ne 1 then begin
+   l2_name = FILE_BASENAME(l2_path)
+   if stregex(FILE_BASENAME(out_path),'fits$',/boolean) ne 1 then begin
       ; out_pathがディレクトリ指定の場合、ファイル名生成
       out_dir = out_path
-      name_l2_elm = strsplit(l2_path_elm[-1], '.', /extract)
+      name_l2_elm = strsplit(FILE_BASENAME(l2_path), '.', /extract)
       for i = 0, n_elements(name_l2_elm) - 1 do begin
          if name_l2_elm[i] eq 'lv' then begin
             name_l2_elm[i+1] = '03'
@@ -141,9 +139,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       name_out = strjoin(name_l2_elm, '.')
       out_path = out_dir + '/' + name_out
    endif else begin
-      out_path_elm = strsplit(out_path, '\', /extract)
-      out_dir_elm = out_path_elm[0:n_elements(out_path_elm) - 2]
-      out_dir = strjoin(out_dir_elm, '\')
+      out_dir = out_path
    endelse
 
 
@@ -169,9 +165,6 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    ; 出力FITSパス名のファイルが存在したらエラー
    if file_test(out_path) eq 1 then $
       message, MSG_ERR04 + out_path
-
-tablea_path='C:\function\JX-PSPC-464448\etc\FJSVTOOL\old_table\line_list_aurora_v1.dat'
-   print,tablea_path
    
    ; テーブルＡ(領域情報)のデータを取得
    write_log, LOG_PATH, MSG_INF03
@@ -280,7 +273,7 @@ tablea_path='C:\function\JX-PSPC-464448\etc\FJSVTOOL\old_table\line_list_aurora_
       for j = 2, value_nextend do begin
          im = mrdfits(l2_path, j, hdr, /silent)
          ;remove geocorona;;;;;;;;;;;;;;;;;;;;;;byhk
-         im=remove_geocor(im,'C:\function\JX-PSPC-464448\etc\FJSVTOOL\old_table\line_list_geocorona_v1.dat' ,l2cal_path)
+         im=remove_geocor(im,FILE_DIRNAME(tablea_path)+'/line_list_geocorona_v1.dat' ,l2cal_path)
          
          im_target = im[x_min_p : x_max_p, y_min_p : y_max_p]
          value_extname  = fxpar(hdr, KEY_EXTNAME)
@@ -299,7 +292,7 @@ tablea_path='C:\function\JX-PSPC-464448\etc\FJSVTOOL\old_table\line_list_aurora_
 ;         spawn,'date "+%-H" -d' + daytime[1], hour;;;;;TK
 ;         spawn,'date "+%-M" -d' + daytime[1], min;;;;;TK
 ;         spawn,'date "+%-S" -d' + daytime[1], sec;;;;;TK
-         ;windows
+         ;win
          dateyear = strsplit(daytime[0], '-', /EXTRACT)
          hhmmss   = strsplit(daytime[1], ':', /EXTRACT)
          year     =dateyear[0]
@@ -311,6 +304,10 @@ tablea_path='C:\function\JX-PSPC-464448\etc\FJSVTOOL\old_table\line_list_aurora_
          csecofday = (double(hour))*60*60 + (double(min))*60 + (double(sec))      ;;;;;TK  
          value_extname_list[j - 2]  = value_extname
          value_ninttime_list[j - 2] = value_ninttime         
+         year_list[j - 2] = year
+         dayofyear_list[j - 2] = dayofyear
+         secofday_list[j - 2] = csecofday
+
          ; 空間方向へ積分
          target_integration = n_elements(im_target[0,*])
          im_target_integral[*]=0.d; initialization
@@ -318,7 +315,7 @@ tablea_path='C:\function\JX-PSPC-464448\etc\FJSVTOOL\old_table\line_list_aurora_
             im_target_integral += im_target[*,k]
          endfor
          distribution_count[* ,j - 2] = im_target_integral
-         distribution_count_rate[* ,j - 2] = im_target_integral/value_ninttime; counts/min
+         distribution_count_rate[* ,j - 2] = im_target_integral;/value_ninttime; counts/min;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;byHK
       endfor
 
       ; 関数Ａから係数αkを取得する。
@@ -370,8 +367,8 @@ tablea_path='C:\function\JX-PSPC-464448\etc\FJSVTOOL\old_table\line_list_aurora_
          structure = {year:long(year_list), dayofyear:long(dayofyear_list), secofday:long(secofday_list)}
       endif
       tag_series_distribution_radiant_energy = 'TPOW'+bintabtag[i]
-      tag_series_distribution_sigma = 'TERR'+bintabtag[i]
-      tag_series_distribution_count = 'LINT'+bintabtag[i]
+      tag_series_distribution_sigma          = 'TERR'+bintabtag[i]
+      tag_series_distribution_count          = 'LINT'+bintabtag[i]
 ;      tag_series_distribution_radiant_energy = "series_distribution_radiant_energy_" + strcompress(i,/remove_all)
 ;      tag_series_distribution_sigma = "series_distribution_sigma_" + strcompress(i,/remove_all)
 ;      tag_series_distribution_count = "series_distribution_count_" + strcompress(i,/remove_all)

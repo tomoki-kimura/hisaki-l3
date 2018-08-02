@@ -45,17 +45,12 @@ pro make_fits_bintable_dir, l2_d=l2_dir, l2cal_p=l2cal_path, tablea_p=tablea_pat
    ; 指定されたディレクトリのファイル一覧を取得し、各ファイルごとにL3データを生成する。
    for i = 0, n_l2_files - 1 do begin
       print,i
-      out_dir_elm = strsplit(out_dir, '/', /extract)
-      if stregex(out_dir_elm[-1],'fits$',/boolean) eq 1 then begin
-         out_dir_elm = out_dir_elm[0:n_elements(out_dir_elm) - 2]
-         out_dir = strjoin(out_dir_elm, '/')
-      endif
-      ;--------byhk
-      path_elm=strsplit(l2_files[i],/extract, '\')
-      file_elm=strsplit(path_elm[n_elements(path_elm)-1],/extract, '.')
-      file_elm2=strsplit(file_elm[1],/extract, '_')
-      l2cal_path2=l2cal_path+'calib_'+file_elm2[0]+'_v1.0.fits'
-      ;----------
+      
+      if stregex(FILE_BASENAME(out_dir),'fits$',/boolean) eq 1 then out_dir = FILE_DIRNAME(out_dir)
+      
+      file_elm=strsplit(FILE_BASENAME(l2_files[i]),/extract, '[._]');--------byhk
+      l2cal_path2=l2cal_path+'/calib_'+file_elm[1]+'_v1.0.fits'    ;--------byhk
+      
       make_fits_bintable, l2_p=l2_files[i], l2cal_p=l2cal_path2, tablea_p=tablea_path, out_p=out_dir
    endfor
 end

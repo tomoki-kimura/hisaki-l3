@@ -7,7 +7,9 @@ function function_a, time,  xrange_v, yrange_v, xrange_p, yrange_p, l2_path, l2c
   aeffarr=file_search(file_dirname(l2cal_path)+'/alpha*.csv')
   if (strlen(aeffarr))[0] eq 0 then message, 'invalid calibration file directory.'
   aefffile=aeffarr[0]; alpha.csv
-  idate=long((strsplit(l2_path, '.',/ext))[4])
+;  idate=long((strsplit(l2_path, '.',/ext))[4])
+  idate=(strsplit(l2_path, '.',/ext))[1]
+  idate=(strsplit(idate  , '_',/ext))[0]
   foreach caeff, aeffarr do begin
     if not stregex(caeff, '[0-9]{4}_[0-9]{4}') ge 0l then continue
     cdates=long((strsplit(file_basename(caeff),'_',/ext))[1:2])
@@ -34,7 +36,8 @@ function function_a, time,  xrange_v, yrange_v, xrange_p, yrange_p, l2_path, l2c
   wave=reform(data.field1[1,*]); Angstrom
   energy=!H*!VC/(wave*1.d-10); Joule
   aeff=reform(data.field1[2,*])*10.d*10.d*!PI/1.d+4; m^2
-  intarg=strupcase((strsplit(l2_path, '.',/ext))[1])
+  ;intarg=strupcase((strsplit(l2_path, '.',/ext))[1])
+  intarg='Jupiter'
   inobs='SPRINTA'
   inframe='IAU_'+intarg
   quiet=1
