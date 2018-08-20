@@ -23,7 +23,7 @@ pro make_l3
   ;170430:140"
   ;161115:best
   
-  l3= file_search(out_dir + '/*'+pattern'*.fits')
+  l3= file_search(out_dir + '/*'+pattern+'*.fits')
   if l3[0] ne '' then file_delete,l3
   
   make_fits_bintable_dir, l2_d=l2_dir, l2cal_p=l2cal_path, tablea_p=tablea_path, out_d=out_dir, pattern=pattern
