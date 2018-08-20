@@ -277,6 +277,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
          
          im_target = im[x_min_p : x_max_p, y_min_p : y_max_p]
          value_extname  = fxpar(hdr, KEY_EXTNAME)
+         print, value_extname
          value_ninttime = double(fxpar(hdr, KEY_NINTTIME))
          daytime = strsplit(value_extname, 'T', /EXTRACT);;;;;TK
 
