@@ -145,13 +145,13 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
 
    ; 入力パスの存在確認
    check_target = [l2_path, l2cal_path, tablea_path, out_dir]
-   for i = 0, n_elements(check_target) - 1 do begin
+   for i = 0, n_elements(check_target) - 2 do begin
       if file_test(check_target[i]) eq FALSE then $
          message, MSG_ERR02 + check_target[i]
    endfor
 
    ; 入力パスのパーミッション確認
-   for i = 0, n_elements(check_target) - 1 do begin
+   for i = 0, n_elements(check_target) - 2 do begin
       if file_test(check_target[i], /read) eq FALSE then $
          message, MSG_ERR03 + check_target[i]
    endfor
@@ -273,7 +273,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       for j = 2, value_nextend do begin
          im = mrdfits(l2_path, j, hdr, /silent)
          ;remove geocorona;;;;;;;;;;;;;;;;;;;;;;byhk
-         im=remove_geocor(im,FILE_DIRNAME(tablea_path)+'/line_list_geocorona_v1.dat' ,l2cal_path)
+         im=remove_geocor(im,!geocorona_list ,l2cal_path)
          
          im_target = im[x_min_p : x_max_p, y_min_p : y_max_p]
          value_extname  = fxpar(hdr, KEY_EXTNAME)

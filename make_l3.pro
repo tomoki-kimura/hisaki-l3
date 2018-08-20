@@ -16,7 +16,7 @@ pro make_l3
   out_dir     = !out_dir
   
   set_env_l3
-  load_spice
+;  load_spice
   
   pattern='*{140101,161115,170430,170520}*'
   ;170520:intermediate
