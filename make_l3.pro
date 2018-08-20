@@ -10,10 +10,10 @@ pro make_l3
 ;stop
 ;stop  
   
-  l2_dir      = 'G:\L3\'
-  l2cal_path  = 'G:\L3\cal\'
-  tablea_path = 'C:\function\JX-PSPC-464448\etc\FJSVTOOL\old_table\line_list_aurora_v1.dat'
-  out_dir     = 'G:\L3\L3\'
+  l2_dir      = !l2_dir
+  l2cal_path  = !l2cal_path
+  tablea_path = !tablea_path
+  out_dir     = !out_dir
   
   set_env_l3
   load_spice
