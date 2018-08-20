@@ -1,5 +1,5 @@
 pro make_l3
-  
+  set_env
 ;  l2_path     = 'G:\v2\exeuv.20160815_LT20-04_d030.fits'
 ;  l2cal_path  = 'G:\v1\cal\calib_20160815_v1.0.fits'
 ;  tablea_path = 'C:\function\JX-PSPC-464448\etc\FJSVTOOL\tableA.dat'
