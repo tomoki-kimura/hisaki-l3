@@ -110,8 +110,8 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       msg = !ERROR_STATE.MSG
       write_log, LOG_PATH, msg
       write_log, LOG_PATH, MSG_INF02
-;      catch, /cancel
-;      message, msg
+      catch, /cancel
+      message, msg
    endif
 
    ; 引数チェック(l2_path/l2cal_path/tablea_path/out_path)
