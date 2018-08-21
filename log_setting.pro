@@ -25,7 +25,7 @@ function log_setting
    ON_ERROR,3
 
 ;定数
-   log_place = 'C:\log_idl\' ;ログファイルを出力するパスが記入されているファイル
+   log_place = !log_place ;ログファイルを出力するパスが記入されているファイル
    wait, 1
    return,log_place
 

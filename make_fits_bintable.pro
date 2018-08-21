@@ -245,8 +245,8 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       res = convert_value2pixel(l2cal_path, xrange_v, yrange_v)
       x_min_p = res[0,0]
       x_max_p = res[1,0]
-      y_min_p = res[0,1]+3
-      y_max_p = res[1,1]+3
+      y_min_p = res[0,1]
+      y_max_p = res[1,1]
 
       xrange_p = [x_min_p, x_max_p]
       yrange_p = [y_min_p, y_max_p]

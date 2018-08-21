@@ -10,16 +10,15 @@ pro make_l3
 ;stop
 ;stop  
   
+  set_env_l3
+;  load_spice
+  
   l2_dir      = !l2_dir
   l2cal_path  = !l2cal_path
   tablea_path = !tablea_path
   out_dir     = !out_dir
-  
-  set_env_l3
-;  load_spice
-  
-  pattern='*{140101}*'
-;  pattern='*{140101,161115,170430,170520}*'
+
+  pattern='*{140101,161115,170430,170520}*'
   ;170520:intermediate
   ;170430:140"
   ;161115:best
