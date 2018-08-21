@@ -315,7 +315,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
          for k = 0, target_integration - 1 do begin
             im_target_integral += im_target[*,k]
          endfor
-         distribution_count[* ,j - 2] = im_target_integral
+         distribution_count[* ,j - 2] = im_target_integral*value_ninttime; counts ; this is used for l2prime
          distribution_count_rate[* ,j - 2] = im_target_integral;/value_ninttime; counts/min;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;byHK
       endfor
 
