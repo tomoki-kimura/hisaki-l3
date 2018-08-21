@@ -242,6 +242,11 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       ; value=>pixel変換
       xrange_v = [tablea_dataset_value[i,0], tablea_dataset_value[i,1]]
       yrange_v = [tablea_dataset_value[i,2], tablea_dataset_value[i,3]]
+;      im = mrdfits(l2_path, 2, hdr, /silent)
+;      value_extname  = fxpar(hdr, KEY_EXTNAME)      
+;      planet_radii_deg=get_planet_radii(time=value_extname,target=!NULL,/deg); deg/rp
+;      yrange_v *= planet_radii_deg*3600.d; arcsec
+      
       res = convert_value2pixel(l2cal_path, xrange_v, yrange_v)
       x_min_p = res[0,0]
       x_max_p = res[1,0]
@@ -332,8 +337,10 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
 
       ; 放射エネルギー分布時系列を取得する。
       series_distribution_radiant_energy = dblarr(size_distribution_count[2])
+      series_distribution_count_rate = dblarr(size_distribution_count[2])
       for j = 0, size_distribution_count[2] - 1 do begin
          series_distribution_radiant_energy[j] = total(distribution_radiant_energy[*,j])
+         series_distribution_count_rate [j] = total(distribution_count_rate[*,j])
       endfor
 
       ; 誤差時系列を取得する。
@@ -369,14 +376,16 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       endif
       tag_series_distribution_radiant_energy = 'TPOW'+bintabtag[i]
       tag_series_distribution_sigma          = 'TERR'+bintabtag[i]
-      tag_series_distribution_count          = 'LINT'+bintabtag[i]
+      tag_series_distribution_count          = 'CONT'+bintabtag[i]
+      tag_series_distribution_count_rate     = 'LINT'+bintabtag[i]
 ;      tag_series_distribution_radiant_energy = "series_distribution_radiant_energy_" + strcompress(i,/remove_all)
 ;      tag_series_distribution_sigma = "series_distribution_sigma_" + strcompress(i,/remove_all)
 ;      tag_series_distribution_count = "series_distribution_count_" + strcompress(i,/remove_all)
       structure_distribution_radiant_energy = create_struct(tag_series_distribution_radiant_energy,series_distribution_radiant_energy)
       structure_distribution_sigma = create_struct(tag_series_distribution_sigma,series_distribution_sigma)
       structure_distribution_count = create_struct(tag_series_distribution_count,series_distribution_count)
-      structure   = create_struct(structure, structure_distribution_radiant_energy, structure_distribution_sigma, structure_distribution_count)
+      structure_distribution_count_rate = create_struct(tag_series_distribution_count_rate,series_distribution_count_rate)
+      structure   = create_struct(structure, structure_distribution_radiant_energy, structure_distribution_sigma, structure_distribution_count, structure_distribution_count_rate)
    endfor
    
    ; binary table用に構造体を変換
