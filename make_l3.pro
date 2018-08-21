@@ -18,13 +18,14 @@ pro make_l3
   set_env_l3
 ;  load_spice
   
-  pattern='*{140101,161115,170430,170520}*'
+  pattern='*{140101}*'
+;  pattern='*{140101,161115,170430,170520}*'
   ;170520:intermediate
   ;170430:140"
   ;161115:best
   
-  l3= file_search(out_dir + '/*'+pattern+'*.fits')
-  if l3[0] ne '' then file_delete,l3
+;  l3= file_search(out_dir + '/*'+pattern+'*.fits')
+;  if l3[0] ne '' then file_delete,l3
   
   make_fits_bintable_dir, l2_d=l2_dir, l2cal_p=l2cal_path, tablea_p=tablea_path, out_d=out_dir, pattern=pattern
   stop
