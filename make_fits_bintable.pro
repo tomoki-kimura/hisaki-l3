@@ -57,6 +57,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
   on_error,2
 
    ; 定数
+   SPECTRESOL=16l
    PRO_NAME = 'MAKE_FITS_BINTABLE'
    STR_EMP = ''
    TRUE  = 1
@@ -332,8 +333,18 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
          coeff[*,j] = function_a(value_extname_list[j], xrange_v, yrange_v, xrange_p, yrange_p, l2_path, l2cal_path)
       endfor
  
+      ;smoothing of spectrum
+      nwave=size_distribution_count[1]
+      ntime=size_distribution_count[2]
+      for j=0l, ntime-1l do begin
+        filt_var, xarr=indgen(nwave), yarr=reform(distribution_count_rate[*,j]), outarr=outarr, window=SPECTRESOL, /ave
+        distribution_count_rate[*,j]=outarr
+        filt_var, xarr=indgen(nwave), yarr=reform(coeff[*,j]                  ), outarr=outarr, window=SPECTRESOL, /ave
+        coeff[*,j]=outarr
+      endfor
       ; カウント分布と係数αkをかけ合わせ放射エネルギー分布を取得する。
       distribution_radiant_energy = distribution_count_rate * coeff
+
 
       ; 放射エネルギー分布時系列を取得する。
       series_distribution_radiant_energy = dblarr(size_distribution_count[2])
@@ -355,6 +366,11 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
          sqrt_distribution_count_rate[*,j] = sqrt_distribution_count[*,j]/value_ninttime_list[j]; counts/min
       endfor
 
+      ;smoothing of spectrum;;;;; TK
+      for j=0l, ntime-1l do begin
+        filt_var, xarr=indgen(nwave), yarr=reform(sqrt_distribution_count_rate[*,j]), outarr=outarr, window=SPECTRESOL, /ave
+        sqrt_distribution_count_rate[*,j]=outarr
+      endfor
       ; (sqrt(Nk)/t)×αkを取得
       distribution_sigma = sqrt_distribution_count_rate * coeff
 
@@ -376,7 +392,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       endif
       tag_series_distribution_radiant_energy = 'TPOW'+bintabtag[i]
       tag_series_distribution_sigma          = 'TERR'+bintabtag[i]
-      tag_series_distribution_count          = 'CONT'+bintabtag[i]
+      tag_series_distribution_count          = 'CONT'+bintabtag[i];;;; TK
       tag_series_distribution_count_rate     = 'LINT'+bintabtag[i]
 ;      tag_series_distribution_radiant_energy = "series_distribution_radiant_energy_" + strcompress(i,/remove_all)
 ;      tag_series_distribution_sigma = "series_distribution_sigma_" + strcompress(i,/remove_all)

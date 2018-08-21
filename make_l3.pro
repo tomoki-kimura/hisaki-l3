@@ -18,8 +18,8 @@ pro make_l3
   tablea_path = !tablea_path
   out_dir     = !out_dir
 
-  pattern='*{140101}*'
-;  pattern='*{140101,161115,170430,170520}*'
+;  pattern='*{140101}*'
+  pattern='*{140101,161115,170430,170520}*'
   ;170520:intermediate
   ;170430:140"
   ;161115:best

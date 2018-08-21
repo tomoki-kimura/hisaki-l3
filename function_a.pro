@@ -35,11 +35,15 @@ function function_a, time,  xrange_v, yrange_v, xrange_p, yrange_p, l2_path, l2c
   if n_elements(data.field1) lt 8*1024 then message, '>>> invalid input effective area data (alpha.csv)'
   wave=reform(data.field1[1,*]); Angstrom
   energy=!H*!VC/(wave*1.d-10); Joule
-  aeff=reform(data.field1[2,*])*10.d*10.d*!PI/1.d+4; m^2
+  alpha=reform(data.field1[2,*])
+  ia=where(alpha le 1.d-5)
+  alpha[ia]=0.d
+  aeff=alpha*10.d*10.d*!PI/1.d+4; m^2
   ;intarg=strupcase((strsplit(l2_path, '.',/ext))[1])
-  intarg='Jupiter'
+  intarg='JUPITER'
   inobs='SPRINTA'
-  inframe='IAU_'+intarg
+;  inframe='IAU_'+intarg
+  inframe='J2000'
   quiet=1
   abcorr='LT+S'
   ltime=0.d
