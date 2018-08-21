@@ -28,10 +28,10 @@ pro make_l3
 ;  if l3[0] ne '' then file_delete,l3
   
   make_fits_bintable_dir, l2_d=l2_dir, l2cal_p=l2cal_path, tablea_p=tablea_path, out_d=out_dir, pattern=pattern
-  stop
-  stop
-  stop
-  stop
+;  stop
+;  stop
+;  stop
+;  stop
 end
 ;make_fits_bintable, l2_p='C:\Users\hkita\Desktop\exeuv.20160121_LT20-04_d030.fits', l2cal_p='C:\Users\hkita\Desktop\calib_20160101_v1.0.fits', tablea_p='C:\function\JX-PSPC-464448\etc\FJSVTOOL\tableA.dat', out_p='C:\Users\hkita\Desktop\out\'
 ;
