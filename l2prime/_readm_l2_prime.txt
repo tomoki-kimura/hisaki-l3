@@ -1,0 +1,75 @@
+---------------------
+2017/4/5 F. Tsuchiya
+---------------------
+
+(0)事前準備
+・初期設定
+ IDL> init
+	ライブラリパスの設定
+	IDL SPICE(ICY)のロード
+	init_spiceの実行（カーネルファイルの読み込み）
+
+(1)HISAKI EUV L2データのコンポジット　→　L2 prime
+
+必要な環境
+	IDL
+	SPICE
+	IDL FITS I/O
+
+使用する主要プログラム
+	read_exc_euv_l2.pro
+	init_variables.pro
+	init_fits.pro
+	chk_fits_pri_hdr.pro
+	chk_fits_ext_hdr.pro
+	chk_fits_ext.pro
+	get_param_jupiter.pro
+	def_data_blk.pro
+	check_ypol.pro
+	img_composit.pro
+	save_fits.pro
+	init_spice.pro
+
+事前準備
+	!SPICE_DIR　の設定	（SPICEカーネルの所在。init_spce.proで使用）
+	init_fits.pro内のL2データの所在の書き換え
+	save_fits.pro内のコンポジット後fitsファイルの保存場所の書き換え
+	
+実行方法
+        １日分のデータを処理する場合
+ 	IDL> .r read_exc_euv_l2
+	IDL> read_exc_euv_l2, '20150101', dl=30.0, lt=[20.0, 4.0], target='jupiter.mod.04'
+	2015/5/1と2015/5/2のL2データを読み、λIII経度30度区切りでデータをコンポジットする。
+	ひさきのLT範囲を20時から4時に限定する
+　　　　木星のmode4のデータ処理を行う
+
+        連続的に複数の日付データを処理する場合
+ 	IDL> .r main_read_exc_euv_l2
+	IDL> main_read_exc_euv_l2, '20150101', '20150201', dl=30.0, lt_range=[20.0, 4.0], target='jupiter.mod.04'
+
+	注）
+	・放射線カウントが高いデータは除外される
+	・隣り合うL2データ間隔が90秒以上ある場合、そのデータはコンポジットから外す
+		（HV ON,OFFシーケンス中データの除外）
+	・SKY観測のデータはコンポジットから除外
+
+(2)L2 primeデータを読み、指定波長、指定動径距離のデータの時系列を取得する
+
+使用する主要プログラム
+	main_exeuv_l2c2roi_jup_R
+	exeuv_l2c2roi_jup_R.pro
+	read_exc_l2c.pro
+	init_spice.pro
+	read_exeuv_cal.pro
+	read_exc_euv_l2.pro
+
+事前準備
+	main_exeuv_l2c2roi_jup_r　内のL2 primeデータ所在及び出力ファイル保存先を書き換え
+	exeuv_l2c2roi_jup_r.pro　内のL2 primeデータ所在を書き換え
+	read_exeuv_cal.pro内のcalファイル所在を書き換え
+
+	exeuv_l2c2roi_jup_r.pro　内のROIの定義を書き換え
+
+実行方法
+	IDL > .r main_exeuv_l2c2roi_jup_r
+	IDL > main_exeuv_l2c2roi_jup_r, '20150101', '20150601', /skip_l2
