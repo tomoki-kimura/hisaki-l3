@@ -76,6 +76,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    KEY_EXTNAME  = 'EXTNAME'
 ;   KEY_NINTTIME = 'NINTTIME';L2
    KEY_NINTTIME = 'INT_TIME';L2prime
+   KEY_RADMON   = 'RADMON'
    
    COMMENT_L2PATH    = 'Path/Dir of Input L2 file.'
    COMMENT_TBLAPATH = 'Path of TableA.'
@@ -271,6 +272,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       im_target_integral = dblarr(x_max_p - x_min_p + 1)
       distribution_count = dblarr(x_max_p - x_min_p + 1, value_nextend - 1)
       distribution_count_rate = dblarr(x_max_p - x_min_p + 1, value_nextend - 1)
+      radiation_monitor = dblarr(value_nextend - 1)
       value_extname_list = strarr(value_nextend - 1)
       value_ninttime_list = dblarr(value_nextend - 1)
       year_list = strarr(value_nextend - 1)      ;;;;;TK
@@ -282,6 +284,11 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
          im = mrdfits(l2_path, j, hdr, /silent)
          ;remove geocorona;;;;;;;;;;;;;;;;;;;;;;byhk
          im=remove_geocor(im,!geocorona_list ,l2cal_path)
+         
+         if i eq 0l then begin; radiation minitor ;; TK
+            crad=double(fxpar(hdr,KEY_RADMON))
+            radiation_monitor[j-2] = crad; counts/min
+         endif
          
          im_target = im[x_min_p : x_max_p, y_min_p : y_max_p]
          value_extname  = fxpar(hdr, KEY_EXTNAME)
@@ -405,7 +412,9 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       structure_distribution_count_rate = create_struct(tag_series_distribution_count_rate,series_distribution_count_rate)
       structure   = create_struct(structure, structure_distribution_radiant_energy, structure_distribution_sigma, structure_distribution_count, structure_distribution_count_rate)
    endfor
-   
+   structure_radiation_monitor = create_struct('RADMOD',radiation_monitor)
+   structure   = create_struct(structure, structure_radiation_monitor)
+
    ; binary table用に構造体を変換
    n_time_series      = n_elements(structure.year)
    n_tag_structure    = n_tags(structure)
@@ -453,7 +462,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
 
    ;modify bintable header
    tunit=strarr(n_tag_structure)
-   tunit[*]='GW' & tunit[0]='years' & tunit[1]='days' & tunit[2]='sec'
+   tunit[*]='GW' & tunit[0]='years' & tunit[1]='days' & tunit[2]='sec' & tunit[-1]='counts/min'
    tdisp=strarr(n_tag_structure)   
    tdisp[*]='D10.1' & tdisp[0]='I5' & tdisp[1]='I5' & tdisp[2]='E15.6'
    bin_table = mrdfits(out_path, 2, hdr_bin_table, /silent)
