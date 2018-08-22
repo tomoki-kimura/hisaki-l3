@@ -2,7 +2,7 @@ pro filt_var, xarr=xarr, yarr=yarr, outarr=outarr, window=window, ave=ave, max=m
   aveflg=0l
   if keyword_set(max) then aveflg=2l
   if keyword_set(ave) then aveflg=1l
-  if aveflg eq 1l then message, '>>> running average is performed instead of running median', /info
+ ; if aveflg eq 1l then message, '>>> running average is performed instead of running median', /info
   
   nx=n_elements(xarr)
   ny=n_elements(yarr)

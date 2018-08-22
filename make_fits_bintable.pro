@@ -245,9 +245,9 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       yrange_v = [tablea_dataset_value[i,2], tablea_dataset_value[i,3]]
       
       ; convert spatial integration region in unit of Rj to in arcsec;;; TK
-      im = mrdfits(l2_path, 2, hdr, /silent)
-      value_extname  = fxpar(hdr, KEY_EXTNAME)      
-      planet_radii_deg=get_planet_radii(time=value_extname,target=!NULL,/deg); deg/rp
+      buf = mrdfits(l2_path, 2, hdr, /silent)
+      time  = fxpar(hdr, KEY_EXTNAME)      
+      planet_radii_deg=get_planet_radii(time=time,target=!NULL,/deg); deg/rp
       yrange_v *= planet_radii_deg*3600.d; arcsec
       
       res = convert_value2pixel(l2cal_path, xrange_v, yrange_v)
