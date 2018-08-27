@@ -58,7 +58,7 @@
 ;      Fujitsu Limited.
 ;      v1.0 2018/01/30 First Edition
 ;-
-pro make_slitpos, lp=l2_intg_path, od=out_dir;, cp=l2_cal_path ;, md=mode, xr=xrange, yr=yrange
+pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern;, cp=l2_cal_path ;, md=mode, xr=xrange, yr=yrange
   loadct,39,/SILENT;;;HK
 
    on_error,2
@@ -145,33 +145,18 @@ pro make_slitpos, lp=l2_intg_path, od=out_dir;, cp=l2_cal_path ;, md=mode, xr=xr
 ;   ; モード
 ;   if (keyword_set(mode) eq FALSE) then err01 += '/' + KEYWORD_MD
    ; 必須項目がない場合は終了
-   if(err01 ne EMP_STR) then $
-      message, MSG_ERR01 + " " + err01
-
-
-
-;    file_recs = strarr(file_lines('G:\cal\slit_move.csv'))
-;    openr, 1, 'G:\cal\slit_move.csv'
-;    readf, 1, file_recs
-;    close, 1
-;    slitmove=0
-;    for j = 0, n_elements(file_recs) - 1 do begin
-;      rec = strsplit(file_recs[j], ',', /EXTRACT)
-;      if j eq 0 then slitmove=rec else slitmove=[slitmove,rec[0]]
-;    endfor
+   if(err01 ne EMP_STR) then message, MSG_ERR01 + " " + err01
     
-    buff=read_csv('G:\cal\slit_move.csv')
+    buff=read_csv(!l2cal_path+'slit_move.csv')
     slitmove=buff.field1[where(buff.field2 ne '#')]
     n=-1
     
-    file=file_search(l2_intg_path+'*.fits')
+    if not keyword_set(pattern) then pattern='*'
+    file=file_search(l2_intg_path + '/*'+pattern+'*.fits')
+
     tot=dblarr(1024,1024)
-    window,1,xsize=1000,ysize=1000
-    nn1=''
-    s2=0
-    s3=0
-    
-    m=0
+    ;window,1,xsize=1000,ysize=1000
+    nn1='' & s1=0 & s2=0 & s3=0 & s4=0 & m=0
     
     for j=0, n_elements(file)-1 do begin
       ; 積分後L2のプライマリーヘッダから時刻エクステンション
@@ -180,95 +165,111 @@ pro make_slitpos, lp=l2_intg_path, od=out_dir;, cp=l2_cal_path ;, md=mode, xr=xr
       n_intg_ext = fxpar(prim_hdr, KEY_NEXTEND)
       if (n_intg_ext eq 0) then message, MSG_ERR05 + KEY_NEXTEND
 
-      ; totalエクステンションの数を引く
-      n_intg_ext -= 1
-      for i = 1, n_intg_ext + 1 do begin
-        ; イメージを取得
-        im = mrdfits(file[j], i, hdr, /silent)
-        ; イメージがfltarr(1024,1024)でない場合はループを飛ばす
-        size_im = size(im, /dimension)
-        if (size_im[0] ne IMG_SIZE[0]) or (size_im[1] ne IMG_SIZE[1])$
-          or (size(im,/tname) ne TYPE_FLT) then begin
-          print, MSG_ERR97 + i
-          continue
-        endif
-        ; データ時刻を取得
-        data_time = fxpar(hdr,KEY_EXTNAME)
-        ; データ時刻が取得できない場合はループを飛ばす
-        if (data_time eq 0) then begin
-          print, MSG_ERR05 + KEY_EXTNAME
-          continue
+      ; イメージを取得
+      im = mrdfits(file[j], 1, hdr, /silent)
+      ; イメージがfltarr(1024,1024)でない場合はループを飛ばす
+      size_im = size(im, /dimension)
+      if (size_im[0] ne IMG_SIZE[0]) or (size_im[1] ne IMG_SIZE[1]) or n_intg_ext eq 1 then begin
+        print, MSG_ERR97 + string(j)
+        continue
+      endif
+      ; データ時刻を取得
+      data_time = fxpar(hdr,'DATE-OBS')
+      ; データ時刻が取得できない場合はループを飛ばす
+      if (data_time eq 0) then begin
+        print, MSG_ERR05 + KEY_EXTNAME
+        continue
+      endif
+
+      if ck_blacklist(data_time,'G:\cal\blacklist.csv') eq -1 then continue
+      if n eq -1 then n=ck_slitmove(data_time,slitmove)
+      list_n = ck_slitmove(data_time,slitmove)
+      if list_n ne n or ( j eq n_elements(file)-1) then begin
+        print,'output'
+        fits_write,out_dir+string(m,format='(i03)')+'.fits',tot/mean(tot)
+
+        line=588;1025
+        file_elm=strsplit(FILE_BASENAME(file[j]),/extract, '[._]')
+        l2cal_path2=!l2cal_path+'calib_'+file_elm[4]+'_v1.0.fits'
+        range_p = convert_value2pixel(l2cal_path2, [line,line+10], [-10,10])
+        geocr  = range_p[0, 0]
+;        slit_profile_b=tot[geocr:geocr+7,*]
+        slit_profile_b=tot[geocr:geocr+23,*]
+
+        slit_profile   = total(slit_profile_b,1)
+        slit_profile   = slit_profile/max(slit_profile)
+        slit_profile_l = slit_profile
+        x1=indgen(n_elements(slit_profile))
+        x2=findgen(n_elements(slit_profile)*100)/100.
+        slit_profile   = INTERPOL(slit_profile, x1, x2)
+        slit1 = min(where(slit_profile ge 0.5))
+        slit4 = max(where(slit_profile ge 0.5))
+        slit2 = min(where(slit_profile[slit1:slit4] lt 0.5))+slit1-1
+        slit3 = max(where(slit_profile[slit1:slit4] lt 0.5))+slit1+1
+
+        if (slit3-slit2)/100. lt 22. then begin
+          for i=0, 3000 do begin
+            if (slit3-slit2)/100. ge 22. then break
+            if slit_profile[slit2] le slit_profile[slit3] then slit2=slit2-1. $
+            else slit3=slit3+1.
+          endfor
+        endif else begin
+          for i=0, 3000 do begin
+            if (slit3-slit2)/100. le 22. then break
+            if slit_profile[slit2] le slit_profile[slit3] then slit2=slit2+1. $
+            else slit3=slit3-1.
+          endfor
+        endelse
+        if (slit3-slit2)/100. ne 22. then begin
+          print, 'err slit2-3 pos'
+          stop
         endif
         
-        if ck_blacklist(data_time) eq -1 then continue
-        if n eq -1 then n=ck_slitmove(data_time,slitmove)
-        list_n = ck_slitmove(data_time,slitmove)
-        if list_n ne n or ( j eq n_elements(file)-1 and i eq n_intg_ext + 1) then begin
-          print,'output'
-          fits_write,out_dir+string(m,format='(i03)')+'.fits',tot/mean(tot)
-          
-          line=1025;line=[972,1025,1216]
-          slit_profile_b=dblarr(24,1024)
-          for k=0, n_elements(line)-1 do begin
-            path_elm=strsplit(file[i],/extract, '\')
-            file_elm=strsplit(path_elm[n_elements(path_elm)-1],/extract, '.')
-            file_elm2=strsplit(file_elm[1],/extract, '_')
-            l2_cal_path='G:\cal\'+'calib_'+file_elm2[0]+'_v1.0.fits'
-            range_p = convert_value2pixel(l2_cal_path, [line[k],line[k]+10], [-10,10])
-            geocr  = range_p[0, 0]
-            if k ne 1 then slit_profile_b+=tot[geocr:geocr+7,*]
-          endfor
-          slit_profile   = total(slit_profile_b,1)
-          slit_profile   = slit_profile/max(smooth(slit_profile,7))
-          slit_profile_s = smooth(slit_profile,6)/max(smooth(slit_profile,6))
-          slit1 = min(where(slit_profile_s ge 0.5))
-          slit4 = max(where(slit_profile_s ge 0.5))
-          slit2 = min(where(slit_profile_s[slit1:slit4] lt 0.5))+slit1-1
-          slit3 = max(where(slit_profile_s[slit1:slit4] lt 0.5))+slit1+1
-          
-          if slit3-slit2 ne 22 then begin
-            if slit3-slit2 eq 21 then begin
-              if slit_profile_s[slit2] le slit_profile_s[slit3] then begin
-                slit2=slit2-1
-              endif else begin
-                slit3=slit3+1
-              endelse              
-            endif
-            if slit3-slit2 eq 20 then begin
-              slit2=slit2-1
-              slit3=slit3+1
-            endif
-          endif
-          s2    = [s2,slit2]
-          s3    = [s3,slit3]
-          
-          !p.multi=[0,1,2]
-          plot, slit_profile_s,psym=-1,xrange=[500,650],charsize=2,title=string(slit2)+string(slit3-slit2)+string(slit3)
-          oplot,slit_profile,linestyle=1
-          oplot,!x.crange,[0.5,0.5],color=fsc_color('gray')
-          oplot,slit1*[1,1],!y.crange,color=fsc_color('green')
-          oplot,slit2*[1,1],!y.crange,color=fsc_color('green')
-          oplot,slit3*[1,1],!y.crange,color=fsc_color('green')
-          oplot,slit4*[1,1],!y.crange,color=fsc_color('green')
-          
-          print,slit3-slit2
-          imgdisp_2,transpose(slit_profile_b[0:7,500:650]),title=slitmove[n]
-          nn1=[nn1,slitmove[n]]
-          
-          write_png,out_dir+string(m,format='(i03)')+'.png',tvrd(/true)
-          tot=0
-          n=list_n
-          m+=1
-        endif
-        tot+=im
-      endfor
+        
+        buff=min(abs(slit_profile[0:slit1+1000] - slit_profile[slit2]),min_subscript)
+        slit1=min_subscript
+        buff=min(abs(slit_profile[slit4-1000:*] - slit_profile[slit3]),min_subscript)
+        slit4=min_subscript+slit4-1000
+        
+        s1    = [s1,slit1/100.]
+        s2    = [s2,slit2/100.]
+        s3    = [s3,slit3/100.]
+        s4    = [s4,slit4/100.]
+
+        !p.multi=[0,1,2]
+        plot, x2,slit_profile,xrange=[500,650],charsize=2,$
+          title=string(slit1/100.,format='(f6.2)')+'  '$
+               +string(slit2/100.,format='(f6.2)')+'  '$
+               +string((slit3-slit2)/100.,format='(f6.2)')+'  '$
+               +string(slit3/100.,format='(f6.2)')+'  '$
+               +string(slit4/100.,format='(f6.2)')
+        oplot,x1,slit_profile_l,psym=1
+        oplot,x2,slit_profile,linestyle=1
+        oplot,!x.crange,[0.5,0.5],color=fsc_color('gray')
+        oplot,slit1/100.*[1,1],!y.crange,color=fsc_color('green')
+        oplot,slit2/100.*[1,1],!y.crange,color=fsc_color('green')
+        oplot,slit3/100.*[1,1],!y.crange,color=fsc_color('green')
+        oplot,slit4/100.*[1,1],!y.crange,color=fsc_color('green')
+
+        print,(slit3-slit2)/100.
+        imgdisp_2,transpose(slit_profile_b[*,500:650]),title=slitmove[n]
+        nn1=[nn1,slitmove[n]]
+
+        write_png,out_dir+string(m,format='(i03)')+'.png',tvrd(/true)
+        tot=0
+        n=list_n
+        m+=1
+      endif
+      tot+=im
       print,data_time,list_n
     endfor
     
     nn1=nn1[1:*]
+    s1 =s1[1:*]
     s2 =s2[1:*]
     s3 =s3[1:*]
-    write_csv, 'G:\cal\slit_move2.csv' ,nn1,s2,s3
+    s4 =s4[1:*]
+    write_csv, !l2cal_path+'\slit_move2.csv' ,nn1,s1,s2,s3,s4
     
     
     ;処理時間計算終了

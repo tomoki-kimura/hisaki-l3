@@ -58,7 +58,7 @@
 ;      Fujitsu Limited.
 ;      v1.0 2018/01/30 First Edition
 ;-
-pro make_peak_list_gauss, lp=l2_intg_path, od=out_dir, md=mode, cp=l2_cal_path, xr=xrange, yr=yrange
+pro make_peak_list_gauss, lp=l2_intg_path, od=out_dir, md=mode, cp=l2_cal_path, xr=xrange, yr=yrange, ret=ret
   loadct,39,/SILENT;;;HK
   !p.multi=[0,1,3]
 
@@ -158,11 +158,21 @@ pro make_peak_list_gauss, lp=l2_intg_path, od=out_dir, md=mode, cp=l2_cal_path, 
 
    ; totalエクステンションの数を引く
    n_intg_ext -= 1
-;stop
+   
+   ;------------------------------hk
+   if n_intg_ext eq 0 then begin
+    print,'no extension'
+    return
+   endif
+   
+   
    ; 格納用の配列を作成
    arr_time   = strarr(n_intg_ext)
+   arr_time_s = strarr(n_intg_ext)
+   arr_time_e = strarr(n_intg_ext)
    arr_yc     = fltarr(n_intg_ext)
    arr_yc_peak= fltarr(n_intg_ext)
+   arr_fwhm   = fltarr(n_intg_ext)
    arr_sigma  = fltarr(n_intg_ext)
 
    ; modeの値チェック
@@ -225,66 +235,48 @@ pro make_peak_list_gauss, lp=l2_intg_path, od=out_dir, md=mode, cp=l2_cal_path, 
    
    
    
-   tot=dblarr(1024,1024)
-;   for i=1, n_intg_ext + 1 do begin
-   for i=2, n_intg_ext + 1 do begin
-     tot+=mrdfits(l2_intg_path, i, hdr, /silent)
-   endfor
    
-   buff=read_csv('D:\L2\cal\slit_move2.csv')
-   s2=buff.field2
-   s3=buff.field3
+   buff=read_csv('G:\cal\slit_move2.csv')
+   ;;;;;;from KOGA result
+   dd=buff.field1
+   s1=buff.field2 + 0.3
+   s2=buff.field3 + 3.0
+   s3=buff.field4 + 3.0
+   s4=buff.field5 + 5.0
    
-;   line=[972,1025,1216];line=[972,1025,1216]
-;   slit_profile_b=dblarr(24,1024)
-;   for j=0, n_elements(line)-1 do begin
-;     range_p = convert_value2pixel(l2_cal_path, [line[j],line[j]+10], [-10,10])
-;     geocr  = range_p[0, 0]
-;     if j ne 1 then slit_profile_b+=tot[geocr:geocr+23,*]
-;   endfor
-;   slit_profile   = total(slit_profile_b,1)
-;   slit_profile   = slit_profile/max(smooth(slit_profile,7))
-;   slit_profile_s = smooth(slit_profile,6)/max(smooth(slit_profile,6))
-;   slit1 = min(where(slit_profile_s ge 0.5))
-;   slit4 = max(where(slit_profile_s ge 0.5))
-;   slit2 = min(where(slit_profile_s[slit1:slit4] lt 0.5))+slit1-1
-;   slit3 = max(where(slit_profile_s[slit1:slit4] lt 0.5))+slit1+1
-
+   
+   tot=mrdfits(l2_intg_path, 1, hdr_tot, /silent)
    extot=1
    
-   
    ; 積分エクステンション毎にガウシアンフィッティング
-;   for i = 1, n_intg_ext + 1 do begin;;;byHK L2primeはtotalextensionが無い
-   for i = 2, n_intg_ext + 1 do begin
+;   for i = 2, n_intg_ext + 1 do begin
+   for i = 2, 2 do begin
 
       ; イメージを取得
-      im = mrdfits(l2_intg_path, i, hdr, /silent)
+      ;im = mrdfits(l2_intg_path, i, hdr, /silent)
       if extot eq 1 then im=float(tot) ;byHK
       im2=im
+      
       ; イメージがfltarr(1024,1024)でない場合はループを飛ばす
       size_im = size(im, /dimension)
       if (size_im[0] ne IMG_SIZE[0]) or (size_im[1] ne IMG_SIZE[1])$
-           or (size(im,/tname) ne TYPE_FLT) then begin
+           or (size(im,/tname) ne TYPE_FLT)  then begin
          print, MSG_ERR97 + i
          continue
       endif
       
-      ;;;byHK
+
       ;;;mask geocorona
-      line=[1025,1216];line=[972,1025,1168,1216,1304,1356]
-      for j=0, n_elements(line)-1 do begin
-        range_p = convert_value2pixel(l2_cal_path, [line[j],line[j]+10], [-10,10])
-        geocr  = range_p[0, 0]
-        im[geocr:geocr+25,*]=0
-      endfor
-      ;;;byHK
+      im=remove_geocor(im,!geocorona_list,l2_cal_path)
+      
       ;;;mask torus
-      lines=[900, 990,1040,1090,1178,1243,1347,1392,1410]
-      linee=[915,1040,1081,1110,1200,1261,1361,1410,1420]
-      for j=0, n_elements(lines)-1 do begin
-        range_p = convert_value2pixel(l2_cal_path, [lines[j],linee[j]], [-10,10])
-        im[range_p[0,0]:range_p[1,0],*]=0
-      endfor
+;      lines=[900, 990,1040,1090,1178,1243,1347,1392,1410]
+;      linee=[915,1040,1081,1110,1200,1261,1361,1410,1420]
+;      for j=0, n_elements(lines)-1 do begin
+;        range_p = convert_value2pixel(l2_cal_path, [lines[j],linee[j]], [-10,10])
+;        im[range_p[0,0]:range_p[1,0],*]=0
+;      endfor
+      im=remove_geocor(im,!iptbat_list,l2_cal_path)
       
       
       ; イメージを指定領域に切り取る
@@ -296,10 +288,6 @@ pro make_peak_list_gauss, lp=l2_intg_path, od=out_dir, md=mode, cp=l2_cal_path, 
       for j = 0, size_im_target[0] - 1 do begin
          im_y_intg = im_y_intg + transpose(im_target[j,*])
       endfor
-;      ;byHK　メジアンにしてみる
-;      for j = 0, size_im_target[1] - 1 do begin
-;        im_y_intg[j] = median(im_target[*,j])
-;      endfor
      
       ; ガウシアンフィッティング
       y_range    = [yrange[0]:yrange[1]]
@@ -310,9 +298,20 @@ pro make_peak_list_gauss, lp=l2_intg_path, od=out_dir, md=mode, cp=l2_cal_path, 
          print, MSG_ERR96 + i
          continue
       endif 
+        
 
       ; データ時刻を取得
-      data_time = fxpar(hdr,KEY_EXTNAME)
+      ;data_time = fxpar(hdr,KEY_EXTNAME)
+      data_time_s = fxpar(hdr_tot,'DATE-OBS')
+      data_time_e = fxpar(hdr_tot,'DATE-END')
+      data_time   = time_string((time_double(data_time_s) + $
+                                  time_double(data_time_e))/2.)
+      data_time   = repstr(data_time,'/','T')
+      
+      ;-----------------------byHK
+      if ck_blacklist(data_time,'G:\cal\blacklist.csv') eq -1 then continue
+      n1=ck_slitmove(data_time, dd)
+
 
       ; データ時刻が取得できない場合はループを飛ばす
       if (data_time eq 0) then begin
@@ -321,90 +320,132 @@ pro make_peak_list_gauss, lp=l2_intg_path, od=out_dir, md=mode, cp=l2_cal_path, 
       endif
 
       ; 値を配列に格納(データ時刻、ピーク位置、σ)
-      num_data  = i - 1 ;byHK i - 2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      num_data  = i - 2
       arr_time[num_data]   = data_time
+      arr_time_s[num_data] = data_time_s
+      arr_time_e[num_data] = data_time_e
       arr_yc_peak[num_data]= coeff[0]
-      arr_yc[num_data]     = coeff[1] + 1 ;配列番号=>pixel番号
+      arr_yc[num_data]     = coeff[1]; + 1 ;配列番号=>pixel番号
+      arr_fwhm[num_data]   = 2*coeff[2]*sqrt(2*alog(2))
       arr_sigma[num_data]  = YERROR ;coeff[2]
       
+      slit1=s1[n1]
+      slit2=s2[n1]
+      slit3=s3[n1]
+      slit4=s4[n1]
       
-;;;;;byHK
-      if ck_blacklist(data_time,'D:\L2\cal\blacklist.csv') eq -1 then continue
-      n1=ck_slitmove(data_time, buff.field1)
-      slit2=buff.field2[n1]
-      slit3=buff.field3[n1]
-      
-      fits_read,'D:\L2\slit\'+string(n1,format='(i03)')+'.fits',data_slit,header
-      line=1025
-      slit_profile_b=dblarr(8,1024)
-      for k=0, n_elements(line)-1 do begin
-        range_p = convert_value2pixel(l2_cal_path, [line[k],line[k]+10], [-10,10])
-        geocr  = range_p[0, 0]
-        slit_profile_b+=data_slit[geocr:geocr+7,*]
-      endfor
+      fits_read,!DIR_SLIT+'\'+string(n1,format='(i03)')+'.fits',data_slit,header
+      line=1025;588
+      range_p = convert_value2pixel(l2_cal_path, [line,line+10], [-10,10])
+      geocr  = range_p[0, 0]
+      slit_profile_b=data_slit[geocr:geocr+7,*]
       slit_profile   = total(slit_profile_b,1)
       slit_profile   = slit_profile/max(smooth(slit_profile,7))
-      slit_profile_s = smooth(slit_profile,6)/max(smooth(slit_profile,6))
-      
+      slit_profile_s = smooth(slit_profile,6)/max(smooth(slit_profile,6))      
       ;;;byHK
       imgdisp_2,im,roi=[xrange[0],xrange[1],yrange[0]-30,yrange[1]+30],title=data_time,charsize=2
       oplot,!x.crange,[1,1]*yrange[0]
       oplot,!x.crange,[1,1]*yrange[1]
       oplot,!x.crange,[1,1]*coeff[1],color=fsc_color('red'),linestyle=1
+      oplot,!x.crange,[1,1]*slit1,color=fsc_color('green'),linestyle=1
+      oplot,!x.crange,[1,1]*slit2,color=fsc_color('green'),linestyle=1
+      oplot,!x.crange,[1,1]*slit3,color=fsc_color('green'),linestyle=1
+      oplot,!x.crange,[1,1]*slit4,color=fsc_color('green'),linestyle=1
       imgdisp_2,im2,roi=[xrange[0],xrange[1],yrange[0]-30,yrange[1]+30],title=data_time,charsize=2
       oplot,!x.crange,[1,1]*yrange[0]
       oplot,!x.crange,[1,1]*yrange[1]
       oplot,!x.crange,[1,1]*coeff[1],color=fsc_color('red'),linestyle=1
+      oplot,!x.crange,[1,1]*slit1,color=fsc_color('green'),linestyle=1
+      oplot,!x.crange,[1,1]*slit2,color=fsc_color('green'),linestyle=1
+      oplot,!x.crange,[1,1]*slit3,color=fsc_color('green'),linestyle=1
+      oplot,!x.crange,[1,1]*slit4,color=fsc_color('green'),linestyle=1
       plot, slit_profile_s,xrange=[yrange[0]-10,yrange[1]+10],charsize=2,/noerase
       oplot,slit_profile,psym=1
       oplot,!x.crange,[0.5,0.5],color=fsc_color('gray')
-      ;oplot,slit1*[1,1],!y.crange,color=fsc_color('green')
+      oplot,slit1*[1,1],!y.crange,color=fsc_color('green')
       oplot,slit2*[1,1],!y.crange,color=fsc_color('green')
       oplot,slit3*[1,1],!y.crange,color=fsc_color('green')
-      ;oplot,slit4*[1,1],!y.crange,color=fsc_color('green')
+      oplot,slit4*[1,1],!y.crange,color=fsc_color('green')
       oplot,coeff[1]*[1,1],!y.crange,color=fsc_color('red'),linestyle=1
       plot, y_range,im_y_intg,xrange=[yrange[0]-10,yrange[1]+10],charsize=2 $
-        ,title=string(slit2)+string(slit3-slit2)+string(slit3)
+        ,title=' slit2'+string(slit2,format='(f6.1)')$
+              +' width'+string(slit3-slit2,format='(f6.1)')$
+              +' slit3'+string(slit3,format='(f6.1)') $
+              +' yc '  +string(arr_yc[num_data],format='(f5.1)')$
+              +' fwhm '+string(arr_fwhm[num_data],format='(f5.1)')
       oplot,y_range,yfit,color=fsc_color('red')
       oplot,[1,1]*yrange[0],!y.crange
       oplot,[1,1]*yrange[1],!y.crange
       path_elm=strsplit(l2_intg_path,/extract, '\')
-      write_png, logdir+'/plot_yc_'+path_elm[n_elements(path_elm)-1]+string(i,format='(i03)')+'.png', TVRD(/TRUE)
-      defsysv,'!nslit_1',yrange[0]
-      defsysv,'!nslit_2',yrange[1]
-      
-      if extot eq 1 then break
-      
+      write_png, !DIR_SLIT+'/plot_yc_'+path_elm[n_elements(path_elm)-1]+string(i,format='(i03)')+'.png', TVRD(/TRUE)
+
+      if extot eq 1 then break      
    endfor
 
-   ; ファイル出力処理
-   out_name = time_string(arr_time[1], tformat=TFORMAT_OUT);;;;;;;byHK
-   out_path = out_dir + SL + out_name
-   openw, NUM_FILE_UNIT, out_path
-   size_arr_time = size(arr_time)
+;   ; ファイル出力処理
+;   out_name = time_string(arr_time[1], tformat=TFORMAT_OUT);;;;;;;byHK
+;   out_path = out_dir + SL + out_name
+;   openw, NUM_FILE_UNIT, out_path
+;   size_arr_time = size(arr_time)
+;
+;   ; ヘッダ部出力
+;   printf, NUM_FILE_UNIT, 'EUV-L2 Integral   = ' + l2_intg_path
+;   printf, NUM_FILE_UNIT, 'EUV-L2 calc       = ' + l2_cal_path
+;   printf, NUM_FILE_UNIT, 'mode              = ' + mode
+;   printf, NUM_FILE_UNIT, 'xrange_min(pixel) = ' + string(xrange[0]) 
+;   printf, NUM_FILE_UNIT, 'xrange_max(pixel) = ' + string(xrange[1]) 
+;   printf, NUM_FILE_UNIT, 'yrange_min(pixel) = ' + string(yrange[0]) 
+;   printf, NUM_FILE_UNIT, 'yrange_max(pixel) = ' + string(yrange[1]) 
+;
+;   ; データ部出力
+;   printf, NUM_FILE_UNIT, REC_HEADER
+;   for k = 0, size_arr_time[1] - 1 do begin
+;      if arr_yc[k] gt yrange[1] then continue
+;      if arr_yc[k] lt yrange[0] then continue
+;      rec = arr_time[k] + CM + strcompress(string(arr_yc[k])) $
+;                        + CM + strcompress(string(arr_sigma[k])) $
+;                        + CM + strcompress(string(arr_yc_peak[k])) $
+;                      + CM + strcompress(string(slit1))$
+;                      + CM + strcompress(string(slit2))$
+;                      + CM + strcompress(string(slit3))$
+;                      + CM + strcompress(string(slit4))
+;      printf, NUM_FILE_UNIT, rec
+;   endfor
+;   close, NUM_FILE_UNIT
+   
+   
+   ;Fitting error => return -1
+   if (where(arr_yc ne 0))[0] eq -1 then begin
+       buff  =create_struct('time_s',-1,'time_m',-1,'time_e',-1,'yc',-1,'peak',-1,$
+                    'fwhm',-1,'sig',-1,'slit1',-1,'slit2',-1,'slit3',-1,'slit4',-1)
+     return
+   endif
 
-   ; ヘッダ部出力
-   printf, NUM_FILE_UNIT, 'EUV-L2 Integral   = ' + l2_intg_path
-   printf, NUM_FILE_UNIT, 'EUV-L2 calc       = ' + l2_cal_path
-   printf, NUM_FILE_UNIT, 'mode              = ' + mode
-   printf, NUM_FILE_UNIT, 'xrange_min(pixel) = ' + string(xrange[0]) 
-   printf, NUM_FILE_UNIT, 'xrange_max(pixel) = ' + string(xrange[1]) 
-   printf, NUM_FILE_UNIT, 'yrange_min(pixel) = ' + string(yrange[0]) 
-   printf, NUM_FILE_UNIT, 'yrange_max(pixel) = ' + string(yrange[1]) 
+   nn=where(arr_time ne 0)
+   for i = 0, n_elements(nn) - 1 do begin
+     k=nn[i]
+     if arr_yc_peak[k] le 0 or arr_yc[k] le yrange[0] or arr_yc[k] ge yrange[1] or arr_fwhm[k] ge 20. then begin
+       print, 'GAUSSFIT is failed.', arr_time_s[k]
+       if extot ne 1 then continue
+       buff  =create_struct('time_s',-1,'time_m',-1,'time_e',-1,'yc',-1,'peak',-1,$
+                    'fwhm',-1,'sig',-1,'slit1',-1,'slit2',-1,'slit3',-1,'slit4',-1)
+     endif else begin
+       buff =create_struct('time_s',arr_time_s[k],$
+                           'time_m',arr_time[k],$
+                           'time_e',arr_time_e[k],$
+                           'yc'    ,arr_yc[k]  ,$
+                           'peak'  ,arr_yc_peak[k],$
+                           'fwhm'  ,arr_fwhm[k],$
+                           'sig'   ,arr_sigma[k],$
+                           'slit1' ,slit1,$
+                           'slit2' ,slit2,$
+                           'slit3' ,slit3,$
+                           'slit4' ,slit4)
+     endelse
 
-   ; データ部出力
-   printf, NUM_FILE_UNIT, REC_HEADER
-   for k = 0, size_arr_time[1] - 1 do begin
-      if arr_yc[k] gt yrange[1] then continue
-      if arr_yc[k] lt yrange[0] then continue
-      rec = arr_time[k] + CM + strcompress(string(arr_yc[k])) $
-                        + CM + strcompress(string(arr_sigma[k])) $
-                        + CM + strcompress(string(arr_yc_peak[k])) $
-                      + CM + strcompress(string(slit2))$
-                      + CM + strcompress(string(slit3))
-      printf, NUM_FILE_UNIT, rec
-   endfor
-   close, NUM_FILE_UNIT
+     if k eq 0 then ret=buff else ret = [ret, buff]
+   end
+   
    
    ;処理時間計算終了
    p_end_time = systime(1)
@@ -413,5 +454,5 @@ pro make_peak_list_gauss, lp=l2_intg_path, od=out_dir, md=mode, cp=l2_cal_path, 
    ; ログ出力
    write_log, LOG_PATH, MSG_INF02
    write_log, LOG_PATH, 'proc time:'+strcompress(p_end_time - p_start_time)
-
+   
 end
