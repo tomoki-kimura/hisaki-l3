@@ -77,7 +77,7 @@ PRO init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range
   ;; mode    : Observation mode for Jupiter 
   ;; hdr     : fits header at the first extention of the block
   ;; radmon  : radiation monitor value counts/min
-  ;; radthr  : threshold of radiation monitor value counts/pixel/min
+  ;; radthr  : threshold of radiation monitor value counts/min
   blk = {ena:0,et_sta:0.0,et_end:0.0,et:0.0,ind_sta:0,ind_end:0,acm:0,$
       rad_j:0.0,apr_j:0.0, lon_j:0.0,inc_ce:0.0,ph_io:0.0,ph_eu:0.0,ypol:0,$
       mode:3,hdr:ptr_new(),radmon:0.0,radthr:300}
