@@ -3,7 +3,7 @@ set_env_l3
 
   defsysv, '!L2_DIR'      ,'G:\L2\'
   defsysv, '!DIR_SLIT'    ,'G:\slit\slit\'
-  defsysv, '!SLIT_POS'    ,'G:\slit\slit\slit_pos.csv'
+  defsysv, '!SLIT_POS'    ,'G:\slit\slit\aur_pos.csv'
 
   set_plot,'Z'
 ;  window,1,xsize=1000,ysize=1000
