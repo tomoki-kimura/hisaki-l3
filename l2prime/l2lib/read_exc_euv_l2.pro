@@ -76,20 +76,28 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
   print, '  composit image'
   im_cmp = fltarr(const.m, const.n, n_blk)
   img_composit, blk_arr, extn_arr, fits_arr, im_cmp, /rej, const=const, radloc=radloc
+  if total(im_cmp) then begin
+    message, 'Jupiter is outside the slit. No composit date is made',/info
+    status=-1
+    return
+  endif
   
   ;-- Check Jupiter location
-  calfile=!FITSDATADIR+'cal/calib_'+string(st_date,form='(i08)')+'_v1.0.fits'
-  if not file_exist(calfile) then return
-  read_cal, filename=calfile, caldata=caldata, calext=calext, numcal=numcal
-  xx=where(calext eq 'X-coord')
-  yy=where(calext eq 'Y-coord')
-  xcal=reform(caldata[xx[0],*,0])
-  ycal=reform(caldata[yy[0],0,*])
-  print, '  jupiter location'
-  chk_jupiter_location, im_cmp=im_cmp, blk_arr=blk_arr, const=const, jupypix=jupypix, xcal=xcal, ycal=ycal
-  if jupypix lt 0l then return
-  offset_image, im_cmp=im_cmp, blk_arr=blk_arr, const=const, jupypix=jupypix
-  print, '  ypix, yarcsec=', string(jupypix), ',', string(ycal[jupypix])
+;  calfile=!FITSDATADIR+'cal/calib_'+string(st_date,form='(i08)')+'_v1.0.fits'
+;  if not file_exist(calfile) then return
+;  read_cal, filename=calfile, caldata=caldata, calext=calext, numcal=numcal
+;  xx=where(calext eq 'X-coord')
+;  yy=where(calext eq 'Y-coord')
+;  xcal=reform(caldata[xx[0],*,0])
+;  ycal=reform(caldata[yy[0],0,*])
+;  print, '  jupiter location'
+;  chk_jupiter_location, im_cmp=im_cmp, blk_arr=blk_arr, const=const, jupypix=jupypix, xcal=xcal, ycal=ycal
+;  if jupypix le 0l then begin
+;    status=-1
+;    return
+;  endif
+;  offset_image, im_cmp=im_cmp, blk_arr=blk_arr, const=const, jupypix=jupypix
+;  print, '  ypix, yarcsec=', string(jupypix), ',', string(ycal[jupypix])
   
   
   ;--- Save to fits file
