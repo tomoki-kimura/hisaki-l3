@@ -40,7 +40,7 @@ pro make_fits_bintable_dir, l2_d=l2_dir, l2cal_p=l2cal_path, tablea_p=tablea_pat
    on_error,2
    
    if not keyword_set(pattern) then pattern='*'
-   l2_files   = file_search(l2_dir + '/*'+pattern+'*.fits');;;;;;;;byhk
+   l2_files   = file_search(l2_dir ,'*'+pattern+'*.fits');;;;;;;;byhk
    n_l2_files = n_elements(l2_files)
 
    ; 指定されたディレクトリのファイル一覧を取得し、各ファイルごとにL3データを生成する。

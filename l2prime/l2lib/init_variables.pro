@@ -24,7 +24,7 @@ PRO init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range
   ;; ipt_thl: IPT detection threshold level (count/min/pixel)
   const = {m:1024,n:1024,dl:10.0,inc_ce:6.8,lon_np:210.0,rj:71492.0,tj:9.925, $
           smin:-2345.2, smax:1853.2, wmin:1529.43, wmax:468.867, fov_cp:575, $
-          lt_sta:0.0, lt_end:24.0,rad_thl:0.004, ipt_thl:0.015}
+          lt_sta:0.0, lt_end:24.0,rad_thl:0.004,radloc:([512l,630l,960l,710l]), ipt_thl:0.015, iptloc:([720l,520l,850l,620l])}
   if keyword_set(dl) then const.dl = dl
   if keyword_set(lt_range) then begin
     const.lt_sta = lt_range[0]
@@ -78,9 +78,14 @@ PRO init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range
   ;; hdr     : fits header at the first extention of the block
   ;; radmon  : radiation monitor value counts/min
   ;; radthr  : threshold of radiation monitor value counts/min
+  ;; juploc  : flag of jupiter location 1:slit center, 2:boundary btw 20"-140", 3: bottom 140", 4:outside slit
+  ;; ycpxjup : y pixel number of jupiter in original l2 data
   blk = {ena:0,et_sta:0.0,et_end:0.0,et:0.0,ind_sta:0,ind_end:0,acm:0,$
       rad_j:0.0,apr_j:0.0, lon_j:0.0,inc_ce:0.0,ph_io:0.0,ph_eu:0.0,ypol:0,$
-      mode:3,hdr:ptr_new(),radmon:0.0,radthr:300}
-  
+      mode:3,hdr:ptr_new(),radmon:0.0,radloc:([512l,630l,960l,710l]),radthr:300.d,juploc:0l,ycpxjup:0l}
+  radloc=blk.radloc
+  radthr=blk.radthr
+  const.rad_thl=radthr/double((radloc[2]-radloc[0])*(radloc[3]-radloc[1]))
+  return
 end
 ;----------------------------------------------------------

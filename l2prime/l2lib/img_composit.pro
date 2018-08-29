@@ -2,7 +2,7 @@
 ; Composit image
 ; for read_exc_euv_l2.pro
 ;----------------------------------------------------------
-PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = rej, submod=submod, const=const, radloc=radloc
+PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = rej, submod=submod, const=const
 
 ;  openw, lun, 'c:\Doc\hisaki\lt_check.txt', /get_lun
 
@@ -48,6 +48,8 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
       ;;; skip if jupiter located outside the slit ;; TK
       ret=ck_aurpos(fxpar(hd,'EXTNAME'),!SLIT_POS)
       jupypix=ret.yc
+      blk_arr[i].juploc=ret.flag
+      blk_arr[i].ycpxjup=ret.yc
       if jupypix eq -1l then begin
         continue;
       endif
@@ -56,6 +58,7 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
       offset_one_image, im=im, jupypix=jupypix
       
       ; filtering based on radiation monitor
+      radloc=blk_arr[i].radloc
       if keyword_set(radloc) then begin
         ix0=radloc[0]
         ix1=radloc[2]
@@ -77,6 +80,7 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
       im_cmp[*,*,i] =0.0
     endelse
     
+    radloc=blk_arr[i].radloc
     if keyword_set(radloc) then begin
       ix0=radloc[0]
       ix1=radloc[2]

@@ -6,7 +6,7 @@
 ;
 ;   2016-02-07 F. Tsuchiya
 ;===================================================================
-PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=target, radloc=radloc
+PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=target
 
   status=1
 
@@ -20,7 +20,6 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
     return
   endif
   if not keyword_set(lt_range) then lt_range=[0.0,24.0]
-  if not keyword_set(radloc) then radloc=[512,630,960,710]; [x0,y0,x1,y1]
   if not keyword_set(target) then target = 'jupiter.mod.03'
 
   ;roi_drk = [512,630,960,710]   ; threshold level = 300/(449*81) [count/pixel/min]=5[counts/pixel/sec]
@@ -75,7 +74,7 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
   ;--- Composit data
   print, '  composit image'
   im_cmp = fltarr(const.m, const.n, n_blk)
-  img_composit, blk_arr, extn_arr, fits_arr, im_cmp, /rej, const=const, radloc=radloc
+  img_composit, blk_arr, extn_arr, fits_arr, im_cmp, /rej, const=const
   if total(im_cmp) eq 0l then begin
     message, 'Jupiter is outside the slit. No composit date is made',/info
     status=-1
@@ -115,7 +114,7 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
     return    
   endif
   
-  save_fits, im_cmp, const, extn_arr, blk_arr, out_file, fits_arr, radloc=radloc
+  save_fits, im_cmp, const, extn_arr, blk_arr, out_file, fits_arr
   print, 'output file name : ',out_file
   print, '   utc-sta utc-end ena-flag acm-time ypol'
   for i=0,n_elements(blk_arr)-1 do begin

@@ -9,10 +9,15 @@ PRO chk_fits_ext, const, extn_arr, fits_arr
   s_val = fltarr(n)
   r_val = fltarr(n)
 
+;  ; ROI for IPT (x0,y0,x1,y1)
+;  roi_ipt = [720,520,850,620]  ; thl = 200/(131*101)
+;  ; ROI for Background (radiation) (x0,y0,x1,y1)
+;  roi_drk = [70,630,960,710]   ; thl = 300/(891*81)
+
   ; ROI for IPT (x0,y0,x1,y1)
-  roi_ipt = [720,520,850,620]  ; thl = 200/(131*101)
+  roi_ipt = const.iptloc  ; thl = 200/(131*101)
   ; ROI for Background (radiation) (x0,y0,x1,y1)
-  roi_drk = [70,630,960,710]   ; thl = 300/(891*81)
+  roi_drk = const.radloc  ; thl = 300/(449*81)
 
   for i=0L,n-1L do begin
     im = mrdfits(fits_arr[extn_arr[i].fn].file,extn_arr[i].ext,hd,/SILENT)

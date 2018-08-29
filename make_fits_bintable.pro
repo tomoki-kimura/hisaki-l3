@@ -273,6 +273,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       distribution_count = dblarr(x_max_p - x_min_p + 1, value_nextend - 1)
       distribution_count_rate = dblarr(x_max_p - x_min_p + 1, value_nextend - 1)
       radiation_monitor = dblarr(value_nextend - 1)
+      jupiter_location_monitor = dblarr(value_nextend - 1)
       value_extname_list = strarr(value_nextend - 1)
       value_ninttime_list = dblarr(value_nextend - 1)
       year_list = strarr(value_nextend - 1)      ;;;;;TK
@@ -287,6 +288,8 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
          
          if i eq 0l then begin; radiation minitor ;; TK
             crad=double(fxpar(hdr,KEY_RADMON))
+            radiation_monitor[j-2] = crad; counts/min
+            cjloc=double(fxpar(hdr,KEY_JUPLOC))
             radiation_monitor[j-2] = crad; counts/min
          endif
          

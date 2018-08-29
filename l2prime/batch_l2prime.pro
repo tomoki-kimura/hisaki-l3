@@ -15,7 +15,10 @@ sdatearr=[$
     '20180824'   $
     ]
   foreach cdate, sdatearr do begin
-    if ck_blacklist(cdate,!BLACK_LIST) eq -1l then continue
+    if ck_blacklist(cdate,!BLACK_LIST) eq -1l then begin
+      message, 'input date is in the blacklist. Skipped.', /info
+      continue
+    endif
     read_exc_euv_l2, cdate, dl=dl, lt_range=lt_range, target=target
   endforeach
 

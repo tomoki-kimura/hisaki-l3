@@ -3,7 +3,7 @@
 ; for read_exc_euv_l2.pro
 ; 2016-06-09 F. Tsuchiya
 ;----------------------------------------------------------
-PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr, radloc=radloc
+PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr
 
   n_ext = n_elements(blk_arr)
   n_ext_w = 0
@@ -65,6 +65,7 @@ PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr, radloc=radloc
   im = fltarr(const.m,const.n)
   totexp=0.d
   radmtot=0.d
+  radloc=blk_arr[0].radloc
   for i=0l, n_ext-1l do begin
     totexp+=blk_arr[i].acm*60.d; sec
     im[*,*]+=im_cmp[*,*,i]*blk_arr[i].acm; [counts/pixel]
@@ -147,6 +148,9 @@ PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr, radloc=radloc
     sxaddpar, hdr, 'EU_PHASE', blk_arr[i].ph_eu, 'Europa phase angle [deg]', format="f8.2"
     sxaddpar, hdr, 'RADMON', radmon, 'Radiation Monitor Value [counts/min]'
     sxaddpar, hdr, 'RADLOC', strjoin(strcompress(string(radloc))), 'Radiation Monitor location [x0,y0,x1,y1]'
+    sxaddpar, hdr, 'JUPLOC', blk_arr[i].juploc, 'jup loc 1:slit cent, 2:bndry btw 20"-140", 3: btm 140", 4:outside slit'
+    sxaddpar, hdr, 'YCPXJUP', blk_arr[i].ycpxjup, 'y pixel number of jupiter in original l2 data' 
+    
     mwrfits, im, file, hdr, /silent
 
   endfor
