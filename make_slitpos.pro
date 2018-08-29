@@ -147,7 +147,7 @@ pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern;, cp=l2_cal_path ;
    ; 必須項目がない場合は終了
    if(err01 ne EMP_STR) then message, MSG_ERR01 + " " + err01
     
-    buff=read_csv(!l2cal_path+'slit_move.csv')
+    buff=read_csv(!dir_slit+'slit_move.csv')
     slitmove=buff.field1[where(buff.field2 ne '#')]
     n=-1
     
@@ -181,7 +181,7 @@ pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern;, cp=l2_cal_path ;
         continue
       endif
 
-      if ck_blacklist(data_time,'G:\cal\blacklist.csv') eq -1 then continue
+      if ck_blacklist(data_time,!dir_slit+'/blacklist.csv') eq -1 then continue
       if n eq -1 then n=ck_slitmove(data_time,slitmove)
       list_n = ck_slitmove(data_time,slitmove)
       if list_n ne n or ( j eq n_elements(file)-1) then begin
@@ -269,7 +269,7 @@ pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern;, cp=l2_cal_path ;
     s2 =s2[1:*]
     s3 =s3[1:*]
     s4 =s4[1:*]
-    write_csv, !l2cal_path+'\slit_move2.csv' ,nn1,s1,s2,s3,s4
+    write_csv, !dir_slit+'/slit_move2.csv' ,nn1,s1,s2,s3,s4
     
     
     ;処理時間計算終了

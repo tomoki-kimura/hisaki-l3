@@ -1,9 +1,6 @@
 pro hisaki_xypos
 set_env_l3
 
-  defsysv, '!L2_DIR'      ,'G:\L2\'
-  defsysv, '!DIR_SLIT'    ,'G:\slit\slit\'
-  defsysv, '!SLIT_POS'    ,'G:\slit\slit\slit_pos.csv'
 
   set_plot,'Z'
 ;  window,1,xsize=1000,ysize=1000
@@ -11,7 +8,7 @@ set_env_l3
   DEVICE, SET_PIXEL_DEPTH = 24
   DEVICE, DECOMPOSED = 0
   
-  file=file_search(!L2_DIR+'\*.fits')
+  file=file_search(!L2_DIR+'*.fits')
   dir_cal=!l2cal_path
 
   
@@ -22,7 +19,8 @@ set_env_l3
 
   for i=0,n_elements(file)-1 do begin
     file_elm=strsplit(FILE_BASENAME(file[i]),/extract, '[._]')
-    l2cal_path2=!l2cal_path+'/calib_'+file_elm[4]+'_v1.0.fits'
+    ii=where(stregex(file_elm[*],'[0-9]{8}') ge 0l)
+    l2cal_path2=!l2cal_path+'calib_'+file_elm[ii]+'_v1.0.fits'
     make_peak_list_gauss,  lp=file[i], od=!DIR_SLIT,$
       md='value',cp=l2cal_path2,xr=[1100,1160],yr=[-200,200],ret=ret
     if ret.time_s eq -1 then continue
