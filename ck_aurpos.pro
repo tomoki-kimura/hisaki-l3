@@ -3,7 +3,7 @@ function ck_aurpos, indate, bpath
   margin=4.
   
   if indate_s le time_double('2016-01-01') then $
-    return, create_struct('flag',1D,'time_s','','time_m','','time_e','',$
+    return, create_struct('flag',1l,'time_s','','time_m','','time_e','',$
       'yc',-1.,'fwhm',-1.,'slit1',-1.,'slit2',-1.,'slit3',-1.,'slit4',-1.)    
   
   file_recs = strarr(file_lines(bpath))
@@ -46,6 +46,6 @@ function ck_aurpos, indate, bpath
     endif
   endfor
 
-  return, create_struct('flag',-1,'time_s','','time_m','','time_e','',$
+  return, create_struct('flag',-1l,'time_s','','time_m','','time_e','',$
     'yc',-1.,'fwhm',-1.,'slit1',-1.,'slit2',-1.,'slit3',-1.,'slit4',-1.)
 end
