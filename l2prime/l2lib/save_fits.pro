@@ -58,7 +58,7 @@ PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr
   sxaddpar, phdr, 'COMMENT', 'Created at ' + SYSTIME()
   sxaddpar, phdr, 'COMMENT', 'Data source : EUV L2'
   sxaddpar, phdr, 'COMMENT', 'PROGRAM     : read_exc_euv_l2.pro'
-  sxaddpar, phdr, 'COMMENT', 'AUTHOR      : Fuminori Tsuchiya'  
+  sxaddpar, phdr, 'COMMENT', 'AUTHOR      : Tomoki KIMURA'  
   mwrfits, im, file, phdr, /create, /silent
 
   ;Write Standard extenstion
@@ -148,7 +148,7 @@ PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr
     sxaddpar, hdr, 'EU_PHASE', blk_arr[i].ph_eu, 'Europa phase angle [deg]', format="f8.2"
     sxaddpar, hdr, 'RADMON', radmon, 'Radiation Monitor Value [counts/min]'
     sxaddpar, hdr, 'RADLOC', strjoin(strcompress(string(radloc))), 'Radiation Monitor location [x0,y0,x1,y1]'
-    sxaddpar, hdr, 'JUPLOC', blk_arr[i].juploc, 'jup loc 1:slit cent, 2:bndry btw 20"-140", 3: btm 140", 4:outside slit'
+    sxaddpar, hdr, 'JUPLOC', blk_arr[i].juploc,'1:20", 2:20"-140", 3:140", 4:outside slit'
     sxaddpar, hdr, 'YCPXJUP', blk_arr[i].ycpxjup, 'y pixel number of jupiter in original l2 data' 
     
     mwrfits, im, file, hdr, /silent

@@ -77,6 +77,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
 ;   KEY_NINTTIME = 'NINTTIME';L2
    KEY_NINTTIME = 'INT_TIME';L2prime
    KEY_RADMON   = 'RADMON'
+   KEY_JUPLOC   = 'JUPLOC'
    
    COMMENT_L2PATH    = 'Path/Dir of Input L2 file.'
    COMMENT_TBLAPATH = 'Path of TableA.'
@@ -273,7 +274,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       distribution_count = dblarr(x_max_p - x_min_p + 1, value_nextend - 1)
       distribution_count_rate = dblarr(x_max_p - x_min_p + 1, value_nextend - 1)
       radiation_monitor = dblarr(value_nextend - 1)
-      jupiter_location_monitor = dblarr(value_nextend - 1)
+      jupiter_location_monitor = lonarr(value_nextend - 1)
       value_extname_list = strarr(value_nextend - 1)
       value_ninttime_list = dblarr(value_nextend - 1)
       year_list = strarr(value_nextend - 1)      ;;;;;TK
@@ -290,7 +291,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
             crad=double(fxpar(hdr,KEY_RADMON))
             radiation_monitor[j-2] = crad; counts/min
             cjloc=double(fxpar(hdr,KEY_JUPLOC))
-            radiation_monitor[j-2] = crad; counts/min
+            jupiter_location_monitor[j-2] = cjloc; counts/min
          endif
          
          im_target = im[x_min_p : x_max_p, y_min_p : y_max_p]
@@ -417,6 +418,8 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    endfor
    structure_radiation_monitor = create_struct('RADMOD',radiation_monitor)
    structure   = create_struct(structure, structure_radiation_monitor)
+   structure_jupiter_location_monitor = create_struct('JUPLOC',jupiter_location_monitor)
+   structure   = create_struct(structure, structure_jupiter_location_monitor)
 
    ; binary table用に構造体を変換
    n_time_series      = n_elements(structure.year)
@@ -446,6 +449,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    write_log, LOG_PATH, '   out_path='+out_path, /nontime
 
    ; 空のファイルを作成
+   message, 'output file:'+out_path,/info
    openw, 1, out_path
    close, 1
 
@@ -465,9 +469,9 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
 
    ;modify bintable header
    tunit=strarr(n_tag_structure)
-   tunit[*]='GW' & tunit[0]='years' & tunit[1]='days' & tunit[2]='sec' & tunit[-1]='counts/min'
+   tunit[*]='GW' & tunit[0]='years' & tunit[1]='days' & tunit[2]='sec' & tunit[-2]='counts/min' & tunit[-1]=''
    tdisp=strarr(n_tag_structure)   
-   tdisp[*]='D10.1' & tdisp[0]='I5' & tdisp[1]='I5' & tdisp[2]='E15.6'
+   tdisp[*]='D10.1' & tdisp[0]='I5' & tdisp[1]='I5' & tdisp[2]='E15.6' & tdisp[-1]='I3'
    bin_table = mrdfits(out_path, 2, hdr_bin_table, /silent)
    if stregex(tablea_path,'aurora',/fold_case) ge 0 then extname='aurora'
    if stregex(tablea_path,'torus',/fold_case) ge 0 then extname='torus'
