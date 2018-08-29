@@ -26,19 +26,19 @@ function ck_aurpos, indate, bpath
     arr_time_e = time_double(time_e)
     if indate_s ge arr_time_s and indate_s lt arr_time_e then begin
       if yc le slit1 + margin then begin
-        flag=4D
+        flag=4l
       endif else if yc gt slit1+margin and yc lt slit2-margin then begin
-        flag=3D
+        flag=3l
       endif else if yc ge slit2-margin and yc le slit2+margin then begin
-        flag=2D
+        flag=2l
       endif else if yc gt slit2+margin and yc lt slit3-margin then begin
-        flag=1D
+        flag=1l
       endif else if yc ge slit3-margin and yc le slit3+margin then begin
-        flag=2D
+        flag=2l
       endif else if yc gt slit3+margin and yc lt slit4-margin then begin
-        flag=3D
+        flag=3l
       endif else if yc ge slit4-margin then begin
-        flag=4D
+        flag=4l
       endif
       
       return, create_struct('flag',flag,'time_s',time_s,'time_m',time_m,'time_e',time_e,$

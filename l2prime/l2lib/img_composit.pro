@@ -61,8 +61,8 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
         ix1=radloc[2]
         iy0=radloc[1]
         iy1=radloc[3]
-        buf = total(im[ix0:ix1,iy0:iy1,i]); counts/min
-        if buf ge blk_arr[i].thr then continue   ; counts/min
+        buf = total(im[ix0:ix1,iy0:iy1]); counts/min
+        if buf ge blk_arr[i].radthr then continue   ; counts/min
       endif
       
       
