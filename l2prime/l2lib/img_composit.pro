@@ -41,16 +41,17 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
       endif
       if extn_arr[j].lt_ena eq 0 then continue    ; Local time selection
       
-      ;;; skip if jupiter located outside the slit ;; TK
-      ret=ck_aurpos(extn_arr[j].ext,!SLIT_POS)
-      jupypix=ret.yc
-      if jupypix eq -1l then begin
-        continue;
-      endif
       
       ; read extension
       im = mrdfits(fits_arr[extn_arr[j].fn].file,extn_arr[j].ext,hd,/SILENT)
       
+      ;;; skip if jupiter located outside the slit ;; TK
+      ret=ck_aurpos(fxpar(hd,'EXTNAME'),!SLIT_POS)
+      jupypix=ret.yc
+      if jupypix eq -1l then begin
+        continue;
+      endif
+
       ; offset Jupiter location to y=572 pixel ;;; TK
       offset_one_image, im=im, jupypix=jupypix
       
