@@ -40,8 +40,19 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
         if extn_arr[j].rejflg eq 1 then continue
       endif
       if extn_arr[j].lt_ena eq 0 then continue    ; Local time selection
+      
+      ;;; skip if jupiter located outside the slit ;; TK
+      ret=ck_aurpos(extn_arr[j].ext,!SLIT_POS)
+      jupypix=ret.yc
+      if jupypix eq -1l then begin
+        continue;
+      endif
+      
       ; read extension
       im = mrdfits(fits_arr[extn_arr[j].fn].file,extn_arr[j].ext,hd,/SILENT)
+      
+      ; offset Jupiter location to y=572 pixel ;;; TK
+      offset_one_image, im=im, jupypix=jupypix
       
       ; filtering based on radiation monitor
       if keyword_set(radloc) then begin
@@ -74,6 +85,7 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
       blk_arr[i].radmon=buf; counts/min
     endif
     
+    ;; reverse y-pixel if the Y-axis polarization is south
     if blk_arr[i].ypol eq 1 then begin
       buf = reform(im_cmp[*,*,i])
       im_cmp[*,*,i]=buf[*,reverse(indgen(const.n))]; counts/pixel/min
