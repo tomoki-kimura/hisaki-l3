@@ -236,7 +236,7 @@ pro make_peak_list_gauss, lp=l2_intg_path, od=out_dir, md=mode, cp=l2_cal_path, 
    
    
    
-   buff=read_csv('G:\cal\slit_move2.csv')
+   buff=read_csv(!dir_slit+'slit_move2.csv')
    ;;;;;;from KOGA result
    dd=buff.field1
    s1=buff.field2 + 0.3
@@ -309,7 +309,7 @@ pro make_peak_list_gauss, lp=l2_intg_path, od=out_dir, md=mode, cp=l2_cal_path, 
       data_time   = repstr(data_time,'/','T')
       
       ;-----------------------byHK
-      if ck_blacklist(data_time,'G:\cal\blacklist.csv') eq -1 then continue
+      if ck_blacklist(data_time,!dir_slit+'/blacklist.csv') eq -1 then continue
       n1=ck_slitmove(data_time, dd)
 
 
@@ -334,7 +334,7 @@ pro make_peak_list_gauss, lp=l2_intg_path, od=out_dir, md=mode, cp=l2_cal_path, 
       slit3=s3[n1]
       slit4=s4[n1]
       
-      fits_read,!DIR_SLIT+'\'+string(n1,format='(i03)')+'.fits',data_slit,header
+      fits_read,!DIR_SLIT+'/'+string(n1,format='(i03)')+'.fits',data_slit,header
       line=1025;588
       range_p = convert_value2pixel(l2_cal_path, [line,line+10], [-10,10])
       geocr  = range_p[0, 0]
