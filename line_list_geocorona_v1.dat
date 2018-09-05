@@ -1,0 +1,39 @@
+################################################################################
+# This is a line list for high-level data product of line intensity variations.
+# Spectral region for line intensity extraction should be defined as central 
+# wavelength and width of lines: e.g., 584 A with 20 A width => range [574:594]
+# Spacial region for extraction of line intensity should be defined as 
+# anglar range from the central pixel in the H axis in the FOV coordinate system 
+# If the barycenter data exists, the central pixel is substituted by it.
+# i.e., along -X axis in the S/C coordinate system.
+# Last modified by T Kimua 2016/04/07
+################################################################################
+# wavelength(A) width(A) angular_start(asec) anglar_end(asec) #comment
+ 584.0   22.0 -250.0 +250.0 # Geocorona HeI 584A
+ 785.0   22.0 -250.0 +250.0 # Ghost of HLyA 785A
+ 834.0   22.0 -250.0 +250.0 # Geocorona OII/OIII 834A
+ 950.0   22.0 -250.0 +250.0 # Geocorona HLy beta?    
+ 972.0   22.0 -250.0 +250.0 # Geocorona HLy gamma    
+1025.0   22.0 -250.0 +250.0 # Geocorona HLyB 1025A
+1168.0   22.0 -250.0 +250.0 # Geocorona NI   1168A
+1216.0   40.0 -250.0 +250.0 # Geocorona HLyA 1216A
+1304.0   22.0 -250.0 +250.0 # Geocorona O 1304A
+1356.0   22.0 -250.0 +250.0 # Geocorona OI 1356A
+# 584.0   10.0 -200.0 +200.0 # Geocorona HeI 584A
+# 785.0   10.0 -200.0 +200.0 # Ghost of HLyA 785A
+# 834.0   10.0 -200.0 +200.0 # Geocorona OII/OIII 834A
+# 972.0   10.0 -200.0 +200.0 # Geocorona HLy gamma    
+#1025.0   10.0 -200.0 +200.0 # Geocorona HLyB 1025A
+#1168.0   10.0 -200.0 +200.0 # Geocorona NI   1168A
+#1216.0   20.0 -200.0 +200.0 # Geocorona HLyA 1216A
+#1304.0   10.0 -200.0 +200.0 # Geocorona O 1304A
+#1356.0   10.0 -200.0 +200.0 # Geocorona OI 1356A
+# 584.0   22.0 -200.0 +200.0 # Geocorona HeI 584A
+# 785.0   22.0 -200.0 +200.0 # Ghost of HLyA 785A
+# 834.0   22.0 -200.0 +200.0 # Geocorona OII/OIII 834A
+# 972.0   22.0 -200.0 +200.0 # Geocorona OII/OIII 834A
+#1025.0   22.0 -200.0 +200.0 # Geocorona HLyB 1025A
+#1168.0   22.0 -200.0 +200.0 # Geocorona NI   1168A
+#1216.0   40.0 -200.0 +200.0 # Geocorona HLyA 1216A
+#1304.0   25.0 -200.0 +200.0 # Geocorona O 1304A
+#1356.0   22.0 -200.0 +200.0 # Geocorona OI 1356A
