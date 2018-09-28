@@ -4,7 +4,7 @@ pro batch_l2prime
 ;  dl=30.
   dl=!NULL
   lt_range=[0.0, 24.0]
-  target='jupiter.mod.*'
+  target='jupiter.mod.{03,20,21,22}*'
   
 ;sdatearr=[$
 ;;    '20140101',  $
@@ -14,8 +14,8 @@ pro batch_l2prime
 ;    '20180808',  $
 ;    '20180824'   $
 ;    ]
-  sdate='20160101'
-  edate='20180820'
+  sdate='20150217'
+  edate='20160101'
   tds=time_double(sdate)
   tde=time_double(edate)
   tdc=tds
