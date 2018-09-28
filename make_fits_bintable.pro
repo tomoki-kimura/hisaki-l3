@@ -129,13 +129,16 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
 
    ; 出力パスの生成
    l2_name = FILE_BASENAME(l2_path)
+   if stregex(tablea_path,'aurora',/fold_case) ge 0 then extname='aurora'
+   if stregex(tablea_path,'torus',/fold_case) ge 0 then extname='torus'
+   if stregex(tablea_path,'geocorona',/fold_case) ge 0 then extname='torus'
    if stregex(FILE_BASENAME(out_path),'fits$',/boolean) ne 1 then begin
       ; out_pathがディレクトリ指定の場合、ファイル名生成
       out_dir = out_path
       name_l2_elm = strsplit(FILE_BASENAME(l2_path), '.', /extract)
       for i = 0, n_elements(name_l2_elm) - 1 do begin
-         if name_l2_elm[i] eq 'lv' then begin
-            name_l2_elm[i+1] = '03'
+         if name_l2_elm[i] eq 'fits' then begin
+            name_l2_elm[i-1] += '.'+extname+'.lv.03'
             break
          endif
       endfor
@@ -184,6 +187,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    for i = 0, n_elements(file_recs) - 1 do begin
       if stregex(file_recs[i], '^#',/boolean) eq 1 then continue
       rec = strsplit(file_recs[i], '[ ]+', /EXTRACT)
+      com = (strsplit(file_recs[i], '#', /EXTRACT))[1]
 
       ; データの形式チェック
       if n_elements(rec) lt 4 then $
@@ -215,6 +219,13 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
         cbintabtag+=ddtag
         bintabtag = [bintabtag, cbintabtag]
       endelse
+
+      if not keyword_set(tablea_comarr) then begin
+        tablea_comarr=string(com,form='(a)')
+      endif else begin
+        tablea_comarr=[tablea_comarr,string(com,form='(a)')]
+      endelse
+
       
       if (tablea_dataset_value[0,0] eq '') then begin
          tablea_dataset_value = rec_tablea
@@ -291,7 +302,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
             crad=double(fxpar(hdr,KEY_RADMON))
             radiation_monitor[j-2] = crad; counts/min
             cjloc=double(fxpar(hdr,KEY_JUPLOC))
-            jupiter_location_monitor[j-2] = cjloc; counts/min
+            jupiter_location_monitor[j-2] = cjloc
          endif
          
          im_target = im[x_min_p : x_max_p, y_min_p : y_max_p]
@@ -416,7 +427,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       structure_distribution_count_rate = create_struct(tag_series_distribution_count_rate,series_distribution_count_rate)
       structure   = create_struct(structure, structure_distribution_radiant_energy, structure_distribution_sigma, structure_distribution_count, structure_distribution_count_rate)
    endfor
-   structure_radiation_monitor = create_struct('RADMOD',radiation_monitor)
+   structure_radiation_monitor = create_struct('RADMON',radiation_monitor)
    structure   = create_struct(structure, structure_radiation_monitor)
    structure_jupiter_location_monitor = create_struct('JUPLOC',jupiter_location_monitor)
    structure   = create_struct(structure, structure_jupiter_location_monitor)
@@ -469,6 +480,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
 
    ;modify bintable header
    tunit=strarr(n_tag_structure)
+   hdrcom=tunit
    tunit[*]='GW' & tunit[0]='years' & tunit[1]='days' & tunit[2]='sec' & tunit[-2]='counts/min' & tunit[-1]=''
    tdisp=strarr(n_tag_structure)   
    tdisp[*]='D10.1' & tdisp[0]='I5' & tdisp[1]='I5' & tdisp[2]='E15.6' & tdisp[-1]='I3'
@@ -477,13 +489,27 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    if stregex(tablea_path,'torus',/fold_case) ge 0 then extname='torus'
    if stregex(tablea_path,'geocorona',/fold_case) ge 0 then extname='torus'
    extname='LineInt-'+extname
-   sxaddpar, hdr_bin_table, 'EXTNAME', extname, '', after='TFIELDS'
+   sxaddpar, hdr_bin_table, 'EXTNAME', extname, 'extension name', after='TFIELDS'
+   indcom=0l
    for i = 1l, n_tag_structure do begin
+     ccom=''
+     ckey3=strtrim('TTYPE'+string(i,form='(i-)'),2)
      ckey0=strtrim('TFORM'+string(i,form='(i-)'),2)
      ckey1=strtrim('TUNIT'+string(i,form='(i-)'),2)
      ckey2=strtrim('TDISP'+string(i,form='(i-)'),2)
-     sxaddpar, hdr_bin_table, ckey1, tunit[i-1l], '', after=ckey0   
-     sxaddpar, hdr_bin_table, ckey2, tdisp[i-1l], '', after=ckey1
+     if tag_name_structure[i-1l] eq 'YEAR' then ccom='year'
+     if tag_name_structure[i-1l] eq 'DAYOFYEAR' then ccom='day of year'
+     if tag_name_structure[i-1l] eq 'SECOFDAY' then ccom='sec of day'
+     if tag_name_structure[i-1l] eq 'RADMON' then ccom='Radiation monitor'
+     if tag_name_structure[i-1l] eq 'JUPLOC' then ccom='Jupiter location'
+     if stregex(tag_name_structure[i-1l],'[0-9]{1,4}') ge 0l then begin
+      ccom=tablea_comarr[indcom/4l]
+      indcom++
+     endif
+     sxaddpar, hdr_bin_table, ckey3, fxpar(hdr_bin_table,ckey3), ccom
+     sxaddpar, hdr_bin_table, ckey0, fxpar(hdr_bin_table,ckey0), ccom
+     sxaddpar, hdr_bin_table, ckey1, tunit[i-1l], ccom, after=ckey0   
+     sxaddpar, hdr_bin_table, ckey2, tdisp[i-1l], ccom, after=ckey1
    endfor
    
    ; データヘッダに領域情報を追記

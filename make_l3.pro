@@ -18,7 +18,7 @@ pro make_l3
   tablea_path = !tablea_path
   out_dir     = !out_dir
 
-  pattern='*{180808}*'
+  pattern='*2016*'
 ;  pattern='*{140101,161115,170430,170520}*'
   ;170520:intermediate
   ;170430:140"
@@ -28,8 +28,6 @@ pro make_l3
 ;  if l3[0] ne '' then file_delete,l3
   
   make_fits_bintable_dir, l2_d=l2_dir, l2cal_p=l2cal_path, tablea_p=tablea_path, out_d=out_dir, pattern=pattern
-;  stop
-;  stop
 ;  stop
 ;  stop
 end

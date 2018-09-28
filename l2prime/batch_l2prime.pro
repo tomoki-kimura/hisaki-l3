@@ -6,14 +6,26 @@ pro batch_l2prime
   lt_range=[0.0, 24.0]
   target='jupiter.mod.*'
   
-sdatearr=[$
-;    '20140101',  $
-;    '20161115', $
-;    '20170430', $
-;    '20170520'  $
-    '20180808',  $
-    '20180824'   $
-    ]
+;sdatearr=[$
+;;    '20140101',  $
+;;    '20161115', $
+;;    '20170430', $
+;;    '20170520'  $
+;    '20180808',  $
+;    '20180824'   $
+;    ]
+  sdate='20160101'
+  edate='20180820'
+  tds=time_double(sdate)
+  tde=time_double(edate)
+  tdc=tds
+  sdatearr=sdate
+  while tdc lt tde do begin
+    tdc+=86400.d
+    cdate=time_string(tdc)
+    cdate=strjoin((strsplit(cdate,'-/:',/ext))[0:2])
+    sdatearr=[sdatearr,cdate]
+  endwhile
   foreach cdate, sdatearr do begin
     if ck_blacklist(cdate,!BLACK_LIST) eq -1l then begin
       message, 'input date is in the blacklist. Skipped.', /info

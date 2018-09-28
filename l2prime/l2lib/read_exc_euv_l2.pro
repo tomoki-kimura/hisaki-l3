@@ -22,7 +22,6 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
   if not keyword_set(lt_range) then lt_range=[0.0,24.0]
   if not keyword_set(target) then target = 'jupiter.mod.03'
 
-  ;roi_drk = [512,630,960,710]   ; threshold level = 300/(449*81) [count/pixel/min]=5[counts/pixel/sec]
   
   ;--- Define working variables
   init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range
