@@ -53,6 +53,8 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
       if jupypix eq -1l then begin
         continue;
       endif
+      if not keyword_set(start_extname) then start_extname=fxpar(hd,'EXTNAME')
+      if strlen(start_extname) lt 1l then start_extname=fxpar(hd,'EXTNAME')
 
       ; offset Jupiter location to y=572 pixel ;;; TK
       offset_one_image, im=im, jupypix=jupypix
@@ -92,8 +94,12 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
     
     ;; reverse y-pixel if the Y-axis polarization is south
     if blk_arr[i].ypol eq 1 then begin
+      ret=ck_aurpos(start_extname,!SLIT_POS)
+      jupypix=ret.yc
       buf = reform(im_cmp[*,*,i])
-      im_cmp[*,*,i]=buf[*,reverse(indgen(const.n))]; counts/pixel/min
+      buf=buf[*,reverse(indgen(const.n))]; counts/pixel/min
+      offset_one_image, im=buf, jupypix=const.n - jupypix
+      im_cmp[*,*,i]=buf
     endif
 
   endfor

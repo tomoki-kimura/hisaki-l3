@@ -18,7 +18,7 @@ pro make_l3
   tablea_path = !tablea_path
   out_dir     = !out_dir
 
-  pattern='*2016*'
+  pattern='*2015{03,04,05,06,07,08,09,10,11,12}*'
 ;  pattern='*{140101,161115,170430,170520}*'
   ;170520:intermediate
   ;170430:140"
