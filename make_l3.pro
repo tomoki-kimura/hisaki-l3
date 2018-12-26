@@ -18,17 +18,20 @@ pro make_l3
   tablea_path = !tablea_path
   out_dir     = !out_dir
 
-  pattern='*20181{116,208}*'
+  pattern='*20181{115,116,208,209}*d006*'
 ;  pattern='*201703{16,17,18,19,20,21,22}*'
 ;  pattern='*{140101,161115,170430,170520}*'
   ;170520:intermediate
   ;170430:140"
   ;161115:best
   
+  planet_radii_deg=80.d/3600.; deg/Rp
+;  planet_radii_deg=!NULL; deg/Rp
+  
 ;  l3= file_search(out_dir + '/*'+pattern+'*.fits')
 ;  if l3[0] ne '' then file_delete,l3
   
-  make_fits_bintable_dir, l2_d=l2_dir, l2cal_p=l2cal_path, tablea_p=tablea_path, out_d=out_dir, pattern=pattern
+  make_fits_bintable_dir, l2_d=l2_dir, l2cal_p=l2cal_path, tablea_p=tablea_path, out_d=out_dir, pattern=pattern, planet_radii_deg=planet_radii_deg
 ;  stop
 ;  stop
 end

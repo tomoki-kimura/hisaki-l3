@@ -52,7 +52,7 @@
 ;                      - L3データのカウント値の算出方法を修正
 ;                      - L3データの時刻情報は[年、dayofyear、secofday]に修正
 ;-
-pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, out_p=out_path
+pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, out_p=out_path, planet_radii_deg=planet_radii_deg
 
   on_error,2
 
@@ -260,7 +260,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       ; convert spatial integration region in unit of Rj to in arcsec;;; TK
       buf = mrdfits(l2_path, 2, hdr, /silent)
       time  = fxpar(hdr, KEY_EXTNAME)      
-      planet_radii_deg=get_planet_radii(time=time,target=!NULL,/deg); deg/rp
+      if not keyword_set(planet_radii_deg) then planet_radii_deg=get_planet_radii(time=time,target=!NULL,/deg); deg/rp
       yrange_v *= planet_radii_deg*3600.d; arcsec
       
       res = convert_value2pixel(l2cal_path, xrange_v, yrange_v)
