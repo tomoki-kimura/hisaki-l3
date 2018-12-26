@@ -151,8 +151,8 @@ pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern;, cp=l2_cal_path ;
     slitmove=buff.field1[where(buff.field2 ne '#')]
     n=-1
     
-    if not keyword_set(pattern) then pattern='*'
-    file=file_search(l2_intg_path + '/*'+pattern+'*.fits')
+    if not keyword_set(pattern) then pattern='*.fits'
+    file=file_search(l2_intg_path, pattern)
 
     tot=dblarr(1024,1024)
     ;window,1,xsize=1000,ysize=1000
@@ -190,7 +190,8 @@ pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern;, cp=l2_cal_path ;
 
         line=588;1025
         file_elm=strsplit(FILE_BASENAME(file[j]),/extract, '[._]')
-        l2cal_path2=!l2cal_path+'calib_'+file_elm[4]+'_v1.0.fits'
+        l2cal_path2=!l2cal_path+'calib_'+stregex(FILE_BASENAME(file[j]),'20[0-9]{6}',/extract)+'_v1.0.fits'
+;        l2cal_path2=!l2cal_path+'calib_'+file_elm[4]+'_v1.0.fits'
         range_p = convert_value2pixel(l2cal_path2, [line,line+10], [-10,10])
         geocr  = range_p[0, 0]
 ;        slit_profile_b=tot[geocr:geocr+7,*]
@@ -252,7 +253,9 @@ pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern;, cp=l2_cal_path ;
         oplot,slit4/100.*[1,1],!y.crange,color=fsc_color('green')
 
         print,(slit3-slit2)/100.
-        imgdisp_2,transpose(slit_profile_b[*,500:650]),title=slitmove[n]
+
+;        imgdisp_2,transpose(slit_profile_b[*,500:650]),title=slitmove[n]
+
         nn1=[nn1,slitmove[n]]
 
         write_png,out_dir+string(m,format='(i03)')+'.png',tvrd(/true)

@@ -7,12 +7,12 @@ set_env_l3
   DEVICE, SET_RESOLUTION = [1000, 1000]
   DEVICE, SET_PIXEL_DEPTH = 24
   DEVICE, DECOMPOSED = 0
-  
-  file=file_search(!L2_DIR+'*.fits')
+  pattern='*20181{115,116,208,209}*d030.fits'
+  file=file_search(!L2_DIR,pattern)
   dir_cal=!l2cal_path
 
   
-  make_slitpos, lp=!L2_DIR, od=!DIR_SLIT,pattern='*'
+  make_slitpos, lp=!L2_DIR, od=!DIR_SLIT,pattern=pattern
 ;  stop
 
 
@@ -22,7 +22,8 @@ set_env_l3
     ii=where(stregex(file_elm[*],'[0-9]{8}') ge 0l)
     l2cal_path2=!l2cal_path+'calib_'+file_elm[ii]+'_v1.0.fits'
     make_peak_list_gauss,  lp=file[i], od=!DIR_SLIT,$
-      md='value',cp=l2cal_path2,xr=[1100,1160],yr=[-200,200],ret=ret
+      md='value',cp=l2cal_path2,xr=[1050,1190],yr=[-200,200],ret=ret
+ ;   md='value',cp=l2cal_path2,xr=[1100,1160],yr=[-200,200],ret=ret
     if ret.time_s eq -1 then continue
     if keyword_set(aur_slit) eq 0 then aur_slit=ret else aur_slit=[aur_slit,ret]
   endfor

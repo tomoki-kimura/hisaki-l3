@@ -30,8 +30,13 @@ PRO chk_fits_ext_hdr, fits_arr, extn_arr
       endif else begin
         extn_arr[nj].calflg = -1
       endelse
-      extn_arr[nj].tarra  = fxpar(hd,'TARRA')
-      extn_arr[nj].tardec = fxpar(hd,'TARDEC')
+      if typename(fxpar(hd,'TARRA')) eq 'FLOAT' or  typename(fxpar(hd,'TARRA')) eq 'DOUBLE' then $ 
+      extn_arr[nj].tarra  = fxpar(hd,'TARRA') else $
+      extn_arr[nj].tarra  = fxpar(hd,'SLCRA')
+
+      if typename(fxpar(hd,'TARDEC')) eq 'FLOAT' or  typename(fxpar(hd,'TARDEC')) eq 'DOUBLE' then $
+      extn_arr[nj].tardec = fxpar(hd,'TARDEC') else $
+      extn_arr[nj].tardec = fxpar(hd,'SLCDEC')
 
       extn_arr[nj].submod = fxpar(hd,'SUBMOD')
       extn_arr[nj].submst = fxpar(hd,'SUBMST')

@@ -50,15 +50,13 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
       jupypix=ret.yc
       blk_arr[i].juploc=ret.flag
       blk_arr[i].ycpxjup=ret.yc
-      if jupypix eq -1l then begin
-        continue;
+      if jupypix ne -1l then begin
+        ; offset Jupiter location to y=572 pixel ;;; TK
+        offset_one_image, im=im, jupypix=jupypix
       endif
       if not keyword_set(start_extname) then start_extname=fxpar(hd,'EXTNAME')
       if strlen(start_extname) lt 1l then start_extname=fxpar(hd,'EXTNAME')
 
-      ; offset Jupiter location to y=572 pixel ;;; TK
-      offset_one_image, im=im, jupypix=jupypix
-      
       ; filtering based on radiation monitor
       radloc=blk_arr[i].radloc
       if keyword_set(radloc) then begin
