@@ -50,13 +50,11 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
       jupypix=ret.yc
       blk_arr[i].juploc=ret.flag
       blk_arr[i].ycpxjup=ret.yc
-      if jupypix eq -1l then begin
-        continue;
+      if jupypix ne -1l then begin
+        ; offset Jupiter location to y=572 pixel ;;; TK
+        offset_one_image, im=im, jupypix=jupypix
       endif
 
-      ; offset Jupiter location to y=572 pixel ;;; TK
-      offset_one_image, im=im, jupypix=jupypix
-      
       ; filtering based on radiation monitor
       radloc=blk_arr[i].radloc
       if keyword_set(radloc) then begin
