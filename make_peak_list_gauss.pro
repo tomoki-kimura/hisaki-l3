@@ -342,42 +342,42 @@ pro make_peak_list_gauss, lp=l2_intg_path, od=out_dir, md=mode, cp=l2_cal_path, 
       slit_profile   = total(slit_profile_b,1)
       slit_profile   = slit_profile/max(smooth(slit_profile,7))
       slit_profile_s = smooth(slit_profile,6)/max(smooth(slit_profile,6))      
-      ;;;byHK
-      imgdisp_2,im,roi=[xrange[0],xrange[1],yrange[0]-30,yrange[1]+30],title=data_time,charsize=2
-      oplot,!x.crange,[1,1]*yrange[0]
-      oplot,!x.crange,[1,1]*yrange[1]
-      oplot,!x.crange,[1,1]*coeff[1],color=fsc_color('red'),linestyle=1
-      oplot,!x.crange,[1,1]*slit1,color=fsc_color('green'),linestyle=1
-      oplot,!x.crange,[1,1]*slit2,color=fsc_color('green'),linestyle=1
-      oplot,!x.crange,[1,1]*slit3,color=fsc_color('green'),linestyle=1
-      oplot,!x.crange,[1,1]*slit4,color=fsc_color('green'),linestyle=1
-      imgdisp_2,im2,roi=[xrange[0],xrange[1],yrange[0]-30,yrange[1]+30],title=data_time,charsize=2
-      oplot,!x.crange,[1,1]*yrange[0]
-      oplot,!x.crange,[1,1]*yrange[1]
-      oplot,!x.crange,[1,1]*coeff[1],color=fsc_color('red'),linestyle=1
-      oplot,!x.crange,[1,1]*slit1,color=fsc_color('green'),linestyle=1
-      oplot,!x.crange,[1,1]*slit2,color=fsc_color('green'),linestyle=1
-      oplot,!x.crange,[1,1]*slit3,color=fsc_color('green'),linestyle=1
-      oplot,!x.crange,[1,1]*slit4,color=fsc_color('green'),linestyle=1
-      plot, slit_profile_s,xrange=[yrange[0]-10,yrange[1]+10],charsize=2,/noerase
-      oplot,slit_profile,psym=1
-      oplot,!x.crange,[0.5,0.5],color=fsc_color('gray')
-      oplot,slit1*[1,1],!y.crange,color=fsc_color('green')
-      oplot,slit2*[1,1],!y.crange,color=fsc_color('green')
-      oplot,slit3*[1,1],!y.crange,color=fsc_color('green')
-      oplot,slit4*[1,1],!y.crange,color=fsc_color('green')
-      oplot,coeff[1]*[1,1],!y.crange,color=fsc_color('red'),linestyle=1
-      plot, y_range,im_y_intg,xrange=[yrange[0]-10,yrange[1]+10],charsize=2 $
-        ,title=' slit2'+string(slit2,format='(f6.1)')$
-              +' width'+string(slit3-slit2,format='(f6.1)')$
-              +' slit3'+string(slit3,format='(f6.1)') $
-              +' yc '  +string(arr_yc[num_data],format='(f5.1)')$
-              +' fwhm '+string(arr_fwhm[num_data],format='(f5.1)')
-      oplot,y_range,yfit,color=fsc_color('red')
-      oplot,[1,1]*yrange[0],!y.crange
-      oplot,[1,1]*yrange[1],!y.crange
-      path_elm=strsplit(l2_intg_path,/extract, '\')
-      write_png, !DIR_SLIT+'/plot_yc_'+path_elm[n_elements(path_elm)-1]+string(i,format='(i03)')+'.png', TVRD(/TRUE)
+;      ;;;byHK
+;      imgdisp_2,im,roi=[xrange[0],xrange[1],yrange[0]-30,yrange[1]+30],title=data_time,charsize=2
+;      oplot,!x.crange,[1,1]*yrange[0]
+;      oplot,!x.crange,[1,1]*yrange[1]
+;      oplot,!x.crange,[1,1]*coeff[1],color=fsc_color('red'),linestyle=1
+;      oplot,!x.crange,[1,1]*slit1,color=fsc_color('green'),linestyle=1
+;      oplot,!x.crange,[1,1]*slit2,color=fsc_color('green'),linestyle=1
+;      oplot,!x.crange,[1,1]*slit3,color=fsc_color('green'),linestyle=1
+;      oplot,!x.crange,[1,1]*slit4,color=fsc_color('green'),linestyle=1
+;      imgdisp_2,im2,roi=[xrange[0],xrange[1],yrange[0]-30,yrange[1]+30],title=data_time,charsize=2
+;      oplot,!x.crange,[1,1]*yrange[0]
+;      oplot,!x.crange,[1,1]*yrange[1]
+;      oplot,!x.crange,[1,1]*coeff[1],color=fsc_color('red'),linestyle=1
+;      oplot,!x.crange,[1,1]*slit1,color=fsc_color('green'),linestyle=1
+;      oplot,!x.crange,[1,1]*slit2,color=fsc_color('green'),linestyle=1
+;      oplot,!x.crange,[1,1]*slit3,color=fsc_color('green'),linestyle=1
+;      oplot,!x.crange,[1,1]*slit4,color=fsc_color('green'),linestyle=1
+;      plot, slit_profile_s,xrange=[yrange[0]-10,yrange[1]+10],charsize=2,/noerase
+;      oplot,slit_profile,psym=1
+;      oplot,!x.crange,[0.5,0.5],color=fsc_color('gray')
+;      oplot,slit1*[1,1],!y.crange,color=fsc_color('green')
+;      oplot,slit2*[1,1],!y.crange,color=fsc_color('green')
+;      oplot,slit3*[1,1],!y.crange,color=fsc_color('green')
+;      oplot,slit4*[1,1],!y.crange,color=fsc_color('green')
+;      oplot,coeff[1]*[1,1],!y.crange,color=fsc_color('red'),linestyle=1
+;      plot, y_range,im_y_intg,xrange=[yrange[0]-10,yrange[1]+10],charsize=2 $
+;        ,title=' slit2'+string(slit2,format='(f6.1)')$
+;              +' width'+string(slit3-slit2,format='(f6.1)')$
+;              +' slit3'+string(slit3,format='(f6.1)') $
+;              +' yc '  +string(arr_yc[num_data],format='(f5.1)')$
+;              +' fwhm '+string(arr_fwhm[num_data],format='(f5.1)')
+;      oplot,y_range,yfit,color=fsc_color('red')
+;      oplot,[1,1]*yrange[0],!y.crange
+;      oplot,[1,1]*yrange[1],!y.crange
+;      path_elm=strsplit(l2_intg_path,/extract, '\')
+;      write_png, !DIR_SLIT+'/plot_yc_'+path_elm[n_elements(path_elm)-1]+string(i,format='(i03)')+'.png', TVRD(/TRUE)
 
       if extot eq 1 then break      
    endfor

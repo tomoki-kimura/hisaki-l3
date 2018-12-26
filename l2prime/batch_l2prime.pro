@@ -2,7 +2,9 @@ pro batch_l2prime
   
   set_env
 ;  dl=30.
-  dl=!NULL
+;  dl=!NULL
+  dl=600./(9.925*3600.)*360.
+;  dl=3000./(9.925*3600.)*360.
   lt_range=[0.0, 24.0]
 ;  target='jupiter.mod.{03,20,21,22}*'
   target='*ux_ari*'
@@ -26,12 +28,18 @@ pro batch_l2prime
 =======
   sdate='20181115'
 <<<<<<< HEAD
+<<<<<<< HEAD
   edate='20181209'
 >>>>>>> kimura
 =======
   edate='20181116'
 ;  sdate='20181208'
 ;  edate='20181209'
+>>>>>>> kimura
+=======
+;  edate='20181116'
+;  sdate='20181208'
+  edate='20181209'
 >>>>>>> kimura
   tds=time_double(sdate)
   tde=time_double(edate)
