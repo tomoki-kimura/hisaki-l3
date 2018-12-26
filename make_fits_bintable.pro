@@ -52,7 +52,7 @@
 ;                      - L3データのカウント値の算出方法を修正
 ;                      - L3データの時刻情報は[年、dayofyear、secofday]に修正
 ;-
-pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, out_p=out_path
+pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, out_p=out_path, planet_radii_deg=planet_radii_deg
 
   on_error,2
 
@@ -260,7 +260,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       ; convert spatial integration region in unit of Rj to in arcsec;;; TK
       buf = mrdfits(l2_path, 2, hdr, /silent)
       time  = fxpar(hdr, KEY_EXTNAME)      
-      planet_radii_deg=get_planet_radii(time=time,target=!NULL,/deg); deg/rp
+      if not keyword_set(planet_radii_deg) then planet_radii_deg=get_planet_radii(time=time,target=!NULL,/deg); deg/rp
       yrange_v *= planet_radii_deg*3600.d; arcsec
       
       res = convert_value2pixel(l2cal_path, xrange_v, yrange_v)
@@ -352,9 +352,11 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       ; 関数Ａから係数αkを取得する。
       size_distribution_count = size(distribution_count)
       coeff = dblarr(size_distribution_count[1], size_distribution_count[2])
+      efcoeff = dblarr(size_distribution_count[1], size_distribution_count[2])
       if SIZE(distribution_count, /N_DIMENSIONS) eq 1 then size_distribution_count[2]=1;;;;;;;;;;;;;;;;;;;;;;;byhk
       for j = 0, size_distribution_count[2] - 1 do begin
          coeff[*,j] = function_a(value_extname_list[j], xrange_v, yrange_v, xrange_p, yrange_p, l2_path, l2cal_path)
+         efcoeff[*,j] = function_eflux(value_extname_list[j], xrange_v, yrange_v, xrange_p, yrange_p, l2_path, l2cal_path)
       endfor
  
       ;smoothing of spectrum
@@ -368,13 +370,16 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       endfor
       ; カウント分布と係数αkをかけ合わせ放射エネルギー分布を取得する。
       distribution_radiant_energy = distribution_count_rate * coeff
+      distribution_energy_flux = distribution_count_rate * coeff
 
 
       ; 放射エネルギー分布時系列を取得する。
       series_distribution_radiant_energy = dblarr(size_distribution_count[2])
+      series_distribution_energy_flux = dblarr(size_distribution_count[2])
       series_distribution_count_rate = dblarr(size_distribution_count[2])
       for j = 0, size_distribution_count[2] - 1 do begin
          series_distribution_radiant_energy[j] = total(distribution_radiant_energy[*,j])
+         series_distribution_energy_flux[j] = total(distribution_energy_flux[*,j])
          series_distribution_count_rate [j] = total(distribution_count_rate[*,j])
       endfor
 
@@ -397,11 +402,14 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       endfor
       ; (sqrt(Nk)/t)×αkを取得
       distribution_sigma = sqrt_distribution_count_rate * coeff
+      distribution_eflux_sigma = sqrt_distribution_count_rate * coeff
 
       ; 誤差時系列を取得
       series_distribution_sigma = dblarr(size_distribution_count[2])
+      series_distribution_eflux_sigma = dblarr(size_distribution_count[2])
       for j = 0, size_distribution_count[2] - 1 do begin
          series_distribution_sigma[j] = total(distribution_sigma[*,j])
+         series_distribution_eflux_sigma[j] = total(distribution_eflux_sigma[*,j])
       endfor
 
       ; カウントレート時系列を取得
@@ -418,6 +426,8 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       tag_series_distribution_sigma          = 'TERR'+bintabtag[i]
       tag_series_distribution_count          = 'CONT'+bintabtag[i];;;; TK
       tag_series_distribution_count_rate     = 'LINT'+bintabtag[i]
+      tag_series_distribution_energy_flux    = 'EFLX'+bintabtag[i]
+      tag_series_distribution_eflux_sigma    = 'EERR'+bintabtag[i]
 ;      tag_series_distribution_radiant_energy = "series_distribution_radiant_energy_" + strcompress(i,/remove_all)
 ;      tag_series_distribution_sigma = "series_distribution_sigma_" + strcompress(i,/remove_all)
 ;      tag_series_distribution_count = "series_distribution_count_" + strcompress(i,/remove_all)
@@ -425,7 +435,14 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       structure_distribution_sigma = create_struct(tag_series_distribution_sigma,series_distribution_sigma)
       structure_distribution_count = create_struct(tag_series_distribution_count,series_distribution_count)
       structure_distribution_count_rate = create_struct(tag_series_distribution_count_rate,series_distribution_count_rate)
-      structure   = create_struct(structure, structure_distribution_radiant_energy, structure_distribution_sigma, structure_distribution_count, structure_distribution_count_rate)
+      structure_distribution_energy_flux = create_struct(tag_series_distribution_energy_flux,series_distribution_energy_flux)
+      structure_distribution_eflux_sigma = create_struct(tag_series_distribution_eflux_sigma,series_distribution_eflux_sigma)
+      structure   = create_struct($
+        structure, $
+        structure_distribution_radiant_energy, structure_distribution_sigma, $
+        structure_distribution_count, structure_distribution_count_rate,$
+        structure_distribution_energy_flux, structure_distribution_eflux_sigma $
+        )
    endfor
    structure_radiation_monitor = create_struct('RADMON',radiation_monitor)
    structure   = create_struct(structure, structure_radiation_monitor)
@@ -481,7 +498,9 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    ;modify bintable header
    tunit=strarr(n_tag_structure)
    hdrcom=tunit
-   tunit[*]='GW' & tunit[0]='years' & tunit[1]='days' & tunit[2]='sec' & tunit[-2]='counts/min' & tunit[-1]=''
+   tunit[0]='years' & tunit[1]='days' & tunit[2]='sec'
+   tunit[3:4]='GW' & tunit[5]='counts' & tunit[6]='counts/min' & tunit[7:8]='eV/cm^2'
+   tunit[9]='counts/min' & tunit[10]='pixel' 
    tdisp=strarr(n_tag_structure)   
    tdisp[*]='D10.1' & tdisp[0]='I5' & tdisp[1]='I5' & tdisp[2]='E15.6' & tdisp[-1]='I3'
    bin_table = mrdfits(out_path, 2, hdr_bin_table, /silent)
@@ -503,7 +522,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
      if tag_name_structure[i-1l] eq 'RADMON' then ccom='Radiation monitor'
      if tag_name_structure[i-1l] eq 'JUPLOC' then ccom='Jupiter location'
      if stregex(tag_name_structure[i-1l],'[0-9]{1,4}') ge 0l then begin
-      ccom=tablea_comarr[indcom/4l]
+      ccom=tablea_comarr[indcom/6l]
       indcom++
      endif
      sxaddpar, hdr_bin_table, ckey3, fxpar(hdr_bin_table,ckey3), ccom

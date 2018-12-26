@@ -18,13 +18,10 @@ pro batch_l2prime
 ;    '20180824'   $
 ;    ]
 
-  edate='20181116'
-;  sdate='20181208'
-;  edate='20181209'
+;  sdate='20181115'
 ;  edate='20181116'
-;  sdate='20181208'
+  sdate='20181208'
   edate='20181209'
->>>>>>> kimura
   tds=time_double(sdate)
   tde=time_double(edate)
   tdc=tds
