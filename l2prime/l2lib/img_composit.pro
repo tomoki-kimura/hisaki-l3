@@ -74,6 +74,14 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
 
     if blk_arr[i].acm ne 0 then begin
       im_cmp[*,*,i] = im_cmp[*,*,i]/blk_arr[i].acm;   [count/min/pixel]
+      ;; reverse y-pixel if the Y-axis polarization is south
+      if blk_arr[i].ypol eq 1 then begin
+        buf = reform(im_cmp[*,*,i])
+        buf =buf[*,reverse(indgen(const.n))]; counts/pixel/min
+        jupypix=const.n - jupypix
+        offset_one_image, im=buf, jupypix=jupypix
+        im_cmp[*,*,i]=buf
+      endif      
     endif else begin
       im_cmp[*,*,i] =0.0
     endelse
@@ -88,14 +96,6 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
       blk_arr[i].radmon=buf; counts/min
     endif
     
-    ;; reverse y-pixel if the Y-axis polarization is south
-    if blk_arr[i].ypol eq 1 then begin
-      buf = reform(im_cmp[*,*,i])
-      buf =buf[*,reverse(indgen(const.n))]; counts/pixel/min
-      jupypix=const.n - jupypix
-      offset_one_image, im=buf, jupypix=jupypix
-      im_cmp[*,*,i]=buf      
-    endif
 
   endfor
 

@@ -18,9 +18,9 @@ pro batch_l2prime
 ;    '20180824'   $
 ;    ]
   sdate='20181115'
-;  edate='20181116'
+  edate='20181116'
 ;  sdate='20181208'
-  edate='20181209'
+;  edate='20181209'
   tds=time_double(sdate)
   tde=time_double(edate)
   tdc=tds
