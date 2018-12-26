@@ -25,7 +25,7 @@ pro make_l3
   ;170430:140"
   ;161115:best
   
-  planet_radii_deg=80.d/3600.; deg/Rp
+  planet_radii_deg=40.d/3600.; deg/Rp
 ;  planet_radii_deg=!NULL; deg/Rp
   
 ;  l3= file_search(out_dir + '/*'+pattern+'*.fits')

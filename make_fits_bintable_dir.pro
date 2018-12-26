@@ -49,8 +49,8 @@ pro make_fits_bintable_dir, l2_d=l2_dir, l2cal_p=l2cal_path, tablea_p=tablea_pat
       
       if stregex(FILE_BASENAME(out_dir),'fits$',/boolean) eq 1 then out_dir = FILE_DIRNAME(out_dir)
       
-      file_elm=strsplit(FILE_BASENAME(l2_files[i]),/extract, '[._]');--------byhk
-      l2cal_path2=l2cal_path+'/calib_'+file_elm[1]+'_v1.0.fits'    ;--------byhk
+;      file_elm=strsplit(FILE_BASENAME(l2_files[i]),/extract, '[._]');--------byhk
+      l2cal_path2=l2cal_path+'/calib_'+stregex(FILE_BASENAME(l2_files[i]),'20[0-9]{6}',/ext)+'_v1.0.fits'    ;--------byhk
       
       make_fits_bintable, l2_p=l2_files[i], l2cal_p=l2cal_path2, tablea_p=tablea_path, out_p=out_dir, planet_radii_deg=planet_radii_deg
    endfor
