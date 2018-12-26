@@ -92,7 +92,7 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
     if blk_arr[i].ypol eq 1 then begin
       buf = reform(im_cmp[*,*,i])
       buf =buf[*,reverse(indgen(const.n))]; counts/pixel/min
-      jupypix=1024 - jupypix
+      jupypix=const.n - jupypix
       offset_one_image, im=buf, jupypix=jupypix
       im_cmp[*,*,i]=buf      
     endif
