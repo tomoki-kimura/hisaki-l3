@@ -3,7 +3,7 @@
 ; for read_exc_euv_l2.pro
 ; 2016-06-09 F. Tsuchiya
 ;----------------------------------------------------------
-PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr
+PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr,effexp
 
   n_ext = n_elements(blk_arr)
   n_ext_w = 0
@@ -26,7 +26,7 @@ PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr
   endfor
   
   file_mkdir, !l2_dir+'/' + strmid(utc_sta,0,4) + '/'
-  file = '/Volumes/hisaki_mhd/l2prime/' + strmid(utc_sta,0,4) + '/' $
+  file = !L2_DIR + strmid(utc_sta,0,4) + '/' $
        + 'exeuv.' + strmid(utc_sta,0,4) + strmid(utc_sta,5,2) + strmid(utc_sta,8,2) $
        + '_LT' + string(const.lt_sta,format='(i2.2)') + '-' + string(const.lt_end,format='(i2.2)') $
        + '_d' + string(const.dl,format='(i3.3)') + '.fits'
@@ -150,7 +150,9 @@ PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr
     sxaddpar, hdr, 'RADLOC', strjoin(strcompress(string(radloc))), 'Radiation Monitor location [x0,y0,x1,y1]'
     sxaddpar, hdr, 'JUPLOC', blk_arr[i].juploc,'1:20", 2:20"-140", 3:140", 4:outside slit'
     sxaddpar, hdr, 'YCPXJUP', blk_arr[i].ycpxjup, 'y pixel number of jupiter in original l2 data' 
-    
+    for j=0, (size(effexp))[2]-1 do begin
+      sxaddpar, hdr, 'EFFEXP'+string(j+1,format='(i02)'),effexp[i,j],'effective exposure extension'
+    endfor
     mwrfits, im, file, hdr, /silent
 
   endfor

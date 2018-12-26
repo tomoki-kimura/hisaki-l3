@@ -25,7 +25,7 @@ PRO chk_fits_ext, const, extn_arr, fits_arr
     extn_arr[i].ipt_val = val/(roi_ipt[2]-roi_ipt[0])/(roi_ipt[3]-roi_ipt[1])
     get_roi_cnt, im, roi_drk, val
     extn_arr[i].rad_val = val/(roi_drk[2]-roi_drk[0])/(roi_drk[3]-roi_drk[1])
-    if extn_arr[i].rad_val gt const.rad_thl then extn_arr[i].rejflg = 1
+    if extn_arr[i].rad_val gt const.rad_thl then extn_arr[i].rejflg = 2
   endfor
   
   ;隣接するL2 imageの時間間隔が90sec以上離れている場合は、そのデータから2枚分のL2は採用しない(HV増加・減少中が含まれるため)
