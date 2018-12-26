@@ -20,7 +20,7 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
     return
   endif
   if not keyword_set(lt_range) then lt_range=[0.0,24.0]
-  if not keyword_set(target) then target = 'jupiter.mod.03'
+  if not keyword_set(target) then target = 'ux_ari'
 
   
   ;--- Define working variables

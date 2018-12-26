@@ -15,11 +15,16 @@ pro batch_l2prime
 ;    '20180824'   $
 ;    ]
 <<<<<<< HEAD
+<<<<<<< HEAD
   sdate='20150314'
   edate='20160101'
 =======
   sdate='20170317'
   edate='20170322'
+>>>>>>> kimura
+=======
+  sdate='20181115'
+  edate='20181209'
 >>>>>>> kimura
   tds=time_double(sdate)
   tde=time_double(edate)
