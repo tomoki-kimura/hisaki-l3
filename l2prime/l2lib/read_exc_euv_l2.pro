@@ -25,9 +25,6 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
   
   ;--- Define working variables
   init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range
-;  dl=600./(const.tj*3600.)*360.
-  dl=3000./(const.tj*3600.)*360.
-  const.dl=dl
 
   ;--- Init fits file
   fits_arr = replicate(fits,2)
