@@ -84,7 +84,7 @@
 # 680.0   10.0 +1.0  +10.0 #SIII     dusk-side of IPT
 # 700.0   10.0 +1.0  +10.0 #SIII     dusk-side of IPT
 # 703.0   10.0 +1.0  +10.0 #SIII+OIII dusk-side of IPT hikida
-# 710.0  120.0 +1.0  +10.0 #SIII band 650-770A dusk-side of IPT
+ 710.0  120.0 +1.0  +10.0 #SIII band 650-770A dusk-side of IPT
 # 711.0   10.0 +1.0  +10.0 #SIII     dusk-side of IPT hikida
 # 717.0   10.0 +1.0  +10.0 #SIV      dusk-side of IPT hikida
 # 726.0   10.0 +1.0  +10.0 #SIII     dusk-side of IPT hikida
