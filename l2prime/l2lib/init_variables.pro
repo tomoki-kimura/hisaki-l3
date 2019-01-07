@@ -22,7 +22,7 @@ PRO init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range
   ;; lt_end : HISAKI local time (end)
   ;; rad_thl : radiation rejection threshold level (count/min/pixel)
   ;; ipt_thl: IPT detection threshold level (count/min/pixel)
-  const = {m:1024,n:1024,dl:10.0,inc_ce:6.8,lon_np:210.0,rj:71492.0,tj:9.925, $
+  const = {m:1024,n:1024,dl:10.0,inc_ce:6.8,lon_np:210.0,rj:71492.0,tj:9.925, cal_enadis_period:0.,$
           smin:-2345.2, smax:1853.2, wmin:1529.43, wmax:468.867, fov_cp:575, $
           lt_sta:0.0, lt_end:24.0,rad_thl:0.004,radloc:([512l,630l,960l,710l]), ipt_thl:0.015, iptloc:([720l,520l,850l,620l])}
   if keyword_set(dl) then const.dl = dl
@@ -31,6 +31,9 @@ PRO init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range
     const.lt_end = lt_range[1]
   endif
 
+  cspice_str2et, '2016-07-05T00:00:00', cet
+  const.cal_enadis_period=cet
+  
   ; Initialize working structure
   ;; file   : L2 data file name  
   ;; n_ext  : number of extenstion in fits file

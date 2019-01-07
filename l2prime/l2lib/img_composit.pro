@@ -53,7 +53,7 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
         ;outputlist,2,hd,extn_arr[j],'calflg',log=log
         continue
       endif
-      if keyword_set(submod) then begin
+      if keyword_set(submod) and extn_arr[j].et le const.cal_enadis_period then begin
         if ( (extn_arr[j].submod ne 4) or (extn_arr[j].submst ne 1) ) then begin
           ;outputlist,2,hd,extn_arr[j],'smod_mst',log=log
           continue
