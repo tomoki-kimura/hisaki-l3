@@ -2,9 +2,9 @@ function ck_aurpos, indate, bpath
   indate_s=time_double(indate)
   margin=4.
   
-  if indate_s le time_double('2016-01-01') then $
-    return, create_struct('flag',1l,'time_s','','time_m','','time_e','',$
-      'yc',-1.,'fwhm',-1.,'slit1',-1.,'slit2',-1.,'slit3',-1.,'slit4',-1.)    
+;  if indate_s le time_double('2016-01-01') then $
+;    return, create_struct('flag',1D,'time_s','','time_m','','time_e','',$
+;      'yc',-1.,'fwhm',-1.,'slit1',-1.,'slit2',-1.,'slit3',-1.,'slit4',-1.)    
   
   file_recs = strarr(file_lines(bpath))
   openr, 1, bpath
@@ -24,21 +24,21 @@ function ck_aurpos, indate, bpath
     slit4   =rec[8]
     arr_time_s = time_double(time_s)
     arr_time_e = time_double(time_e)
-    if indate_s ge arr_time_s and indate_s lt arr_time_e then begin
+    if indate_s ge arr_time_s and indate_s le arr_time_e then begin
       if yc le slit1 + margin then begin
-        flag=4l
+        flag=4D
       endif else if yc gt slit1+margin and yc lt slit2-margin then begin
-        flag=3l
+        flag=3D
       endif else if yc ge slit2-margin and yc le slit2+margin then begin
-        flag=2l
+        flag=2D
       endif else if yc gt slit2+margin and yc lt slit3-margin then begin
-        flag=1l
+        flag=1D
       endif else if yc ge slit3-margin and yc le slit3+margin then begin
-        flag=2l
+        flag=2D
       endif else if yc gt slit3+margin and yc lt slit4-margin then begin
-        flag=3l
+        flag=3D
       endif else if yc ge slit4-margin then begin
-        flag=4l
+        flag=4D
       endif
       
       return, create_struct('flag',flag,'time_s',time_s,'time_m',time_m,'time_e',time_e,$
@@ -46,6 +46,6 @@ function ck_aurpos, indate, bpath
     endif
   endfor
 
-  return, create_struct('flag',-1l,'time_s','','time_m','','time_e','',$
+  return, create_struct('flag',-1,'time_s','','time_m','','time_e','',$
     'yc',-1.,'fwhm',-1.,'slit1',-1.,'slit2',-1.,'slit3',-1.,'slit4',-1.)
 end

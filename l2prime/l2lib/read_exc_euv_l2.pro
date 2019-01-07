@@ -20,10 +20,11 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
     return
   endif
   if not keyword_set(lt_range) then lt_range=[0.0,24.0]
-  if not keyword_set(target) then target = 'ux_ari'
+  if not keyword_set(target) then target = 'jupiter.mod.03'
 
   
   ;--- Define working variables
+  if not keyword_set(dl) then dl=600./(9.925*3600.)*360.
   init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range
 
   ;--- Init fits file
@@ -64,6 +65,7 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
   n_blk = fix(24.0/const.tj * 360.0/const.dl) + 2 ; (+2 --- margin)
   print, '  number of data block : ',n_blk
   blk_arr = replicate(blk,n_blk)
+  effexp  = strarr(n_blk,fix(dl*9.925/360.*60)+1)
   def_data_blk, blk_arr, extn_arr, st_date, 2, const
 
   ;--- Find y-pol change
@@ -72,7 +74,7 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
   ;--- Composit data
   print, '  composit image'
   im_cmp = fltarr(const.m, const.n, n_blk)
-  img_composit, blk_arr, extn_arr, fits_arr, im_cmp, /rej, const=const
+  img_composit, blk_arr, extn_arr, fits_arr, im_cmp, /rej, const=const,effexp=effexp,/no_cal,/submod;,/log
   if total(im_cmp) eq 0l then begin
     message, 'Jupiter is outside the slit. No composit date is made',/info
     status=-1
@@ -112,7 +114,7 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
     return    
   endif
   
-  save_fits, im_cmp, const, extn_arr, blk_arr, out_file, fits_arr
+  save_fits, im_cmp, const, extn_arr, blk_arr, out_file, fits_arr,effexp
   print, 'output file name : ',out_file
   print, '   utc-sta utc-end ena-flag acm-time ypol'
   for i=0,n_elements(blk_arr)-1 do begin

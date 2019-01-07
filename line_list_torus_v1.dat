@@ -1,0 +1,144 @@
+################################################################################
+# This is a line list for high-level data product of line intensity variations.
+# Spectral region for line intensity extraction should be defined as central 
+# wavelength and width of lines: e.g., 584 A with 20 A width => range [574:594]
+# Spacial region for extraction of line intensity should be defined as 
+# start and end pixel index along the H axis in the FOV coordinate system 
+# i.e., along -X axis in the S/C coordinate system.
+# Last modified by T Kimua 2013/12/16
+################################################################################
+# wavelength(A) width(A) angular_start(asec) anglar_end(asec) #comment
+ 584.0   10.0 -200.0  -20.0 #HeI      dawn-side of IPT
+ 629.7   10.0 -200.0  -20.0 #OV       dawn-side of IPT
+ 642.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT hikida
+ 657.0   10.0 -200.0  -20.0 #SIV      dawn-side of IPT hikida
+ 661.0   10.0 -200.0  -20.0 #SIV      dawn-side of IPT hikida
+ 680.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT
+ 700.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT
+ 703.0   10.0 -200.0  -20.0 #SIII+OIII dawn-side of IPT hikida
+ 710.0  120.0 -200.0  -20.0 #SIII band 650-770A dawn-side of IPT
+ 711.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT hikida
+ 717.0   10.0 -200.0  -20.0 #SIV      dawn-side of IPT hikida
+ 726.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT hikida
+ 729.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT
+ 738.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT hikida
+ 745.0   10.0 -200.0  -20.0 #SIV      dawn-side of IPT hikida
+ 748.0   10.0 -200.0  -20.0 #SIV      dawn-side of IPT
+ 750.0   10.0 -200.0  -20.0 #SIV      dawn-side of IPT hikida
+ 754.0   10.0 -200.0  -20.0 #SIV      dawn-side of IPT hikida
+ 765.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT
+ 774.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT hikida
+ 789.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT hikida
+ 797.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT hikida
+ 810.0   10.0 -200.0  -20.0 #SIV      dawn-side of IPT hikida
+ 816.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT hikida
+ 822.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT
+ 833.0   10.0 -200.0  -20.0 #OII/OIII dawn-side of IPT
+ 841.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT hikida
+ 875.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT
+ 891.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT hikida
+ 897.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT hikida
+ 900.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT hikida
+ 906.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT
+ 910.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT hikida
+ 938.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT
+ 950.0   10.0 -200.0  -20.0 #OI       dawn-side of IPT hikida
+ 973.0   10.0 -200.0  -20.0 #HI       dawn-side of IPT hikida
+ 996.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT hikida
+1000.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT hikida
+1006.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT hikida
+1016.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT
+1021.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT
+1047.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT
+1063.0   10.0 -200.0  -20.0 #SIV      dawn-side of IPT
+1073.0   10.0 -200.0  -20.0 #SIV      dawn-side of IPT hikida
+1077.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT hikida
+1075.0   10.0 -200.0  -20.0 #SIV/SIII dawn-side of IPT
+1089.0   10.0 -200.0  -20.0 #SIV      dawn-side of IPT hikida
+1097.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT hikida
+#1100.0   10.0 -200.0  -20.0 #SIV      dawn-side of IPT まちがい？？？
+1102.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT hikida
+1126.0   10.0 -200.0  -20.0 #SII+SIII dawn-side of IPT
+#1167.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT Heの2次光とN
+1191.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT
+1194.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT hikida
+1201.0   10.0 -200.0  -20.0 #SIII     dawn-side of IPT
+1216.0   10.0 -200.0  -20.0 #Ly-a     dawn-side of IPT
+1251.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT hikida
+1254.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT
+1260.0   10.0 -200.0  -20.0 #SII      dawn-side of IPT
+1304.0   10.0 -200.0  -20.0 #OI       dawn-side of IPT
+1356.0   10.0 -200.0  -20.0 #OI+680   dawn-side of IPT
+1406.0   10.0 -200.0  -20.0 #SIV+700  dawn-side of IPT
+1417.0   10.0 -200.0  -20.0 #SIV      dawn-side of IPT
+1424.0   10.0 -200.0  -20.0 #SIV      dawn-side of IPT hikida
+1025.0  910.0 -200.0  -20.0 #total    dawn-side of IPT 570-1480
+1015.0  890.0 -200.0  -20.0 #total    dawn-side of IPT 570-1460
+880.50  601.0 -200.0  -20.0 #total    dawn-side of IPT Steffl+04
+ 584.0   10.0 +20.0  +200.0 #HeI      dusk-side of IPT
+ 629.7   10.0 +20.0  +200.0 #OV       dusk-side of IPT
+ 642.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT hikida
+ 657.0   10.0 +20.0  +200.0 #SIV      dusk-side of IPT hikida
+ 661.0   10.0 +20.0  +200.0 #SIV      dusk-side of IPT hikida
+ 680.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT
+ 700.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT
+ 703.0   10.0 +20.0  +200.0 #SIII+OIII dusk-side of IPT hikida
+ 710.0  120.0 +20.0  +200.0 #SIII band 650-770A dusk-side of IPT
+ 711.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT hikida
+ 717.0   10.0 +20.0  +200.0 #SIV      dusk-side of IPT hikida
+ 726.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT hikida
+ 729.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT
+ 738.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT hikida
+ 745.0   10.0 +20.0  +200.0 #SIV      dusk-side of IPT hikida
+ 748.0   10.0 +20.0  +200.0 #SIV      dusk-side of IPT
+ 750.0   10.0 +20.0  +200.0 #SIV      dusk-side of IPT hikida
+ 754.0   10.0 +20.0  +200.0 #SIV      dusk-side of IPT hikida
+ 765.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT
+ 774.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT hikida
+ 789.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT hikida
+ 797.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT hikida
+ 810.0   10.0 +20.0  +200.0 #SIV      dusk-side of IPT hikida
+ 816.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT hikida
+ 822.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT
+ 833.0   10.0 +20.0  +200.0 #OII/OIII dusk-side of IPT
+ 841.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT hikida
+ 875.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT
+ 891.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT hikida
+ 897.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT hikida
+ 900.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT hikida
+ 906.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT
+ 910.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT hikida
+ 938.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT
+ 950.0   10.0 +20.0  +200.0 #OI       dusk-side of IPT hikida
+ 973.0   10.0 +20.0  +200.0 #HI       dusk-side of IPT hikida
+ 996.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT hikida
+1000.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT hikida
+1006.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT hikida
+1016.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT
+1021.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT
+1047.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT
+1063.0   10.0 +20.0  +200.0 #SIV      dusk-side of IPT
+1073.0   10.0 +20.0  +200.0 #SIV      dusk-side of IPT hikida
+1077.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT hikida
+1075.0   10.0 +20.0  +200.0 #SIV/SIII dusk-side of IPT
+1089.0   10.0 +20.0  +200.0 #SIV      dusk-side of IPT hikida
+1097.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT hikida
+#1100.0   10.0 +20.0  +200.0 #SIV      dusk-side of IPT まちがい？？？
+1102.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT hikida
+1126.0   10.0 +20.0  +200.0 #SII+SIII dusk-side of IPT
+#1167.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT Heの2次光とN
+1191.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT
+1194.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT hikida
+1201.0   10.0 +20.0  +200.0 #SIII     dusk-side of IPT
+1216.0   10.0 +20.0  +200.0 #Ly-a     dusk-side of IPT
+1251.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT hikida
+1254.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT
+1260.0   10.0 +20.0  +200.0 #SII      dusk-side of IPT
+1304.0   10.0 +20.0  +200.0 #OI       dusk-side of IPT
+1356.0   10.0 +20.0  +200.0 #OI+680   dusk-side of IPT
+1406.0   10.0 +20.0  +200.0 #SIV+700  dusk-side of IPT
+1417.0   10.0 +20.0  +200.0 #SIV      dusk-side of IPT
+1424.0   10.0 +20.0  +200.0 #SIV      dusk-side of IPT hikida
+1025.0  910.0 +20.0  +200.0 #total    dusk-side of IPT 570-1480
+1015.0  890.0 +20.0  +200.0 #total    dusk-side of IPT 570-1460
+880.50  601.0 +20.0  +200.0 #total    dusk-side of IPT Steffl+04
