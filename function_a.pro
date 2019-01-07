@@ -1,4 +1,4 @@
-function function_a, time,  xrange_v, yrange_v, xrange_p, yrange_p, l2_path, l2cal_path
+function function_a, time,  xrange_v, yrange_v, xrange_p, yrange_p, l2_path, l2cal_path, lightyear
   common aeff_block, aefffile0, data
   if not keyword_set(l2cal_path) then l2cal_path='/Users/moxon/moxonraid/spa/data/fits/euv/cal/exeuv.jupiter.mod.20.20170706.lv.02.vr.00.fits'
   if not keyword_set(l2_path)    then l2_path='/Users/moxon/moxonraid/spa/data/fits/euv/l2/exeuv.jupiter.mod.20.20170706.lv.02.vr.00.fits'
@@ -49,6 +49,10 @@ function function_a, time,  xrange_v, yrange_v, xrange_p, yrange_p, l2_path, l2c
   ltime=0.d
   orb=cal_orb(epoch=time, intarg=intarg, inobs=inobs, inframe=inframe, quiet=quiet, abcorr=abcorr, ltime=ltime)
   radii=orb.radii * 1.d+3; m
+  
+  if keyword_set(lightyear) then begin
+    radii=lightyear*9460730472580800.d; m
+  endif
   
   nx=n_elements(wave)
   a=dblarr(nx)

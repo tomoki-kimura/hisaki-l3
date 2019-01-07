@@ -52,7 +52,7 @@
 ;                      - L3データのカウント値の算出方法を修正
 ;                      - L3データの時刻情報は[年、dayofyear、secofday]に修正
 ;-
-pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, out_p=out_path, planet_radii_deg=planet_radii_deg
+pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, out_p=out_path, planet_radii_deg=planet_radii_deg, lightyear=lightyear
 
   on_error,2
 
@@ -355,7 +355,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       efcoeff = dblarr(size_distribution_count[1], size_distribution_count[2])
       if SIZE(distribution_count, /N_DIMENSIONS) eq 1 then size_distribution_count[2]=1;;;;;;;;;;;;;;;;;;;;;;;byhk
       for j = 0, size_distribution_count[2] - 1 do begin
-         coeff[*,j] = function_a(value_extname_list[j], xrange_v, yrange_v, xrange_p, yrange_p, l2_path, l2cal_path)
+         coeff[*,j] = function_a(value_extname_list[j], xrange_v, yrange_v, xrange_p, yrange_p, l2_path, l2cal_path, lightyear)
          efcoeff[*,j] = function_eflux(value_extname_list[j], xrange_v, yrange_v, xrange_p, yrange_p, l2_path, l2cal_path)
       endfor
  
@@ -370,7 +370,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       endfor
       ; カウント分布と係数αkをかけ合わせ放射エネルギー分布を取得する。
       distribution_radiant_energy = distribution_count_rate * coeff
-      distribution_energy_flux = distribution_count_rate * coeff
+      distribution_energy_flux = distribution_count_rate * efcoeff
 
 
       ; 放射エネルギー分布時系列を取得する。
@@ -400,16 +400,20 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
         filt_var, xarr=indgen(nwave), yarr=reform(sqrt_distribution_count_rate[*,j]), outarr=outarr, window=SPECTRESOL, /ave
         sqrt_distribution_count_rate[*,j]=outarr
       endfor
-      ; (sqrt(Nk)/t)×αkを取得
-      distribution_sigma = sqrt_distribution_count_rate * coeff
-      distribution_eflux_sigma = sqrt_distribution_count_rate * coeff
+;      ; (sqrt(Nk)/t)×αkを取得
+;      distribution_sigma = sqrt_distribution_count_rate * coeff
+;      distribution_eflux_sigma = sqrt_distribution_count_rate * efcoeff
+      distribution_sigma = sqrt_distribution_count_rate
+      distribution_eflux_sigma = sqrt_distribution_count_rate
 
       ; 誤差時系列を取得
       series_distribution_sigma = dblarr(size_distribution_count[2])
       series_distribution_eflux_sigma = dblarr(size_distribution_count[2])
       for j = 0, size_distribution_count[2] - 1 do begin
-         series_distribution_sigma[j] = total(distribution_sigma[*,j])
-         series_distribution_eflux_sigma[j] = total(distribution_eflux_sigma[*,j])
+;         series_distribution_sigma[j] = total(coeff*distribution_sigma[*,j])
+;         series_distribution_eflux_sigma[j] = total(efcoeff*distribution_eflux_sigma[*,j])
+         series_distribution_sigma[j] = sqrt(total((coeff*distribution_sigma[*,j])^2.d))
+         series_distribution_eflux_sigma[j] = sqrt(total((efcoeff*distribution_eflux_sigma[*,j])^2.d))
       endfor
 
       ; カウントレート時系列を取得
