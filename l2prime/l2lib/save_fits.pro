@@ -148,9 +148,15 @@ PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr,effexp
     sxaddpar, hdr, 'EU_PHASE', blk_arr[i].ph_eu, 'Europa phase angle [deg]', format="f8.2"
     sxaddpar, hdr, 'RADMON', radmon, 'Radiation Monitor Value [counts/min]'
     sxaddpar, hdr, 'RADLOC', strjoin(strcompress(string(radloc))), 'Radiation Monitor location [x0,y0,x1,y1]'
-    sxaddpar, hdr, 'JUPLOC', blk_arr[i].juploc,'1:20", 2:20"-140", 3:140", 4:outside slit'
-    sxaddpar, hdr, 'YCPXJUP', blk_arr[i].ycpxjup, 'y pixel number of jupiter in original l2 data' 
+    sxaddpar, hdr, 'JUPLOC', blk_arr[i].ycpxjup, 'Y pixel of Jupiter in original L2 (pixel)', format="f12.6"
+    sxaddpar, hdr, 'JPFWHM', blk_arr[i].fwhm, 'FWHM of Jupiter aurora (pixel)', format="f12.6"
+    sxaddpar, hdr, 'SLIT1Y', blk_arr[i].slit1, 'Y pixel of btm 140" slit edge', format="f12.6"
+    sxaddpar, hdr, 'SLIT2Y', blk_arr[i].slit2, 'Y pixel of btm  20" slit edge', format="f12.6"
+    sxaddpar, hdr, 'SLIT3Y', blk_arr[i].slit3, 'Y pixel of top  20" slit edge', format="f12.6"
+    sxaddpar, hdr, 'SLIT4Y', blk_arr[i].slit4, 'Y pixel of top 140" slit edge', format="f12.6"
+    sxaddpar, hdr, 'JPFLAG', blk_arr[i].juploc, '1:20"slit,2:btw20"&140",3:140"slit,4:140"edge', format="i02"
     for j=0, (size(effexp))[2]-1 do begin
+      if strlen(effexp[i,j]) gt 0l then $
       sxaddpar, hdr, 'EFFEXP'+string(j+1,format='(i02)'),effexp[i,j],'effective exposure extension'
     endfor
     mwrfits, im, file, hdr, /silent

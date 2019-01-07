@@ -78,6 +78,12 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    KEY_NINTTIME = 'INT_TIME';L2prime
    KEY_RADMON   = 'RADMON'
    KEY_JUPLOC   = 'JUPLOC'
+   KEY_FWHM     = 'FWHM'
+   KEY_SLIT1Y   = 'SLIT1Y'
+   KEY_SLIT2Y   = 'SLIT2Y'
+   KEY_SLIT3Y   = 'SLIT3Y'
+   KEY_SLIT4Y   = 'SLIT4Y'
+   KEY_JPFLAG   = 'JPFLAG'
    
    COMMENT_L2PATH    = 'Path/Dir of Input L2 file.'
    COMMENT_TBLAPATH = 'Path of TableA.'
@@ -284,13 +290,21 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       im_target_integral = dblarr(x_max_p - x_min_p + 1)
       distribution_count = dblarr(x_max_p - x_min_p + 1, value_nextend - 1)
       distribution_count_rate = dblarr(x_max_p - x_min_p + 1, value_nextend - 1)
-      radiation_monitor = dblarr(value_nextend - 1)
-      jupiter_location_monitor = lonarr(value_nextend - 1)
       value_extname_list = strarr(value_nextend - 1)
       value_ninttime_list = dblarr(value_nextend - 1)
       year_list = strarr(value_nextend - 1)      ;;;;;TK
       dayofyear_list = strarr(value_nextend - 1) ;;;;;TK
       secofday_list = strarr(value_nextend - 1)  ;;;;;TK
+      if i eq 0l then begin; radiation minitor ;; TK
+        radiation_monitor = dblarr(value_nextend - 1)
+        jupiter_location_monitor = dblarr(value_nextend - 1)
+        jupiter_fwhm_monitor = dblarr(value_nextend - 1)
+        jupiter_slit1_monitor = dblarr(value_nextend - 1)
+        jupiter_slit2_monitor = dblarr(value_nextend - 1)
+        jupiter_slit3_monitor = dblarr(value_nextend - 1)
+        jupiter_slit4_monitor = dblarr(value_nextend - 1)
+        jupiter_jpflag_monitor = lonarr(value_nextend - 1)
+     endif
 
       ; イメージEXTENTIONごとに処理
       for j = 2, value_nextend do begin
@@ -301,8 +315,14 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
          if i eq 0l then begin; radiation minitor ;; TK
             crad=double(fxpar(hdr,KEY_RADMON))
             radiation_monitor[j-2] = crad; counts/min
-            cjloc=double(fxpar(hdr,KEY_JUPLOC))
-            jupiter_location_monitor[j-2] = cjloc
+            
+            jupiter_location_monitor[j-2] = double(fxpar(hdr,KEY_JUPLOC))
+            jupiter_fwhm_monitor[j-2] = double(fxpar(hdr,KEY_FWHM))
+            jupiter_slit1_monitor[j-2] = double(fxpar(hdr,KEY_SLIT1))
+            jupiter_slit2_monitor[j-2] = double(fxpar(hdr,KEY_SLIT2))
+            jupiter_slit3_monitor[j-2] = double(fxpar(hdr,KEY_SLIT3))
+            jupiter_slit4_monitor[j-2] = double(fxpar(hdr,KEY_SLIT4))
+            jupiter_flag_monitor[j-2] = long(fxpar(hdr,KEY_JPFLAG))
          endif
          
          im_target = im[x_min_p : x_max_p, y_min_p : y_max_p]
@@ -447,11 +467,23 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
         structure_distribution_count, structure_distribution_count_rate,$
         structure_distribution_energy_flux, structure_distribution_eflux_sigma $
         )
-   endfor
-   structure_radiation_monitor = create_struct('RADMON',radiation_monitor)
+   endfor; i
+   structure_radiation_monitor = create_struct(KEY_RADMON,radiation_monitor)
    structure   = create_struct(structure, structure_radiation_monitor)
-   structure_jupiter_location_monitor = create_struct('JUPLOC',jupiter_location_monitor)
+   structure_jupiter_location_monitor = create_struct(KEY_JUPLOC,jupiter_location_monitor)
    structure   = create_struct(structure, structure_jupiter_location_monitor)
+   structure_jupiter_fwhm_monitor = create_struct(KEY_FWHM,jupiter_fwhm_monitor)
+   structure   = create_struct(structure, structure_jupiter_fwhm_monitor)
+   structure_jupiter_slit1_monitor = create_struct(KEY_SLIT1,jupiter_slit1_monitor)
+   structure   = create_struct(structure, structure_jupiter_slit1_monitor)
+   structure_jupiter_slit2_monitor = create_struct(KEY_SLIT2,jupiter_slit2_monitor)
+   structure   = create_struct(structure, structure_jupiter_slit2_monitor)
+   structure_jupiter_slit3_monitor = create_struct(KEY_SLIT3,jupiter_slit3_monitor)
+   structure   = create_struct(structure, structure_jupiter_slit3_monitor)
+   structure_jupiter_slit4_monitor = create_struct(KEY_SLIT4,jupiter_slit4_monitor)
+   structure   = create_struct(structure, structure_jupiter_slit4_monitor)
+   structure_jupiter_jpflag_monitor = create_struct(KEY_JPFLAG,jupiter_jpflag_monitor)
+   structure   = create_struct(structure, structure_jupiter_jpflag_monitor)
 
    ; binary table用に構造体を変換
    n_time_series      = n_elements(structure.year)
@@ -501,12 +533,46 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
 
    ;modify bintable header
    tunit=strarr(n_tag_structure)
+   tdisp=strarr(n_tag_structure)
    hdrcom=tunit
-   tunit[0]='years' & tunit[1]='days' & tunit[2]='sec'
-   tunit[3:4]='GW' & tunit[5]='counts' & tunit[6]='counts/min' & tunit[7:8]='eV/cm^2'
-   tunit[9]='counts/min' & tunit[10]='pixel' 
-   tdisp=strarr(n_tag_structure)   
-   tdisp[*]='D10.1' & tdisp[0]='I5' & tdisp[1]='I5' & tdisp[2]='E15.6' & tdisp[-1]='I3'
+   for i=0l, n_tag_structure-1l do begin
+    if tag_name_structure[i] eq 'year' then tunit[i]='years'
+    if tag_name_structure[i] eq 'dayofyear' then tunit[i]='days' 
+    if tag_name_structure[i] eq 'secofday'  then tunit[i]='sec'
+    if tag_name_structure[i] eq KEY_JUPLOC  then tunit[i]='pixel' 
+    if tag_name_structure[i] eq KEY_FWHM    then tunit[i]='pixel'
+    if tag_name_structure[i] eq KEY_SLIT1   then tunit[i]='pixel'
+    if tag_name_structure[i] eq KEY_SLIT2   then tunit[i]='pixel'
+    if tag_name_structure[i] eq KEY_SLIT3   then tunit[i]='pixel'
+    if tag_name_structure[i] eq KEY_SLIT4   then tunit[i]='pixel'
+    if tag_name_structure[i] eq KEY_JPFLAG  then tunit[i]='pixel'
+    if stregex(tag_name_structure[i],'TPOW') ge 0l then tunit[i]='GW'
+    if stregex(tag_name_structure[i],'TERR') ge 0l then tunit[i]='GW'
+    if stregex(tag_name_structure[i],'CONT') ge 0l then tunit[i]='counts'
+    if stregex(tag_name_structure[i],'LINT') ge 0l then tunit[i]='counts/min'
+    if stregex(tag_name_structure[i],'EFLX') ge 0l then tunit[i]='eV/cm^2/s'
+    if stregex(tag_name_structure[i],'EERR') ge 0l then tunit[i]='eV/cm^2/s'
+   endfor
+
+   for i=0l, n_tag_structure-1l do begin
+     if tag_name_structure[i] eq 'year' then tdisp[i]='I5'
+     if tag_name_structure[i] eq 'dayofyear' then tdisp[i]='I3'
+     if tag_name_structure[i] eq 'secofday'  then tdisp[i]='D7'
+     if tag_name_structure[i] eq KEY_JUPLOC  then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_FWHM    then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_SLIT1   then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_SLIT2   then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_SLIT3   then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_SLIT4   then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_JPFLAG  then tdisp[i]='I2'
+     if stregex(tag_name_structure[i],'TPOW') ge 0l then tdisp[i]='D10.1'
+     if stregex(tag_name_structure[i],'TERR') ge 0l then tdisp[i]='D10.1'
+     if stregex(tag_name_structure[i],'CONT') ge 0l then tdisp[i]='D10.1'
+     if stregex(tag_name_structure[i],'LINT') ge 0l then tdisp[i]='D10.1'
+     if stregex(tag_name_structure[i],'EFLX') ge 0l then tdisp[i]='D10.1'
+     if stregex(tag_name_structure[i],'EERR') ge 0l then tdisp[i]='D10.1'
+   endfor
+
    bin_table = mrdfits(out_path, 2, hdr_bin_table, /silent)
    if stregex(tablea_path,'aurora',/fold_case) ge 0 then extname='aurora'
    if stregex(tablea_path,'torus',/fold_case) ge 0 then extname='torus'
@@ -524,7 +590,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
      if tag_name_structure[i-1l] eq 'DAYOFYEAR' then ccom='day of year'
      if tag_name_structure[i-1l] eq 'SECOFDAY' then ccom='sec of day'
      if tag_name_structure[i-1l] eq 'RADMON' then ccom='Radiation monitor'
-     if tag_name_structure[i-1l] eq 'JUPLOC' then ccom='Jupiter location'
+     if tag_name_structure[i-1l] eq 'JUPLOC' then ccom='Jupiter location '
      if stregex(tag_name_structure[i-1l],'[0-9]{1,4}') ge 0l then begin
       ccom=tablea_comarr[indcom/6l]
       indcom++

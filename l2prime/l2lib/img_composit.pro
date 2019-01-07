@@ -77,6 +77,11 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
       jupypix=ret.yc
       blk_arr[i].juploc=ret.flag
       blk_arr[i].ycpxjup=ret.yc
+      blk_arr[i].slit1=ret.slit1
+      blk_arr[i].slit2=ret.slit2
+      blk_arr[i].slit3=ret.slit3
+      blk_arr[i].slit4=ret.slit4
+      blk_arr[i].fwhm=ret.fwhm
       if jupypix eq -1l then begin
         ;outputlist,2,hd,extn_arr[j],'no peak',log=log
         continue;
