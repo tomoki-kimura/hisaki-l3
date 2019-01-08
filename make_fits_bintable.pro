@@ -318,11 +318,11 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
             
             jupiter_location_monitor[j-2] = double(fxpar(hdr,KEY_JUPLOC))
             jupiter_fwhm_monitor[j-2] = double(fxpar(hdr,KEY_FWHM))
-            jupiter_slit1_monitor[j-2] = double(fxpar(hdr,KEY_SLIT1))
-            jupiter_slit2_monitor[j-2] = double(fxpar(hdr,KEY_SLIT2))
-            jupiter_slit3_monitor[j-2] = double(fxpar(hdr,KEY_SLIT3))
-            jupiter_slit4_monitor[j-2] = double(fxpar(hdr,KEY_SLIT4))
-            jupiter_flag_monitor[j-2] = long(fxpar(hdr,KEY_JPFLAG))
+            jupiter_slit1_monitor[j-2] = double(fxpar(hdr,KEY_SLIT1Y))
+            jupiter_slit2_monitor[j-2] = double(fxpar(hdr,KEY_SLIT2Y))
+            jupiter_slit3_monitor[j-2] = double(fxpar(hdr,KEY_SLIT3Y))
+            jupiter_slit4_monitor[j-2] = double(fxpar(hdr,KEY_SLIT4Y))
+            jupiter_jpflag_monitor[j-2] = long(fxpar(hdr,KEY_JPFLAG))
          endif
          
          im_target = im[x_min_p : x_max_p, y_min_p : y_max_p]
@@ -474,13 +474,13 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    structure   = create_struct(structure, structure_jupiter_location_monitor)
    structure_jupiter_fwhm_monitor = create_struct(KEY_FWHM,jupiter_fwhm_monitor)
    structure   = create_struct(structure, structure_jupiter_fwhm_monitor)
-   structure_jupiter_slit1_monitor = create_struct(KEY_SLIT1,jupiter_slit1_monitor)
+   structure_jupiter_slit1_monitor = create_struct(KEY_SLIT1Y,jupiter_slit1_monitor)
    structure   = create_struct(structure, structure_jupiter_slit1_monitor)
-   structure_jupiter_slit2_monitor = create_struct(KEY_SLIT2,jupiter_slit2_monitor)
+   structure_jupiter_slit2_monitor = create_struct(KEY_SLIT2Y,jupiter_slit2_monitor)
    structure   = create_struct(structure, structure_jupiter_slit2_monitor)
-   structure_jupiter_slit3_monitor = create_struct(KEY_SLIT3,jupiter_slit3_monitor)
+   structure_jupiter_slit3_monitor = create_struct(KEY_SLIT3Y,jupiter_slit3_monitor)
    structure   = create_struct(structure, structure_jupiter_slit3_monitor)
-   structure_jupiter_slit4_monitor = create_struct(KEY_SLIT4,jupiter_slit4_monitor)
+   structure_jupiter_slit4_monitor = create_struct(KEY_SLIT4Y,jupiter_slit4_monitor)
    structure   = create_struct(structure, structure_jupiter_slit4_monitor)
    structure_jupiter_jpflag_monitor = create_struct(KEY_JPFLAG,jupiter_jpflag_monitor)
    structure   = create_struct(structure, structure_jupiter_jpflag_monitor)
@@ -541,10 +541,10 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
     if tag_name_structure[i] eq 'SECOFDAY'  then tunit[i]='sec'
     if tag_name_structure[i] eq KEY_JUPLOC  then tunit[i]='pixel' 
     if tag_name_structure[i] eq KEY_FWHM    then tunit[i]='pixel'
-    if tag_name_structure[i] eq KEY_SLIT1   then tunit[i]='pixel'
-    if tag_name_structure[i] eq KEY_SLIT2   then tunit[i]='pixel'
-    if tag_name_structure[i] eq KEY_SLIT3   then tunit[i]='pixel'
-    if tag_name_structure[i] eq KEY_SLIT4   then tunit[i]='pixel'
+    if tag_name_structure[i] eq KEY_SLIT1Y   then tunit[i]='pixel'
+    if tag_name_structure[i] eq KEY_SLIT2Y   then tunit[i]='pixel'
+    if tag_name_structure[i] eq KEY_SLIT3Y   then tunit[i]='pixel'
+    if tag_name_structure[i] eq KEY_SLIT4Y   then tunit[i]='pixel'
     if tag_name_structure[i] eq KEY_JPFLAG  then tunit[i]='pixel'
     if stregex(tag_name_structure[i],'TPOW') ge 0l then tunit[i]='GW'
     if stregex(tag_name_structure[i],'TERR') ge 0l then tunit[i]='GW'
@@ -560,10 +560,10 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
      if tag_name_structure[i] eq 'SECOFDAY'  then tdisp[i]='D7'
      if tag_name_structure[i] eq KEY_JUPLOC  then tdisp[i]='D6.2'
      if tag_name_structure[i] eq KEY_FWHM    then tdisp[i]='D6.2'
-     if tag_name_structure[i] eq KEY_SLIT1   then tdisp[i]='D6.2'
-     if tag_name_structure[i] eq KEY_SLIT2   then tdisp[i]='D6.2'
-     if tag_name_structure[i] eq KEY_SLIT3   then tdisp[i]='D6.2'
-     if tag_name_structure[i] eq KEY_SLIT4   then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_SLIT1Y   then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_SLIT2Y   then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_SLIT3Y   then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_SLIT4Y   then tdisp[i]='D6.2'
      if tag_name_structure[i] eq KEY_JPFLAG  then tdisp[i]='I2'
      if stregex(tag_name_structure[i],'TPOW') ge 0l then tdisp[i]='D10.1'
      if stregex(tag_name_structure[i],'TERR') ge 0l then tdisp[i]='D10.1'
@@ -592,10 +592,10 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
      if tag_name_structure[i-1l] eq KEY_RADMON then ccom='Radiation Monitor Value [counts/min]'
      if tag_name_structure[i-1l] eq KEY_JUPLOC then ccom='Y pixel of Jupiter in original L2 (pixel)'
      if tag_name_structure[i-1l] eq KEY_FWHM   then ccom='FWHM of Jupiter aurora (pixel)'
-     if tag_name_structure[i-1l] eq KEY_SLIT1  then ccom='Y pixel of btm 140" slit edge (pixel)'
-     if tag_name_structure[i-1l] eq KEY_SLIT2  then ccom='Y pixel of btm  20" slit edge (pixel)'
-     if tag_name_structure[i-1l] eq KEY_SLIT3  then ccom='Y pixel of top  20" slit edge (pixel)'
-     if tag_name_structure[i-1l] eq KEY_SLIT4  then ccom='Y pixel of top 140" slit edge (pixel)'
+     if tag_name_structure[i-1l] eq KEY_SLIT1Y  then ccom='Y pixel of btm 140" slit edge (pixel)'
+     if tag_name_structure[i-1l] eq KEY_SLIT2Y  then ccom='Y pixel of btm  20" slit edge (pixel)'
+     if tag_name_structure[i-1l] eq KEY_SLIT3Y  then ccom='Y pixel of top  20" slit edge (pixel)'
+     if tag_name_structure[i-1l] eq KEY_SLIT4Y  then ccom='Y pixel of top 140" slit edge (pixel)'
      if tag_name_structure[i-1l] eq KEY_JPFLAG then ccom='1:20"slit,2:btw20"&140",3:140"slit,4:140"edge'
      if stregex(tag_name_structure[i-1l],'[0-9]{3,4}A') ge 0l then begin
       ccom=tablea_comarr[indcom/6l]
