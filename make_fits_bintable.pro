@@ -536,9 +536,9 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    tdisp=strarr(n_tag_structure)
    hdrcom=tunit
    for i=0l, n_tag_structure-1l do begin
-    if tag_name_structure[i] eq 'year' then tunit[i]='years'
-    if tag_name_structure[i] eq 'dayofyear' then tunit[i]='days' 
-    if tag_name_structure[i] eq 'secofday'  then tunit[i]='sec'
+    if tag_name_structure[i] eq 'YEAR' then tunit[i]='years'
+    if tag_name_structure[i] eq 'DAYOFYEAR' then tunit[i]='days' 
+    if tag_name_structure[i] eq 'SECOFDAY'  then tunit[i]='sec'
     if tag_name_structure[i] eq KEY_JUPLOC  then tunit[i]='pixel' 
     if tag_name_structure[i] eq KEY_FWHM    then tunit[i]='pixel'
     if tag_name_structure[i] eq KEY_SLIT1   then tunit[i]='pixel'
@@ -555,9 +555,9 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    endfor
 
    for i=0l, n_tag_structure-1l do begin
-     if tag_name_structure[i] eq 'year' then tdisp[i]='I5'
-     if tag_name_structure[i] eq 'dayofyear' then tdisp[i]='I3'
-     if tag_name_structure[i] eq 'secofday'  then tdisp[i]='D7'
+     if tag_name_structure[i] eq 'YEAR' then tdisp[i]='I5'
+     if tag_name_structure[i] eq 'DAYOFYEAR' then tdisp[i]='I3'
+     if tag_name_structure[i] eq 'SECOFDAY'  then tdisp[i]='D7'
      if tag_name_structure[i] eq KEY_JUPLOC  then tdisp[i]='D6.2'
      if tag_name_structure[i] eq KEY_FWHM    then tdisp[i]='D6.2'
      if tag_name_structure[i] eq KEY_SLIT1   then tdisp[i]='D6.2'
@@ -589,9 +589,15 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
      if tag_name_structure[i-1l] eq 'YEAR' then ccom='year'
      if tag_name_structure[i-1l] eq 'DAYOFYEAR' then ccom='day of year'
      if tag_name_structure[i-1l] eq 'SECOFDAY' then ccom='sec of day'
-     if tag_name_structure[i-1l] eq 'RADMON' then ccom='Radiation monitor'
-     if tag_name_structure[i-1l] eq 'JUPLOC' then ccom='Jupiter location '
-     if stregex(tag_name_structure[i-1l],'[0-9]{1,4}') ge 0l then begin
+     if tag_name_structure[i-1l] eq KEY_RADMON then ccom='Radiation Monitor Value [counts/min]'
+     if tag_name_structure[i-1l] eq KEY_JUPLOC then ccom='Y pixel of Jupiter in original L2 (pixel)'
+     if tag_name_structure[i-1l] eq KEY_FWHM   then ccom='FWHM of Jupiter aurora (pixel)'
+     if tag_name_structure[i-1l] eq KEY_SLIT1  then ccom='Y pixel of btm 140" slit edge (pixel)'
+     if tag_name_structure[i-1l] eq KEY_SLIT2  then ccom='Y pixel of btm  20" slit edge (pixel)'
+     if tag_name_structure[i-1l] eq KEY_SLIT3  then ccom='Y pixel of top  20" slit edge (pixel)'
+     if tag_name_structure[i-1l] eq KEY_SLIT4  then ccom='Y pixel of top 140" slit edge (pixel)'
+     if tag_name_structure[i-1l] eq KEY_JPFLAG then ccom='1:20"slit,2:btw20"&140",3:140"slit,4:140"edge'
+     if stregex(tag_name_structure[i-1l],'[0-9]{3,4}A') ge 0l then begin
       ccom=tablea_comarr[indcom/6l]
       indcom++
      endif
