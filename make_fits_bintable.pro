@@ -78,7 +78,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    KEY_NINTTIME = 'INT_TIME';L2prime
    KEY_RADMON   = 'RADMON'
    KEY_JUPLOC   = 'JUPLOC'
-   KEY_FWHM     = 'FWHM'
+   KEY_JPFWHM     = 'JPFWHM'
    KEY_SLIT1Y   = 'SLIT1Y'
    KEY_SLIT2Y   = 'SLIT2Y'
    KEY_SLIT3Y   = 'SLIT3Y'
@@ -298,7 +298,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       if i eq 0l then begin; radiation minitor ;; TK
         radiation_monitor = dblarr(value_nextend - 1)
         jupiter_location_monitor = dblarr(value_nextend - 1)
-        jupiter_fwhm_monitor = dblarr(value_nextend - 1)
+        jupiter_jpfwhm_monitor = dblarr(value_nextend - 1)
         jupiter_slit1_monitor = dblarr(value_nextend - 1)
         jupiter_slit2_monitor = dblarr(value_nextend - 1)
         jupiter_slit3_monitor = dblarr(value_nextend - 1)
@@ -317,7 +317,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
             radiation_monitor[j-2] = crad; counts/min
             
             jupiter_location_monitor[j-2] = double(fxpar(hdr,KEY_JUPLOC))
-            jupiter_fwhm_monitor[j-2] = double(fxpar(hdr,KEY_FWHM))
+            jupiter_jpfwhm_monitor[j-2] = double(fxpar(hdr,KEY_JPFWHM))
             jupiter_slit1_monitor[j-2] = double(fxpar(hdr,KEY_SLIT1Y))
             jupiter_slit2_monitor[j-2] = double(fxpar(hdr,KEY_SLIT2Y))
             jupiter_slit3_monitor[j-2] = double(fxpar(hdr,KEY_SLIT3Y))
@@ -472,8 +472,8 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    structure   = create_struct(structure, structure_radiation_monitor)
    structure_jupiter_location_monitor = create_struct(KEY_JUPLOC,jupiter_location_monitor)
    structure   = create_struct(structure, structure_jupiter_location_monitor)
-   structure_jupiter_fwhm_monitor = create_struct(KEY_FWHM,jupiter_fwhm_monitor)
-   structure   = create_struct(structure, structure_jupiter_fwhm_monitor)
+   structure_jupiter_jpfwhm_monitor = create_struct(KEY_JPFWHM,jupiter_jpfwhm_monitor)
+   structure   = create_struct(structure, structure_jupiter_jpfwhm_monitor)
    structure_jupiter_slit1_monitor = create_struct(KEY_SLIT1Y,jupiter_slit1_monitor)
    structure   = create_struct(structure, structure_jupiter_slit1_monitor)
    structure_jupiter_slit2_monitor = create_struct(KEY_SLIT2Y,jupiter_slit2_monitor)
@@ -540,7 +540,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
     if tag_name_structure[i] eq 'DAYOFYEAR' then tunit[i]='days' 
     if tag_name_structure[i] eq 'SECOFDAY'  then tunit[i]='sec'
     if tag_name_structure[i] eq KEY_JUPLOC  then tunit[i]='pixel' 
-    if tag_name_structure[i] eq KEY_FWHM    then tunit[i]='pixel'
+    if tag_name_structure[i] eq KEY_JPFWHM    then tunit[i]='pixel'
     if tag_name_structure[i] eq KEY_SLIT1Y   then tunit[i]='pixel'
     if tag_name_structure[i] eq KEY_SLIT2Y   then tunit[i]='pixel'
     if tag_name_structure[i] eq KEY_SLIT3Y   then tunit[i]='pixel'
@@ -558,8 +558,9 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
      if tag_name_structure[i] eq 'YEAR' then tdisp[i]='I5'
      if tag_name_structure[i] eq 'DAYOFYEAR' then tdisp[i]='I3'
      if tag_name_structure[i] eq 'SECOFDAY'  then tdisp[i]='D7'
+     if tag_name_structure[i] eq KEY_RADMON  then tdisp[i]='D6.2'
      if tag_name_structure[i] eq KEY_JUPLOC  then tdisp[i]='D6.2'
-     if tag_name_structure[i] eq KEY_FWHM    then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_JPFWHM    then tdisp[i]='D6.2'
      if tag_name_structure[i] eq KEY_SLIT1Y   then tdisp[i]='D6.2'
      if tag_name_structure[i] eq KEY_SLIT2Y   then tdisp[i]='D6.2'
      if tag_name_structure[i] eq KEY_SLIT3Y   then tdisp[i]='D6.2'
@@ -591,7 +592,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
      if tag_name_structure[i-1l] eq 'SECOFDAY' then ccom='sec of day'
      if tag_name_structure[i-1l] eq KEY_RADMON then ccom='Radiation Monitor Value [counts/min]'
      if tag_name_structure[i-1l] eq KEY_JUPLOC then ccom='Y pixel of Jupiter in original L2 (pixel)'
-     if tag_name_structure[i-1l] eq KEY_FWHM   then ccom='FWHM of Jupiter aurora (pixel)'
+     if tag_name_structure[i-1l] eq KEY_JPFWHM   then ccom='FWHM of Jupiter aurora (pixel)'
      if tag_name_structure[i-1l] eq KEY_SLIT1Y  then ccom='Y pixel of btm 140" slit edge (pixel)'
      if tag_name_structure[i-1l] eq KEY_SLIT2Y  then ccom='Y pixel of btm  20" slit edge (pixel)'
      if tag_name_structure[i-1l] eq KEY_SLIT3Y  then ccom='Y pixel of top  20" slit edge (pixel)'
@@ -610,7 +611,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    ; データヘッダに領域情報を追記
    for i = 0, n_elements(range_info) - 1 do begin
       key_range_info = "RINFO" + strcompress(i,/remove_all)
-      sxaddpar, hdr_bin_table, key_range_info, range_info[i], 'pixal range:[xmin,xmax,ymin,ymax]'
+      sxaddpar, hdr_bin_table, key_range_info, range_info[i], 'pixel range:[xmin,xmax,ymin,ymax]'
    endfor
    sxaddpar, hdr_bin_table, KEY_DATE, time_create, COMMENT_DATE
    modfits, out_path, bin_table, hdr_bin_table, EXTEN_NO=2
