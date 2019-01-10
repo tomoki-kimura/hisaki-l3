@@ -89,7 +89,7 @@ PRO init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range
       juploc:0.d,ycpxjup:0.d,slit1:0.d,slit2:0.d,slit3:0.d,slit4:0.d,fwhm:0.d}
   radloc=blk.radloc
   radthr=blk.radthr
-  const.rad_thl=radthr/double((radloc[2]-radloc[0])*(radloc[3]-radloc[1]))
+  const.rad_thl=radthr/double((radloc[2]-radloc[0]+1)*(radloc[3]-radloc[1]+1))
   return
 end
 ;----------------------------------------------------------

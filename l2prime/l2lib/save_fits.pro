@@ -53,7 +53,7 @@ PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr,effexp
   sxaddpar, phdr, 'INCL_CE', const.inc_ce, 'Inclinatiion of centrifugal eq. [deg.]', format="f8.3"
   sxaddpar, phdr, 'RADIUS_J', const.rj, 'Jovian Radius [km]', format="f10.3"
   sxaddpar, phdr, 'PERIOD_J', const.tj, 'Jovian rotation period [hour]', format="f8.3"
-  sxaddpar, phdr, 'RAD_THL', const.rad_thl, 'Threshold level for rejecting energetic particle count [count/min/pixel]', format="f8.5"  
+  sxaddpar, phdr, 'RAD_THL', const.rad_thl, 'Threshold for rad monitor [cnt/min/pix]', format="f8.5"  
   sxaddpar, phdr, 'COMMENT', ''
   sxaddpar, phdr, 'COMMENT', 'Created at ' + SYSTIME()
   sxaddpar, phdr, 'COMMENT', 'Data source : EUV L2'
