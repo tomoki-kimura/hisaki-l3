@@ -18,7 +18,7 @@ pro batch_l2prime
 ;    '20180824'   $
 ;    ]
 
-  sdate='20180810'
+  sdate='20180901'
   edate='20181231'
 ;  sdate='20181115'
 ;  edate='20181116'

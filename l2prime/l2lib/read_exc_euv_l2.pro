@@ -65,7 +65,7 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
   n_blk = fix(24.0/const.tj * 360.0/const.dl) + 2 ; (+2 --- margin)
   print, '  number of data block : ',n_blk
   blk_arr = replicate(blk,n_blk)
-  effexp  = strarr(n_blk,fix(dl*9.925/360.*60)+1)
+  effexp  = strarr(n_blk,fix(const.dl/360.*const.tj*60.)+2)
   def_data_blk, blk_arr, extn_arr, st_date, 2, const
 
   ;--- Find y-pol change
