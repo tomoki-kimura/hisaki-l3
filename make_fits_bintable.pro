@@ -138,6 +138,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    if stregex(tablea_path,'aurora',/fold_case) ge 0 then extname='aurora'
    if stregex(tablea_path,'torus',/fold_case) ge 0 then extname='torus'
    if stregex(tablea_path,'geocorona',/fold_case) ge 0 then extname='torus'
+   if stregex(tablea_path,'star',/fold_case) ge 0 then extname='star'
    if stregex(FILE_BASENAME(out_path),'fits$',/boolean) ne 1 then begin
       ; out_pathがディレクトリ指定の場合、ファイル名生成
       out_dir = out_path
