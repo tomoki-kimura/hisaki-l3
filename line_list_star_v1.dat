@@ -1,0 +1,23 @@
+################################################################################
+# This is a line list for high-level data product of line intensity variations.
+# Spectral region for line intensity extraction should be defined as central 
+# wavelength and width of lines: e.g., 584 A with 20 A width => range [574:594]
+# Spacial region for extraction of line intensity should be defined as 
+# anglar range from the central pixel in the H axis in the FOV coordinate system 
+# If the barycenter data exists, the central pixel is substituted by it.
+# i.e., along -X axis in the S/C coordinate system.
+# Last modified by T Kimua 2019/01/24
+################################################################################
+# wavelength(A) width(A) angular_start(asec) anglar_end(asec) #comment
+1190.0  580.0  -1.0 +1.0 #Total cnt of aurora (900-1480)
+1191.0  580.0  -16.0 -14.0 #Total cnt of rad BG (901-1481)
+ 981.0  8.0    -1.0 +1.0 # CIII 977 (977-985)
+ 994.0  8.0    -1.0 +1.0 # NIII 992 (990-998)
+1038.0 10.0    -1.0 +1.0 # OVI 1032/OVI 1038 (1033-1043)
+1087.0  8.0    -1.0 +1.0 # NII 1086 (1083-1091)
+1177.0  8.0    -1.0 +1.0 # CIII 1176 (1173-1181)
+1304.0 10.0    -1.0 +1.0 # OI 1302 (1299-1309)
+1335.0  8.0    -1.0 +1.0 # CII 1336 (1331-1339)
+1392.0  8.0    -1.0 +1.0 # SiIV 1394 (1388-1396)
+1401.0  8.0    -1.0 +1.0 # SiIV 1403 (1397-1405)
+
