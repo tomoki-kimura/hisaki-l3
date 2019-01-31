@@ -193,6 +193,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    ; テーブルＡのレコードを処理
    for i = 0, n_elements(file_recs) - 1 do begin
       if stregex(file_recs[i], '^#',/boolean) eq 1 then continue
+      if strlen(file_recs[i]) le 1 then continue
       rec = strsplit(file_recs[i], '[ ]+', /EXTRACT)
       com = (strsplit(file_recs[i], '#', /EXTRACT))[1]
 
