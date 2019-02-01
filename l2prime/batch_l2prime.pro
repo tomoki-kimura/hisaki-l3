@@ -20,7 +20,7 @@ pro batch_l2prime
 
 ;  sdate='20190110'
 ;  edate='20190110'
-  sdate='20190121'
+  sdate='20190122'
   edate='20190124'
 ;  sdate='20181207'
 ;  edate='20181207'
