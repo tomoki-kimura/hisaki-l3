@@ -155,10 +155,19 @@ PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr,effexp
     sxaddpar, hdr, 'SLIT3Y', blk_arr[i].slit3, 'Y pixel of top  20" slit edge', format="f12.6"
     sxaddpar, hdr, 'SLIT4Y', blk_arr[i].slit4, 'Y pixel of top 140" slit edge', format="f12.6"
     sxaddpar, hdr, 'JPFLAG', blk_arr[i].juploc, '1:20"slit,2:btw20"&140",3:140"slit,4:140"edge', format="i02"
+    et_ave=0
+    ave_count=0
     for j=0, (size(effexp))[2]-1 do begin
-      if strlen(effexp[i,j]) gt 0l then $
-      sxaddpar, hdr, 'EFFEXP'+string(j+1,format='(i02)'),effexp[i,j],'effective exposure extension'
+      if strlen(effexp[i,j]) gt 0l then begin
+        sxaddpar, hdr, 'EFFEXP'+string(j+1,format='(i02)'),effexp[i,j],'effective exposure extension'
+        cspice_utc2et, effexp[i,j], buff
+        et_ave+=+buff
+        ave_count+=+1.        
+      endif
     endfor
+    et_ave=et_ave/ave_count
+    cspice_et2utc, et_ave, 'ISOC', 0, utcstr_cen
+    sxaddpar, hdr, 'EXTNAME', utcstr_cen, 'Name of this HDU'
     mwrfits, im, file, hdr, /silent
 
   endfor

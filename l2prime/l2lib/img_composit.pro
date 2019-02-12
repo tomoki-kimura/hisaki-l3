@@ -50,23 +50,23 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
 
       ; skip data
       if keyword_set(no_cal) then if extn_arr[j].calflg eq 1 then begin
-        ;outputlist,2,hd,extn_arr[j],'calflg',log=log
+        outputlist,2,hd,extn_arr[j],'calflg',log=log
         continue
       endif
       if keyword_set(submod) and extn_arr[j].et le const.cal_enadis_period then begin
         if ( (extn_arr[j].submod ne 4) or (extn_arr[j].submst ne 1) ) then begin
-          ;outputlist,2,hd,extn_arr[j],'smod_mst',log=log
+          outputlist,2,hd,extn_arr[j],'smod_mst',log=log
           continue
         endif
       endif
       if keyword_set(rej) then begin
         if extn_arr[j].rejflg ge 1 then begin
-          ;outputlist,2,hd,extn_arr[j],'rejflg',log=log
+          outputlist,2,hd,extn_arr[j],'rejflg',log=log
           continue
         endif
       endif
       if extn_arr[j].lt_ena eq 0 then begin
-        ;outputlist,2,hd,extn_arr[j],'lt ena',log=log
+        outputlist,2,hd,extn_arr[j],'lt ena',log=log
         continue    ; Local time selection
       endif
       
@@ -75,6 +75,10 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
       ;;; skip if jupiter located outside the slit ;; TK
       ret=ck_aurpos(fxpar(hd,'EXTNAME'),!SLIT_POS)
       jupypix=ret.yc
+      if jupypix eq -1l then begin
+        outputlist,2,hd,extn_arr[j],'no peak',log=log
+        continue;
+      endif
       blk_arr[i].juploc=ret.flag
       blk_arr[i].ycpxjup=ret.yc
       blk_arr[i].slit1=ret.slit1
@@ -82,10 +86,6 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
       blk_arr[i].slit3=ret.slit3
       blk_arr[i].slit4=ret.slit4
       blk_arr[i].fwhm=ret.fwhm
-      if jupypix eq -1l then begin
-        ;outputlist,2,hd,extn_arr[j],'no peak',log=log
-        continue;
-      endif
       if not keyword_set(start_extname) then start_extname=fxpar(hd,'EXTNAME')
       if strlen(start_extname) lt 1l then start_extname=fxpar(hd,'EXTNAME')
 
@@ -100,9 +100,9 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
         iy0=radloc[1]
         iy1=radloc[3]
         buf = total(im[ix0:ix1,iy0:iy1]); counts/min
-print, fxpar(hd,'EXTNAME'), 'radmon', buf, 'radthr', blk_arr[i].radthr        
+        print, fxpar(hd,'EXTNAME'), 'radmon', buf, 'radthr', blk_arr[i].radthr 
         if buf ge blk_arr[i].radthr then begin
-          ;outputlist,2,hd,extn_arr[j],'rad',log=log
+          outputlist,2,hd,extn_arr[j],'rad',log=log
           continue   ; counts/min
         endif
       endif
@@ -111,14 +111,14 @@ print, fxpar(hd,'EXTNAME'), 'radmon', buf, 'radthr', blk_arr[i].radthr
       ; composit data
       im_cmp[*,*,i] = im_cmp[*,*,i] + im
       blk_arr[i].acm ++
-      ;outputlist,2,hd,extn_arr[j],'good',log=log
+      outputlist,2,hd,extn_arr[j],'good',log=log
       effexp[i,e_cnt]=fxpar(hd,'EXTNAME')
       e_cnt++
     endfor
 
     if blk_arr[i].acm ne 0 then begin
       im_cmp[*,*,i] = im_cmp[*,*,i]/blk_arr[i].acm;   [count/min/pixel]
-
+      
       ; radiation background monitor
       radloc=blk_arr[i].radloc
       if keyword_set(radloc) then begin
@@ -131,7 +131,7 @@ print, fxpar(hd,'EXTNAME'), 'radmon', buf, 'radthr', blk_arr[i].radthr
       endif
       print, fxpar(hd,'EXTNAME'), 'cmp radmon', blk_arr[i].radmon
 
-
+      
       ;; reverse y-pixel if the Y-axis polarization is south
       if blk_arr[i].ypol eq 1 then begin
         buf = reform(im_cmp[*,*,i])
@@ -144,7 +144,6 @@ print, fxpar(hd,'EXTNAME'), 'radmon', buf, 'radthr', blk_arr[i].radthr
       im_cmp[*,*,i] =0.0
     endelse
     
-   
 
   endfor
 

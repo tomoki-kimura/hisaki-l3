@@ -74,7 +74,7 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
   ;--- Composit data
   print, '  composit image'
   im_cmp = fltarr(const.m, const.n, n_blk)
-  img_composit, blk_arr, extn_arr, fits_arr, im_cmp, /rej, const=const,effexp=effexp,/no_cal,/submod;,/log
+  img_composit, blk_arr, extn_arr, fits_arr, im_cmp, /rej, const=const,effexp=effexp,/no_cal,log=1
   if total(im_cmp) eq 0l then begin
     message, 'Jupiter is outside the slit. No composit date is made',/info
     status=-1
