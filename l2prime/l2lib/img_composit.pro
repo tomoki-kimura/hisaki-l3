@@ -100,6 +100,7 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
         iy0=radloc[1]
         iy1=radloc[3]
         buf = total(im[ix0:ix1,iy0:iy1]); counts/min
+print, fxpar(hd,'EXTNAME'), 'radmon', buf, 'radthr', blk_arr[i].radthr        
         if buf ge blk_arr[i].radthr then begin
           ;outputlist,2,hd,extn_arr[j],'rad',log=log
           continue   ; counts/min
@@ -117,6 +118,20 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
 
     if blk_arr[i].acm ne 0 then begin
       im_cmp[*,*,i] = im_cmp[*,*,i]/blk_arr[i].acm;   [count/min/pixel]
+
+      ; radiation background monitor
+      radloc=blk_arr[i].radloc
+      if keyword_set(radloc) then begin
+        ix0=radloc[0]
+        ix1=radloc[2]
+        iy0=radloc[1]
+        iy1=radloc[3]
+        buf = total(im_cmp[ix0:ix1,iy0:iy1,i]); counts/min
+        blk_arr[i].radmon=buf; counts/min
+      endif
+      print, fxpar(hd,'EXTNAME'), 'cmp radmon', blk_arr[i].radmon
+
+
       ;; reverse y-pixel if the Y-axis polarization is south
       if blk_arr[i].ypol eq 1 then begin
         buf = reform(im_cmp[*,*,i])
@@ -129,16 +144,7 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
       im_cmp[*,*,i] =0.0
     endelse
     
-    radloc=blk_arr[i].radloc
-    if keyword_set(radloc) then begin
-      ix0=radloc[0]
-      ix1=radloc[2]
-      iy0=radloc[1]
-      iy1=radloc[3]
-      buf = total(im_cmp[ix0:ix1,iy0:iy1,i]); counts/min
-      blk_arr[i].radmon=buf; counts/min
-    endif
-    
+   
 
   endfor
 
