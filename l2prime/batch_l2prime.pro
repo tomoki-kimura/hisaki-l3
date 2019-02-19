@@ -6,7 +6,7 @@ pro batch_l2prime
   dl=600./(9.925*3600.)*360.
 ;  dl=3000./(9.925*3600.)*360.
   lt_range=[0.0, 24.0]
-  target='jupiter.mod.{03,20,21,22}*'
+  target='jupiter.mod.{03,04,20,21,22}*'
 ;  target='*ux_ari*'
   
 ;sdatearr=[$
@@ -18,8 +18,8 @@ pro batch_l2prime
 ;    '20180824'   $
 ;    ]
 
-  sdate='20160101'
-  edate='20190201'
+  sdate='20160305'
+  edate='20160331'
 ;  sdate='20190110'
 ;  edate='20190110'
 ;  sdate='20190122'
