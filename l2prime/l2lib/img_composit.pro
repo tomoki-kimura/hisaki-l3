@@ -1,6 +1,14 @@
 pro outputlist,fout,hd,extn_arr,reason,log=log
   if keyword_set(log) eq 0 then return
-  printf,fout,fxpar(hd,'EXTNAME'),','$
+;  printf,fout,fxpar(hd,'EXTNAME'),','$
+;    ,string(extn_arr.ext,   format='(i03)'),','$
+;    ,string(extn_arr.calflg,format='(i1)' ),','$
+;    ,string(extn_arr.rejflg,format='(i1)' ),','$
+;    ,string(extn_arr.submod,format='(i1)' ),','$
+;    ,string(extn_arr.submst,format='(i2)' ),','$
+;    ,reason
+    
+  print,fxpar(hd,'EXTNAME'),','$
     ,string(extn_arr.ext,   format='(i03)'),','$
     ,string(extn_arr.calflg,format='(i1)' ),','$
     ,string(extn_arr.rejflg,format='(i1)' ),','$
@@ -39,6 +47,14 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
 
     j=(blk_arr[i].ind_sta+blk_arr[i].ind_end)/2l
     im = mrdfits(fits_arr[extn_arr[j].fn].file,extn_arr[j].ext,hd,/SILENT)
+
+    ;tsuchiya calibration
+    exc_cal_init
+    jd_in = julday(1,1,2014)
+    exc_cal_img, jd_in, im, outdata, xcal, ycal
+    im=outdata
+
+
     blk_arr[i].hdr=ptr_new(hd)
     e_cnt=0
     for j=blk_arr[i].ind_sta,blk_arr[i].ind_end do begin
@@ -47,6 +63,8 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
 
       ; read extension
       im = mrdfits(fits_arr[extn_arr[j].fn].file,extn_arr[j].ext,hd,/SILENT)
+      exc_cal_img, jd_in, im, outdata, xcal, ycal
+      im=outdata
 
       ; skip data
       if keyword_set(no_cal) then if extn_arr[j].calflg eq 1 then begin

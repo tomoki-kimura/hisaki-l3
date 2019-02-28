@@ -56,6 +56,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
 
   on_error,2
 
+
    ; 定数
    SPECTRESOL=16l
    PRO_NAME = 'MAKE_FITS_BINTABLE'
@@ -252,6 +253,12 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    im_pri   = mrdfits(l2_path, 0, hdr_pri, /silent)
    im_total = mrdfits(l2_path, 1, hdr_total, /silent)
 
+;   ;calibration
+;   exc_cal_init
+;   jd_in = julday(1,1,2014)
+;   exc_cal_img, jd_in, im_total, outdata, xcal, ycal
+;   im_total=outdata
+
    ; 領域情報格納用の配列を用意する。
    range_info = strarr(n_tablea_dataset)
   
@@ -311,6 +318,13 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       ; イメージEXTENTIONごとに処理
       for j = 2, value_nextend do begin
          im = mrdfits(l2_path, j, hdr, /silent)
+;         ;tsuchiya calibration
+;         exc_cal_init
+;         jd_in = julday(1,1,2014)
+;         exc_cal_img, jd_in, im, outdata, xcal, ycal
+;         im=outdata
+
+
          ;remove geocorona;;;;;;;;;;;;;;;;;;;;;;byhk
          im=remove_geocor(im,!geocorona_list ,l2cal_path)
          

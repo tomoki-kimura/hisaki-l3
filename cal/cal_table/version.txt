@@ -1,0 +1,6 @@
+2017/1/18
+	X-table : 		C:\Doc\HISAKI\cal\cal_wl\xtable_0.sav for Y-pol=0 (+)
+				C:\Doc\HISAKI\cal\cal_wl\xtable_1.sav for Y-pol=1 (-)
+	Y-table : 		C:\Doc\HISAKI\cal\cal\set2\y_table.sav
+	Jupiter position	C:\Doc\HISAKI\cal\cal_sp4\jupiter_pos.sav
+
