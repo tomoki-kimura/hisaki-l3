@@ -13,12 +13,13 @@ pro make_l3_star
     tablea_path = tablea_path
     out_dir     = !out_dir
   
-  pattern='*201{81115,81116}*d006*'
+    pattern='*201{81115,81116}*d006*'
 ;   pattern='*2018*'
     
-  planet_radii_deg=50.d/3600.; deg/Rp  
-  lightyear=168.d; lightyear
+    planet_radii_deg=50.d/3600.; deg/Rp  
+    lightyear=168.d; lightyear
+    waveshift=-4.0d; angstrom
         
-    make_fits_bintable_dir, l2_d=l2_dir, l2cal_p=l2cal_path, tablea_p=tablea_path, out_d=out_dir, pattern=pattern, planet_radii_deg=planet_radii_deg, lightyear=lightyear
+    make_fits_bintable_dir, l2_d=l2_dir, l2cal_p=l2cal_path, tablea_p=tablea_path, out_d=out_dir, pattern=pattern, planet_radii_deg=planet_radii_deg, lightyear=lightyear, waveshift=waveshift
   endforeach
 end

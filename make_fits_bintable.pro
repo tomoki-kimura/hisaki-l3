@@ -52,7 +52,13 @@
 ;                      - L3データのカウント値の算出方法を修正
 ;                      - L3データの時刻情報は[年、dayofyear、secofday]に修正
 ;-
-pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, out_p=out_path, planet_radii_deg=planet_radii_deg, lightyear=lightyear
+pro make_fits_bintable, $
+  l2_p=l2_path, $
+  l2cal_p=l2cal_path, $
+  tablea_p=tablea_path, $
+  out_p=out_path, $
+  planet_radii_deg=planet_radii_deg, $
+  lightyear=lightyear, waveshift=waveshift
 
   on_error,2
 
@@ -138,7 +144,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    l2_name = FILE_BASENAME(l2_path)
    if stregex(tablea_path,'aurora',/fold_case) ge 0 then extname='aurora'
    if stregex(tablea_path,'torus',/fold_case) ge 0 then extname='torus'
-   if stregex(tablea_path,'geocorona',/fold_case) ge 0 then extname='torus'
+   if stregex(tablea_path,'geocorona',/fold_case) ge 0 then extname='geocorona'
    if stregex(tablea_path,'star',/fold_case) ge 0 then extname='star'
    if stregex(FILE_BASENAME(out_path),'fits$',/boolean) ne 1 then begin
       ; out_pathがディレクトリ指定の場合、ファイル名生成
@@ -278,7 +284,7 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
       if not keyword_set(planet_radii_deg) then planet_radii_deg=get_planet_radii(time=time,target=!NULL,/deg); deg/rp
       yrange_v *= planet_radii_deg*3600.d; arcsec
       
-      res = convert_value2pixel(l2cal_path, xrange_v, yrange_v)
+      res = convert_value2pixel(l2cal_path, xrange_v, yrange_v, waveshift=waveshift)
       x_min_p = res[0,0]
       x_max_p = res[1,0]
       y_min_p = res[0,1]
@@ -593,7 +599,8 @@ pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, 
    bin_table = mrdfits(out_path, 2, hdr_bin_table, /silent)
    if stregex(tablea_path,'aurora',/fold_case) ge 0 then extname='aurora'
    if stregex(tablea_path,'torus',/fold_case) ge 0 then extname='torus'
-   if stregex(tablea_path,'geocorona',/fold_case) ge 0 then extname='torus'
+   if stregex(tablea_path,'geocorona',/fold_case) ge 0 then extname='geocorona'
+   if stregex(tablea_path,'star',/fold_case) ge 0 then extname='star'
    extname='LineInt-'+extname
    sxaddpar, hdr_bin_table, 'EXTNAME', extname, 'extension name', after='TFIELDS'
    indcom=0l

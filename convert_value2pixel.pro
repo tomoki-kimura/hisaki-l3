@@ -35,7 +35,7 @@
 ;      Fujitsu Limited.
 ;      v1.0 2018/01/30 First Edition
 ;-
-function convert_value2pixel, l2cal_path, xrange_v, yrange_v
+function convert_value2pixel, l2cal_path, xrange_v, yrange_v, waveshift=waveshift
 
    on_error,2    
 
@@ -91,12 +91,15 @@ function convert_value2pixel, l2cal_path, xrange_v, yrange_v
       message, MSG_05
 
 
-   ;calibration
+   ;wave calibration
    exc_cal_init
    jd_in = julday(1,1,2014)
    exc_cal_img, jd_in, dblarr(1024,1024)+1., outdata, xcal, ycal
-   for i=0l, size_img_xcoord-1l do img_xcoord[*,i]=xcal
-   for i=0l, size_img_ycoord-1l do img_ycoord[*,i]=ycal
+   if keyword_set(waveshift) then begin
+    xcal+=waveshift
+   endif
+   for i=0l, size_img_xcoord[1]-1l do img_xcoord[*,i]=xcal
+   for i=0l, size_img_ycoord[2]-1l do img_ycoord[i,*]=ycal
    
    xcoord = img_xcoord[*, 0]
    ycoord = transpose(img_ycoord[0, *])
