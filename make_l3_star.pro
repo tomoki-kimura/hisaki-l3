@@ -16,7 +16,7 @@ pro make_l3_star
     pattern='*201{81115,81116}*d006*'
 ;   pattern='*2018*'
     
-    planet_radii_deg=40.d/3600.; deg/Rp  
+    planet_radii_deg=25.d/3600.; deg/Rp  
     lightyear=168.d; lightyear
     waveshift=-4.0d; angstrom
         

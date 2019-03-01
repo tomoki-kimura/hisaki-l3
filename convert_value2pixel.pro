@@ -99,7 +99,7 @@ function convert_value2pixel, l2cal_path, xrange_v, yrange_v, waveshift=waveshif
     xcal+=waveshift
    endif
    for i=0l, size_img_xcoord[1]-1l do img_xcoord[*,i]=xcal
-   for i=0l, size_img_ycoord[2]-1l do img_ycoord[i,*]=ycal
+;   for i=0l, size_img_ycoord[2]-1l do img_ycoord[i,*]=ycal
    
    xcoord = img_xcoord[*, 0]
    ycoord = transpose(img_ycoord[0, *])
