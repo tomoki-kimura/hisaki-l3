@@ -3,7 +3,7 @@
 ; for read_exc_euv_l2.pro
 ; 2016-06-09 F. Tsuchiya
 ;----------------------------------------------------------
-PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr,effexp
+PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr,effexp, dt=dt
 
   n_ext = n_elements(blk_arr)
   n_ext_w = 0

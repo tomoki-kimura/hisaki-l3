@@ -19,8 +19,8 @@ function cal_et0_arr, et_arr=et_arr, dt=dt
     if del_lt[i   ]-del_lt[i-1l] gt 0.d and $
        del_lt[i+1l]-del_lt[i   ] le 0.d then begin
         et0_arr[i:*]=et_arr[i]
-       if not keyword_set(i0) then i0=i
-       if     keyword_set(i0) and not keyword_set(i1) then i1=i
+       if not keyword_set(i0) then i0=i $
+        else if     keyword_set(i0) and not keyword_set(i1) then i1=i
     endif 
   endfor
   et0_arr[0l:i0-1l]=et0_arr[i0] - (et0_arr[i1]-et0_arr[i0])

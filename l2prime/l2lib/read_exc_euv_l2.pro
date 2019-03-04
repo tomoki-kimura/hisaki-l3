@@ -24,8 +24,8 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
 
   
   ;--- Define working variables
-  if not keyword_set(dl) then dl=600./(9.925*3600.)*360.; deg
-  if not keyword_set(dt) then dt=53.1d*60.d; sec
+;  if not keyword_set(dl) then dl=600./(9.925*3600.)*360.; deg
+;  if not keyword_set(dt) then dt=53.1d*60.d; sec
   init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range, dt=dt
 
   ;--- Init fits file
