@@ -31,7 +31,7 @@ PRO def_data_blk_sec, blk_arr, extn_arr, start_date, nd, const
   ut_str = string(yy,mm,dd,format='(i4.4,"-",i2.2,"-",i2.2,"T00:00:00")')
   cspice_str2et, ut_str, et
   et_arr = et + findgen(n)
-  et0_arr=cal_et0_arr(et_arr)
+  et0_arr=cal_et0_arr(et_arr=et_arr)
 
   ; calculate system-III longitude of Jupiter (1-min step)
   deletarr = et_arr-et0_arr
