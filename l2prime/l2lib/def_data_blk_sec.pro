@@ -33,7 +33,7 @@ PRO def_data_blk_sec, blk_arr, extn_arr, start_date, nd, const
   et_arr = et + findgen(n)
   et0_arr=cal_et0_arr(et_arr=et_arr)
 
-  ; calculate system-III longitude of Jupiter (1-min step)
+  ; calculate system-III longitude of Jupiter (1-sec step)
   deletarr = et_arr-et0_arr
 
   ; Define start and end ETs of each data block

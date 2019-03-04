@@ -65,14 +65,14 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
   if keyword_set(dt) then begin
     ;--- Define data block
     n_blk = fix(86400.d/const.dt) + 2 ; (+2 --- margin)
-    print, '  number of data block : ',n_blk
+    print, '  number of data block derived by dividing with dt: ',n_blk
     blk_arr = replicate(blk,n_blk)
     effexp  = strarr(n_blk,fix(const.dt/60.)+2)
     def_data_blk_sec, blk_arr, extn_arr, st_date, 2, const
   endif else begin
     ;--- Define data block
     n_blk = fix(24.0/const.tj * 360.0/const.dl) + 2 ; (+2 --- margin)
-    print, '  number of data block : ',n_blk
+    print, '  number of data block derived by dividing with dl: ',n_blk
     blk_arr = replicate(blk,n_blk)
     effexp  = strarr(n_blk,fix(const.dl/360.*const.tj*60.)+2)
     def_data_blk, blk_arr, extn_arr, st_date, 2, const

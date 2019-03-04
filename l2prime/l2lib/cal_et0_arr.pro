@@ -12,8 +12,8 @@ function cal_et0_arr, et_arr=et_arr
   endfor
   ii=where(del_lt gt 12.d)
   jj=where(del_lt lt  0.d)
-  del_lt[ii]=24.d - del_lt[ii]; <12.
   del_lt[jj]=del_lt[jj] + 24.d; >0.
+  del_lt[ii]=24.d - del_lt[ii]; <12.
   del_lt_flg=lonarr(net)
   for i=1l, net-2l do begin
     if del_lt[i]-del_lt[i-1l] gt 0.d and $
