@@ -1,9 +1,10 @@
 pro batch_l2prime
   
   set_env
+  dt=53.1d*60.d; sec
 ;  dl=30.
-;  dl=!NULL
-  dl=600./(9.925*3600.)*360.
+  dl=!NULL
+;  dl=600./(9.925*3600.)*360.
 ;  dl=53.1d*60.d/(9.925*3600.)*360.
 ;  dl=3000./(9.925*3600.)*360.
   lt_range=[0.0, 24.0]
@@ -31,7 +32,7 @@ pro batch_l2prime
       message, 'input date is in the blacklist. Skipped.', /info
       continue
     endif
-    read_exc_euv_l2, cdate, dl=dl, lt_range=lt_range, target=target
+    read_exc_euv_l2, cdate, dl=dl, lt_range=lt_range, target=target, dt=dt
   endforeach
 
 end

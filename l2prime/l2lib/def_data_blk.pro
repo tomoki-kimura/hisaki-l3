@@ -47,6 +47,9 @@ PRO def_data_blk, blk_arr, extn_arr, start_date, nd, const
   for i=1L,n-1L do begin
     lon_j1 = lon_j_arr[i-1] mod const.dl
     lon_j2 = lon_j_arr[i] mod const.dl
+    ;del_t1 = (et[i-1] - et0) mod const.dt
+    ;del_t2 = (et[i] - et0) mod const.dt
+;    if (del_t2 lt del_t1) then begin
     if (lon_j2 lt lon_j1) then begin
       if iblk ge n_blk-1l then break 
       blk_arr[iblk].et_end = et_arr[i-1]

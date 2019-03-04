@@ -3,7 +3,7 @@
 ; for read_exc_euv_l2.pro
 ; 2016-06-09
 ;----------------------------------------------------------
-PRO init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range
+PRO init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range, dt=dt
 
   ; Initialize structure to set constant
   ;; m      : number of wavelength grid
@@ -22,10 +22,11 @@ PRO init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range
   ;; lt_end : HISAKI local time (end)
   ;; rad_thl : radiation rejection threshold level (count/min/pixel)
   ;; ipt_thl: IPT detection threshold level (count/min/pixel)
-  const = {m:1024,n:1024,dl:10.0,inc_ce:6.8,lon_np:210.0,rj:71492.0,tj:9.925, cal_enadis_period:0.,$
+  const = {m:1024,n:1024,dl:10.0,dt:53.1d*60.d, inc_ce:6.8,lon_np:210.0,rj:71492.0,tj:9.925, cal_enadis_period:0.,$
           smin:-2345.2, smax:1853.2, wmin:1529.43, wmax:468.867, fov_cp:575, $
           lt_sta:0.0, lt_end:24.0,rad_thl:0.004,radloc:([512l,630l,960l,710l]), ipt_thl:0.015, iptloc:([720l,520l,850l,620l])}
   if keyword_set(dl) then const.dl = dl
+  if keyword_set(dt) then const.dt = dt
   if keyword_set(lt_range) then begin
     const.lt_sta = lt_range[0]
     const.lt_end = lt_range[1]

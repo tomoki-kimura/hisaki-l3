@@ -6,7 +6,7 @@
 ;
 ;   2016-02-07 F. Tsuchiya
 ;===================================================================
-PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=target
+PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=target, dt=dt
 
   status=1
 
@@ -24,8 +24,9 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
 
   
   ;--- Define working variables
-  if not keyword_set(dl) then dl=600./(9.925*3600.)*360.
-  init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range
+  if not keyword_set(dl) then dl=600./(9.925*3600.)*360.; deg
+  if not keyword_set(dt) then dt=53.1d*60.d; sec
+  init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range, dt=dt
 
   ;--- Init fits file
   fits_arr = replicate(fits,2)
@@ -61,12 +62,22 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
     get_param_jupiter, extn_arr[i], const
   endfor
   
-  ;--- Define data block
-  n_blk = fix(24.0/const.tj * 360.0/const.dl) + 2 ; (+2 --- margin)
-  print, '  number of data block : ',n_blk
-  blk_arr = replicate(blk,n_blk)
-  effexp  = strarr(n_blk,fix(const.dl/360.*const.tj*60.)+2)
-  def_data_blk, blk_arr, extn_arr, st_date, 2, const
+  if keyword_set(dt) then begin
+    ;--- Define data block
+    n_blk = fix(86400.d/const.dt) + 2 ; (+2 --- margin)
+    print, '  number of data block : ',n_blk
+    blk_arr = replicate(blk,n_blk)
+    effexp  = strarr(n_blk,fix(const.dt/60.)+2)
+    def_data_blk_sec, blk_arr, extn_arr, st_date, 2, const
+  endif else begin
+    ;--- Define data block
+    n_blk = fix(24.0/const.tj * 360.0/const.dl) + 2 ; (+2 --- margin)
+    print, '  number of data block : ',n_blk
+    blk_arr = replicate(blk,n_blk)
+    effexp  = strarr(n_blk,fix(const.dl/360.*const.tj*60.)+2)
+    def_data_blk, blk_arr, extn_arr, st_date, 2, const
+  endelse
+
 
   ;--- Find y-pol change
   check_ypol, blk_arr

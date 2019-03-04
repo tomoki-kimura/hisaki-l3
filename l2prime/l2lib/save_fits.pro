@@ -26,11 +26,17 @@ PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr,effexp
   endfor
   
   file_mkdir, !l2_dir+'/' + strmid(utc_sta,0,4) + '/'
-  file = !L2_DIR + strmid(utc_sta,0,4) + '/' $
+  if keyword_set(dt) then begin
+    file = !L2_DIR + strmid(utc_sta,0,4) + '/' $
        + 'exeuv.' + strmid(utc_sta,0,4) + strmid(utc_sta,5,2) + strmid(utc_sta,8,2) $
        + '_LT' + string(const.lt_sta,format='(i2.2)') + '-' + string(const.lt_end,format='(i2.2)') $
-       + '_d' + string(const.dl,format='(i3.3)') + '.fits'
-  
+       + '_dt' + string(round(const.dt/60.),format='(i05)') + '.fits'
+  endif else begin
+    file = !L2_DIR + strmid(utc_sta,0,4) + '/' $
+      + 'exeuv.' + strmid(utc_sta,0,4) + strmid(utc_sta,5,2) + strmid(utc_sta,8,2) $
+      + '_LT' + string(const.lt_sta,format='(i2.2)') + '-' + string(const.lt_end,format='(i2.2)') $
+      + '_d' + string(const.dl,format='(i3.3)') + '.fits'    
+  endelse
   ;Write Primary header  
   phdr = strarr(1)
   sxaddpar, phdr, 'SIMPLE', 'T'
