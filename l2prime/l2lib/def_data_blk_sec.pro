@@ -18,7 +18,7 @@ PRO def_data_blk_sec, blk_arr, extn_arr, start_date, nd, const
 
   ; size of 1-min step array
 ;  n = fix(24*60 + const.dl/360.0*const.tj*60)
-  n = fix(86400l + const.dt)
+  n = long(86400l + const.dt)
 
   ; block size
   n_blk = n_elements(blk_arr)

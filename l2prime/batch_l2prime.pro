@@ -1,7 +1,7 @@
 pro batch_l2prime
   
   set_env
-  dt=53.1d*60.d; sec
+  dt=106.2d*60.d; sec
 ;  dl=30.
   dl=!NULL
 ;  dl=600./(9.925*3600.)*360.

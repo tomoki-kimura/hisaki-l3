@@ -64,7 +64,7 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
   
   if keyword_set(dt) then begin
     ;--- Define data block
-    n_blk = fix(86400.d/const.dt) + 2 ; (+2 --- margin)
+    n_blk = long(86400.d/const.dt) + 2 ; (+2 --- margin)
     print, '  number of data block derived by dividing with dt: ',n_blk
     blk_arr = replicate(blk,n_blk)
     effexp  = strarr(n_blk,fix(const.dt/60.)+2)
