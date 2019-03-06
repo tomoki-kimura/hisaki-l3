@@ -332,7 +332,8 @@ pro make_fits_bintable, $
 
 
          ;remove geocorona;;;;;;;;;;;;;;;;;;;;;;byhk
-         im=remove_geocor(im,!geocorona_list ,l2cal_path)
+         if keyword_set(lightyear) then im=remove_geocor_star(im,!geocorona_list ,l2cal_path) $
+          else im=remove_geocor(im,!geocorona_list ,l2cal_path)
          
          if i eq 0l then begin; radiation minitor ;; TK
             crad=double(fxpar(hdr,KEY_RADMON))
