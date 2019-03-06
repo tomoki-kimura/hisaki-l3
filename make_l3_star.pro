@@ -13,7 +13,7 @@ pro make_l3_star
     tablea_path = tablea_path
     out_dir     = !out_dir
   
-    pattern='*201{81115,81116}*d006*'
+    pattern='*201{81115,81116}*dt00010*'
 ;   pattern='*2018*'
     
     planet_radii_deg=25.d/3600.; deg/Rp  
