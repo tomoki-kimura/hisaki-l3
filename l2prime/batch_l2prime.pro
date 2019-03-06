@@ -2,19 +2,20 @@ pro batch_l2prime
   
   set_env
   dt=106.2d*60.d; sec
+;  dt=10.d*60.d; sec
 ;  dl=30.
   dl=!NULL
 ;  dl=600./(9.925*3600.)*360.
 ;  dl=53.1d*60.d/(9.925*3600.)*360.
 ;  dl=3000./(9.925*3600.)*360.
   lt_range=[0.0, 24.0]
-  target='jupiter.mod.{03,04,20,21,22}*'
-;  target='*ux_ari*'
+;  target='jupiter.mod.{03,04,20,21,22}*'
+  target='*ux_ari*'
   
-  sdate='20160122'
-  edate='20160122'
-;  sdate='20181115'
-;  edate='20181116'
+;  sdate='20160122'
+;  edate='20160122'
+  sdate='20181115'
+  edate='20181116'
 ;  sdate='20181208'
 ;  edate='20181209'
   tds=time_double(sdate)

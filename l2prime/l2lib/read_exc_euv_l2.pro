@@ -125,7 +125,7 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
     return    
   endif
   
-  save_fits, im_cmp, const, extn_arr, blk_arr, out_file, fits_arr,effexp
+  save_fits, im_cmp, const, extn_arr, blk_arr, out_file, fits_arr,effexp, dt=dt
   print, 'output file name : ',out_file
   print, '   utc-sta utc-end ena-flag acm-time ypol'
   for i=0,n_elements(blk_arr)-1 do begin
