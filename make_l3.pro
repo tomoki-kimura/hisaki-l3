@@ -5,11 +5,7 @@ pro make_l3
 ;  tablea_path = 'C:\function\JX-PSPC-464448\etc\FJSVTOOL\tableA.dat'
 ;  out_path    = 'G:\'
 ;  make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, out_p=out_path
-;
-;stop
-;stop
-;stop  
-  
+
   set_env_l3
 ;  load_spice
   
@@ -17,9 +13,6 @@ pro make_l3
     file_dirname(!tablea_path)+'/line_list_aurora_v1.dat',$ 
     file_dirname(!tablea_path)+'/line_list_torus_v1.dat'$
     ]
-;  tablea_path_arr=[$
-;    '/Users/moxon/dropbox/private/exapi/l3/hisaki-l3/line_list_star_v1.dat'$
-;    ]
 
   foreach tablea_path, tablea_path_arr do begin
     l2_dir      = !l2_dir
@@ -27,21 +20,12 @@ pro make_l3
     tablea_path = tablea_path
     out_dir     = !out_dir
   
-;  pattern='*201{9011,9012}*d006*'
-;  pattern='*201{81115,81116,81207,81208}*d006*'
    pattern='*2018*dt00010*'
-  ;  pattern='*201703{16,17,18,19,20,21,22}*'
-  ;  pattern='*{140101,161115,170430,170520}*'
-;    pattern='*{1312,1401}*'
     ;170520:intermediate
     ;170430:140"
     ;161115:best
     
-;    planet_radii_deg=50.d/3600.; deg/Rp
-     planet_radii_deg=!NULL; deg/Rp
-  
-;    lightyear=168.d; lightyear
-    
+     planet_radii_deg=!NULL; deg/Rp  
   ;  l3= file_search(out_dir + '/*'+pattern+'*.fits')
   ;  if l3[0] ne '' then file_delete,l3
     
