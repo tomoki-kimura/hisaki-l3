@@ -45,7 +45,7 @@ PRO chk_fits_ext, const, extn_arr, fits_arr
     det1 = abs(extn_arr[i].et   - extn_arr[i-1].et)
     if det1 gt 90.0 then begin
       extn_arr[i-1].rejflg = 1
-      extn_arr[i].rejflg   = 1
+      extn_arr[i  ].rejflg = 1
       extn_arr[i+1].rejflg = 1
     endif
   endfor
