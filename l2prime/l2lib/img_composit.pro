@@ -8,6 +8,7 @@ pro outputlist,fout,hd,extn_arr,totext,reason,log=log
     ,string(extn_arr.rejflg,format='(i1)' ),','$
     ,string(extn_arr.submod,format='(i1)' ),','$
     ,string(extn_arr.submst,format='(i2)' ),','$
+    ,string(extn_arr.rad_val,format='(f8.2)'),','$
     ,reason
 end
 
@@ -60,7 +61,17 @@ print,fits_arr.n_ext
       im = mrdfits(fits_arr[extn_arr[j].fn].file,extn_arr[j].ext,hd,/SILENT)
       exc_cal_img, jd_in, im, outdata, xcal, ycal
       im=outdata
-
+      
+      ;calculate radiation
+      radloc=blk_arr[i].radloc
+      ix0=radloc[0]
+      ix1=radloc[2]
+      iy0=radloc[1]
+      iy1=radloc[3]
+      radval = total(im[ix0:ix1,iy0:iy1]); counts/min
+      ;print, fxpar(hd,'EXTNAME'), 'radmon', buf, 'radthr', blk_arr[i].radthr 
+      extn_arr[j].rad_val=radval
+      
       ; skip data
       if keyword_set(no_cal) then if extn_arr[j].calflg eq 1 then begin
         outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'calflg',log=log
@@ -88,20 +99,10 @@ print,fits_arr.n_ext
       endif
       
       
-      
       ; filtering based on radiation monitor
-      radloc=blk_arr[i].radloc
-      if keyword_set(radloc) then begin
-        ix0=radloc[0]
-        ix1=radloc[2]
-        iy0=radloc[1]
-        iy1=radloc[3]
-        buf = total(im[ix0:ix1,iy0:iy1]); counts/min
-        ;print, fxpar(hd,'EXTNAME'), 'radmon', buf, 'radthr', blk_arr[i].radthr 
-        if buf ge blk_arr[i].radthr then begin
-          outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'radmon2',log=log
-          continue   ; counts/min
-        endif
+      if radval ge blk_arr[i].radthr then begin
+        outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'radmon2',log=log
+        continue
       endif
       
       

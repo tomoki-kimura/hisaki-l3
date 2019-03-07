@@ -55,8 +55,8 @@ PRO init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range, dt=dt
   ;; gc_lh  : centroid lower h value [pixel]
   ;; gc_lv  : centroid lower v value [pixel]
   ;; lt_ena : data selection ENA(1)/DIS(0) by HISAKI local time
-  ;; ipt_val: count rate in IPT ROI
-  ;; rad_val: count rate in RAD ROI
+  ;; ipt_val: count rate in IPT ROI ;disabled
+  ;; rad_val: count rate in RAD ROI ;cnt/min
   ;; mode   : AOCP mode
   ;; submode: AOCP submode
   extn = {fn:0, ext:0L, et:0.0, lon_j:0.0, calflg:0, rejflg:0, tarra:0.0, tardec:0.0, $

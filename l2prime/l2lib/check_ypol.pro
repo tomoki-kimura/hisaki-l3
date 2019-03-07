@@ -6,8 +6,10 @@ PRO check_ypol, blk_arr
 
   ; period of Y-axis south/mode-3 or north/mode-4
   defsysv, '!aurpos_l2p', exists = ret
-  if ret eq 1 then begin
-    print, 'aurora pos l2p'
+  if ret eq 0 then defsysv, '!aurpos_l2p', 0
+  
+  if !aurpos_l2p eq 1 then begin
+    print, '***** aurora pos l2p *****'
     ypol_n = [['2011-01-17T00:00:00','2011-01-19T23:59:59'],$
               ['2013-01-17T00:00:00','2013-01-19T23:59:59']]
   endif else begin
