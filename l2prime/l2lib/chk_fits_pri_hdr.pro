@@ -21,7 +21,7 @@ PRO chk_fits_pri_hdr, fits_arr, n_ext
       close, lun
       free_lun, lun
       hd = headfits(fits_arr[i].file,exten=0,/SILENT)
-      fits_arr[i].n_ext = fix(fxpar(hd,'NEXTEND')) - 2
+      fits_arr[i].n_ext = fix(fxpar(hd,'NEXTEND')) - 1;2;;;;;;;;;;;;;;;;;;;;;;;;間違い？？hk
       if fits_arr[i].n_ext gt 0 then n_ext = n_ext +  fits_arr[i].n_ext
     endelse
     
