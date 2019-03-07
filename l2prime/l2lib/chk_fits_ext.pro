@@ -19,14 +19,15 @@ PRO chk_fits_ext, const, extn_arr, fits_arr
   ; ROI for Background (radiation) (x0,y0,x1,y1)
   roi_drk = const.radloc  ; thl = 300/(449*81)
 
-  for i=0L,n-1L do begin
-    im = mrdfits(fits_arr[extn_arr[i].fn].file,extn_arr[i].ext,hd,/SILENT)
-    get_roi_cnt, im, roi_ipt, val
-    extn_arr[i].ipt_val = val/(roi_ipt[2]-roi_ipt[0])/(roi_ipt[3]-roi_ipt[1])
-    get_roi_cnt, im, roi_drk, val
-    extn_arr[i].rad_val = val/(roi_drk[2]-roi_drk[0])/(roi_drk[3]-roi_drk[1])
-    if extn_arr[i].rad_val gt const.rad_thl then extn_arr[i].rejflg = 2
-  endfor
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;disabled byHK 
+;  for i=0L,n-1L do begin
+;    im = mrdfits(fits_arr[extn_arr[i].fn].file,extn_arr[i].ext,hd,/SILENT)
+;    get_roi_cnt, im, roi_ipt, val
+;    extn_arr[i].ipt_val = val/(roi_ipt[2]-roi_ipt[0])/(roi_ipt[3]-roi_ipt[1])
+;    get_roi_cnt, im, roi_drk, val
+;    extn_arr[i].rad_val = val/(roi_drk[2]-roi_drk[0])/(roi_drk[3]-roi_drk[1])
+;    if extn_arr[i].rad_val gt const.rad_thl then extn_arr[i].rejflg = 2
+;  endfor
   
   ;隣接するL2 imageの時間間隔が90sec以上離れている場合は、そのデータから2枚分のL2は採用しない(HV増加・減少中が含まれるため)
   det1 = extn_arr[1].et   - extn_arr[0].et

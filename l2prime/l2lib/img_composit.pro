@@ -77,7 +77,7 @@ print,fits_arr.n_ext
           outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'HV_on/off',log=log
           continue
         endif
-        if extn_arr[j].rejflg eq 2 then begin
+        if extn_arr[j].rejflg eq 2 then begin;do not work
           outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'radmon',log=log
           continue
         endif
@@ -87,6 +87,22 @@ print,fits_arr.n_ext
         continue    ; Local time selection
       endif
       
+      
+      
+      ; filtering based on radiation monitor
+      radloc=blk_arr[i].radloc
+      if keyword_set(radloc) then begin
+        ix0=radloc[0]
+        ix1=radloc[2]
+        iy0=radloc[1]
+        iy1=radloc[3]
+        buf = total(im[ix0:ix1,iy0:iy1]); counts/min
+        ;print, fxpar(hd,'EXTNAME'), 'radmon', buf, 'radthr', blk_arr[i].radthr 
+        if buf ge blk_arr[i].radthr then begin
+          outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'radmon2',log=log
+          continue   ; counts/min
+        endif
+      endif
       
       
       ;;; skip if jupiter located outside the slit ;; TK
@@ -108,22 +124,6 @@ print,fits_arr.n_ext
 
       ; offset Jupiter location to y=572 pixel ;;; TK
       offset_one_image, im=im, jupypix=jupypix
-      
-      ; filtering based on radiation monitor
-      radloc=blk_arr[i].radloc
-      if keyword_set(radloc) then begin
-        ix0=radloc[0]
-        ix1=radloc[2]
-        iy0=radloc[1]
-        iy1=radloc[3]
-        buf = total(im[ix0:ix1,iy0:iy1]); counts/min
-        ;print, fxpar(hd,'EXTNAME'), 'radmon', buf, 'radthr', blk_arr[i].radthr 
-        if buf ge blk_arr[i].radthr then begin
-          outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'radmon2',log=log
-          continue   ; counts/min
-        endif
-      endif
-      
       
       ; composit data
       im_cmp[*,*,i] = im_cmp[*,*,i] + im
