@@ -1,6 +1,8 @@
 pro batch_l2prime
   
   set_env
+  openw,/append,2,!log_place+'flaglist_'+get_local_time('YYYYMMDDThhmmss')+'.txt'
+    
   dt=106.2d*60.d; sec
 ;  dt=10.d*60.d; sec
 ;  dl=30.
@@ -35,5 +37,7 @@ pro batch_l2prime
     endif
     read_exc_euv_l2, cdate, dl=dl, lt_range=lt_range, target=target, dt=dt
   endforeach
+  close,2
+  print,'finished'
 
 end
