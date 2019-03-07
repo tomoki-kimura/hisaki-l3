@@ -1,15 +1,9 @@
-pro outputlist,fout,hd,extn_arr,reason,log=log
+pro outputlist,fout,hd,extn_arr,totext,reason,log=log
   if keyword_set(log) eq 0 then return
-;  printf,fout,fxpar(hd,'EXTNAME'),','$
-;    ,string(extn_arr.ext,   format='(i03)'),','$
-;    ,string(extn_arr.calflg,format='(i1)' ),','$
-;    ,string(extn_arr.rejflg,format='(i1)' ),','$
-;    ,string(extn_arr.submod,format='(i1)' ),','$
-;    ,string(extn_arr.submst,format='(i2)' ),','$
-;    ,reason
-    
-  print,fxpar(hd,'EXTNAME'),','$
-    ,string(extn_arr.ext,   format='(i03)'),','$
+  print,fxpar(hd,'EXTNAME'),',',string(extn_arr.ext,format='(i03)'),'/',string(totext+1,format='(i03)'),reason;Totは個数、extensionは2始まりなので+1する
+  printf,fout,fxpar(hd,'EXTNAME'),','$
+    ,string(extn_arr.ext,   format='(i03)'),','$;0始まり
+    ,string(totext+1,       format='(i03)'),','$
     ,string(extn_arr.calflg,format='(i1)' ),','$
     ,string(extn_arr.rejflg,format='(i1)' ),','$
     ,string(extn_arr.submod,format='(i1)' ),','$
@@ -24,6 +18,7 @@ end
 ;----------------------------------------------------------
 PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = rej, $
                     submod=submod, const=const, effexp=effexp, log=log
+print,fits_arr.n_ext
 
 ;  openw, lun, 'c:\Doc\hisaki\lt_check.txt', /get_lun
 
@@ -68,23 +63,27 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
 
       ; skip data
       if keyword_set(no_cal) then if extn_arr[j].calflg eq 1 then begin
-        outputlist,2,hd,extn_arr[j],'calflg',log=log
+        outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'calflg',log=log
         continue
       endif
       if keyword_set(submod) and extn_arr[j].et le const.cal_enadis_period then begin
         if ( (extn_arr[j].submod ne 4) or (extn_arr[j].submst ne 1) ) then begin
-          outputlist,2,hd,extn_arr[j],'smod_mst',log=log
+          outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'smod_mst',log=log
           continue
         endif
       endif
       if keyword_set(rej) then begin
-        if extn_arr[j].rejflg ge 1 then begin
-          outputlist,2,hd,extn_arr[j],'rejflg',log=log
+        if extn_arr[j].rejflg eq 1 then begin
+          outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'HV_on/off',log=log
+          continue
+        endif
+        if extn_arr[j].rejflg eq 2 then begin
+          outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'radmon',log=log
           continue
         endif
       endif
       if extn_arr[j].lt_ena eq 0 then begin
-        outputlist,2,hd,extn_arr[j],'lt ena',log=log
+        outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'lt ena',log=log
         continue    ; Local time selection
       endif
       
@@ -94,7 +93,7 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
       ret=ck_aurpos(fxpar(hd,'EXTNAME'),!SLIT_POS)
       jupypix=ret.yc
       if jupypix eq -1l then begin
-        outputlist,2,hd,extn_arr[j],'no peak',log=log
+        outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'no peak',log=log
         continue;
       endif
       blk_arr[i].juploc=ret.flag
@@ -118,9 +117,9 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
         iy0=radloc[1]
         iy1=radloc[3]
         buf = total(im[ix0:ix1,iy0:iy1]); counts/min
-        print, fxpar(hd,'EXTNAME'), 'radmon', buf, 'radthr', blk_arr[i].radthr 
+        ;print, fxpar(hd,'EXTNAME'), 'radmon', buf, 'radthr', blk_arr[i].radthr 
         if buf ge blk_arr[i].radthr then begin
-          outputlist,2,hd,extn_arr[j],'rad',log=log
+          outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'radmon2',log=log
           continue   ; counts/min
         endif
       endif
@@ -129,7 +128,7 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
       ; composit data
       im_cmp[*,*,i] = im_cmp[*,*,i] + im
       blk_arr[i].acm ++
-      outputlist,2,hd,extn_arr[j],'good',log=log
+      outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'good',log=log
       effexp[i,e_cnt]=fxpar(hd,'EXTNAME')
       e_cnt++
     endfor
@@ -147,7 +146,7 @@ PRO img_composit, blk_arr, extn_arr, fits_arr, im_cmp, no_cal = no_cal, rej = re
         buf = total(im_cmp[ix0:ix1,iy0:iy1,i]); counts/min
         blk_arr[i].radmon=buf; counts/min
       endif
-      print, fxpar(hd,'EXTNAME'), 'cmp radmon', blk_arr[i].radmon
+      ;print, fxpar(hd,'EXTNAME'), 'cmp radmon', blk_arr[i].radmon
 
       
       ;; reverse y-pixel if the Y-axis polarization is south
