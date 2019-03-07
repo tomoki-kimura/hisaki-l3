@@ -22,7 +22,7 @@ PRO chk_fits_ext_hdr, fits_arr, extn_arr
       if n_elements(hd) eq 1 then if hd eq -1 then continue
 
       ; cal (sky obs) ena/dis
-      obj_name = fxpar(hd,'CALFLG')
+      obj_name = string(fxpar(hd,'CALFLG'));;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;hk
       if obj_name eq 'ena     ' then begin
         extn_arr[nj].calflg = 1
       endif else if obj_name eq 'dis     ' then begin
