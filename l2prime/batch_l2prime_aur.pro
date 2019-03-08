@@ -7,7 +7,6 @@ pro batch_l2prime_aur
   lt_range=[0.0, 24.0]
   target='jupiter.mod.{03,04,20,21,22}*'
   
-  defsysv, '!BLACK_LIST'    ,'C:\function\JX-PSPC-464448\etc\FJSVTOOL\blacklist_aur.csv'
   defsysv, '!L2_DIR'        ,'D:\l2prime_aur\'
   defsysv, '!SLIT_POS'      ,!dir_slit+'/aur_pos_dummy.csv'
   defsysv, '!aurpos_l2p'     ,1
