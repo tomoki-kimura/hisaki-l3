@@ -1,3 +1,5 @@
+
+
 ;----------------------------------------------------------
 ; Save L2out fits
 ; for read_exc_euv_l2.pro
@@ -37,6 +39,7 @@ PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr,effexp, dt=dt
       + '_LT' + string(const.lt_sta,format='(i2.2)') + '-' + string(const.lt_end,format='(i2.2)') $
       + '_d' + string(const.dl,format='(i3.3)') + '.fits'    
   endelse
+
   ;Write Primary header  
   phdr = strarr(1)
   sxaddpar, phdr, 'SIMPLE', 'T'

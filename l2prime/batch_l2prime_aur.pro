@@ -7,16 +7,20 @@ pro batch_l2prime_aur
   lt_range=[0.0, 24.0]
   target='jupiter.mod.{03,04,20,21,22}*'
   
-  defsysv, '!L2_DIR'        ,'D:\l2prime_aur\'
+;  defsysv, '!L2_DIR'        ,'D:\l2prime_aur\'
   defsysv, '!SLIT_POS'      ,!dir_slit+'/aur_pos_dummy.csv'
   defsysv, '!aurpos_l2p'     ,1
-  sdate='20161001'
-  edate='20190101'
+;  sdate='20161001'
+;  edate='20190101'
   
+  sdate='20160122'
+  edate='20160122'
 
 
 ;;;------------------------------------------------------------------
   defsysv,'!last_extn', 1.
+  close, 2
+  free_lun, 2
   openw,/append,2,!log_place+'flaglist_'+get_local_time('YYYYMMDDThhmmss')+'.txt'
   tds=time_double(sdate)
   tde=time_double(edate)
