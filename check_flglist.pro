@@ -1,8 +1,5 @@
 pro check_flglist
   file=dialog_pickfile()
-  
-  
-;  sed_data = READ_CSV(testfile, HEADER=SedHeader, N_TABLE_HEADER=1, TABLE_HEADER=SedTableHeader)
   data = READ_CSV(file)
   err=0
   for i=0, n_elements(data.field1)-2 do begin
@@ -21,8 +18,7 @@ pro check_flglist
       if err eq 1 then print, data.field1[i-1], ' --to'
       if err eq 2 then print, data.field1[i-1], ' --to'
       err=0
-    endelse
-    
+    endelse    
   endfor
   
 end
