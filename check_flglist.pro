@@ -1,5 +1,6 @@
 pro check_flglist
   file=dialog_pickfile()
+
   data = READ_CSV(file)
   err=0
   for i=0, n_elements(data.field1)-2 do begin
