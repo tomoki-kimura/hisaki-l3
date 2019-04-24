@@ -125,6 +125,15 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
   endelse
 
 
+  nn1=where(blk_arr.ind_end eq fits_arr[0].n_ext-1)
+  if nn1 ne -1 then begin
+    print,'last extension!'
+    !last_extn=1.
+  endif else begin
+    !last_extn=0.
+  endelse
+
+
   ;--- Find y-pol change
   check_ypol, blk_arr
 
