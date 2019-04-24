@@ -20,6 +20,5 @@ pro check_flglist
       if err eq 2 then print, data.field1[i-1], ' --to'
       err=0
     endelse    
-  endfor
-  
+  endfor 
 end
