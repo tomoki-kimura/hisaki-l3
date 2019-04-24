@@ -22,6 +22,3 @@ pro check_flglist
     endelse    
   endfor 
 end
-;
-;
-;
