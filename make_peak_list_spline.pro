@@ -77,7 +77,7 @@ pro make_peak_list_spline, yc_d=yc_dir, st=start_time, et=end_time, out_p=path_o
    LOG_PATH = logdir + LOG_NAME
    ;   LOG_PATH = logdir + '/' + LOG_NAME
    
-
+   
    MSG_INF01 = 'msg_inf01: Process Start.'
    MSG_INF02 = 'msg_inf02: Process End.'
 
@@ -135,6 +135,7 @@ pro make_peak_list_spline, yc_d=yc_dir, st=start_time, et=end_time, out_p=path_o
    size_yc_files = size(yc_files,/dimension)
    if size_yc_files eq 0 then $
       message, 'There is no file at Yc dir. '+yc_dir
+   
 
    ; 取得したファイルのレコードを取得
    total_recs    = strarr(1)
@@ -195,10 +196,10 @@ pro make_peak_list_spline, yc_d=yc_dir, st=start_time, et=end_time, out_p=path_o
    out_name = start_date + "_" + end_date
    out_path = path_out + "/" + out_name
    openw, 1, out_path
-   printf,1, 'yc_dir=' + yc_dir
-   printf,1, 'start_time=' + start_time
-   printf,1, 'end_time=' + end_time 
-   printf,1, 'out_path=' + out_path 
+   printf,1, 'yc_dir     = ' + yc_dir
+   printf,1, 'start_time = ' + start_time
+   printf,1, 'end_time   = ' + end_time 
+   printf,1, 'out_path   = ' + out_path 
    printf,1, 'movemean_period=' , strcompress(period, /remove_all)
    printf,1, 'time_resolution=' , strcompress(time_resolution, /remove_all)
    printf,1, REC_HEADER

@@ -114,7 +114,7 @@ pro euvl2_timeintegral, l2path=l2path, intgtime=intgtime, intgl2path=intgl2path,
    CM_NI  = 'time of integration actually'
    CM_DT  = 'Date of file creation (UTC)'
    CM_DC  = 'CENTRAL time of integration in this extension'
-
+   
    ;メッセージ
    M_ERR01   = 'msg_err01: Please input the following items.'
    M_ERR02   = 'msg_err02: Please input the following items in the form of　"YYYY-MM-DDThh:mm:ss".'
@@ -446,7 +446,7 @@ pro euvl2_timeintegral, l2path=l2path, intgtime=intgtime, intgl2path=intgl2path,
    timecount = C_INIT ;引数で入力した時間の内、1分積分のデータが存在し、実際に積分した時間の総計の初期値
    count = C_INIT ;積分後のデータエクステンションヘッダ（"YYYY-MM-DDThh:mm:ss_Integral"）の個数の初期値
    maintime_sec_ave=0D ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;byHK
-
+   
    ;時間積分を実施する。
    for i=nextend0,nextend do begin
       ;L2ファイルの各“YYYY-MM-DDThh:mm:ss”エクステンション（1分積分）の時刻（単位は秒）を取得

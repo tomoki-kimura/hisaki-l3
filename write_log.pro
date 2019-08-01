@@ -28,9 +28,9 @@
 pro write_log, log_path, msg, nontime=nontime
 
    on_error, 2
-
-   TFORMAT_LOG = 'YYYYMMDD-hhmmss' ; ƒƒOƒtƒ@ƒCƒ‹’†‚ÌƒtƒH[ƒ}ƒbƒg
    
+   TFORMAT_LOG = 'YYYYMMDD-hhmmss' ; ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ä¸­ã®æ™‚åˆ»ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+
    append=1
    if file_search(log_path) eq '' then append=!NULL
    log_path=strtrim(log_path,2)

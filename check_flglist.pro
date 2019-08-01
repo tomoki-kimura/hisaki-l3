@@ -22,5 +22,5 @@ pro check_flglist
       err=0
     endelse    
   endfor
-  
+  print,'finished'
 end

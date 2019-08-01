@@ -76,7 +76,7 @@ function convert_value2pixel, l2cal_path, xrange_v, yrange_v, waveshift=waveshif
    ; x,yの校正表を取得
    img_xcoord = mrdfits(l2cal_path, 1, hdr_xcoord, /silent)
    img_ycoord = mrdfits(l2cal_path, 2, hdr_ycoord, /silent)
-
+   
 
    
    ; 校正表を取得できない場合はエラー
@@ -92,14 +92,16 @@ function convert_value2pixel, l2cal_path, xrange_v, yrange_v, waveshift=waveshif
 
 
    ;wave calibration
-   exc_cal_init
-   jd_in = julday(1,1,2014)
-   exc_cal_img, jd_in, dblarr(1024,1024)+1., outdata, xcal, ycal
-   if keyword_set(waveshift) then begin
-    xcal+=waveshift
+   if strpos(l2cal_path,'v2.0') ne -1 then begin
+     exc_cal_init
+     jd_in = julday(1,1,2014)
+     exc_cal_img, jd_in, dblarr(1024,1024)+1., outdata, xcal, ycal
+     if keyword_set(waveshift) then begin
+       xcal+=waveshift
+     endif
+     for i=0l, size_img_xcoord[1]-1l do img_xcoord[*,i]=xcal
+     ;   for i=0l, size_img_ycoord[2]-1l do img_ycoord[i,*]=ycal    
    endif
-   for i=0l, size_img_xcoord[1]-1l do img_xcoord[*,i]=xcal
-;   for i=0l, size_img_ycoord[2]-1l do img_ycoord[i,*]=ycal
    
    xcoord = img_xcoord[*, 0]
    ycoord = transpose(img_ycoord[0, *])
