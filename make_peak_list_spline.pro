@@ -73,7 +73,10 @@ pro make_peak_list_spline, yc_d=yc_dir, st=start_time, et=end_time, out_p=path_o
    ;ログファイルの名前を決める。
    logdir  = log_setting() ;ログファイルを出力するディレクトリ名を取得する
    LOG_NAME = PRO_NAME + get_local_time(TFORMAT_LOG) + FILE_TYPE_LOG
-   LOG_PATH = logdir + '/' + LOG_NAME
+   LOG_NAME = repstr(LOG_NAME,':','_')
+   LOG_PATH = logdir + LOG_NAME
+   ;   LOG_PATH = logdir + '/' + LOG_NAME
+   
 
    MSG_INF01 = 'msg_inf01: Process Start.'
    MSG_INF02 = 'msg_inf02: Process End.'

@@ -99,6 +99,8 @@ pro euvl2_timeintegral, l2path=l2path, intgtime=intgtime, intgl2path=intgl2path,
    KEYWORD_DE  = 'date-end'
    KEYWORD_NI  = 'ninttime'
    KEYWORD_DT  = 'date'
+   KEYWORD_DC  = 'date-center'
+   
 
    ;キーワードのコメント
    CM_IT  = 'time of integration'
@@ -111,6 +113,7 @@ pro euvl2_timeintegral, l2path=l2path, intgtime=intgtime, intgl2path=intgl2path,
    CM_DE  = 'END time of integration in this extension'
    CM_NI  = 'time of integration actually'
    CM_DT  = 'Date of file creation (UTC)'
+   CM_DC  = 'CENTRAL time of integration in this extension'
 
    ;メッセージ
    M_ERR01   = 'msg_err01: Please input the following items.'
@@ -143,7 +146,8 @@ pro euvl2_timeintegral, l2path=l2path, intgtime=intgtime, intgl2path=intgl2path,
 
 ;ログファイルの名前を決める。
    logdir  = log_setting() ;ログファイルを出力するディレクトリ名を取得する
-   LOGPATH = logdir+'EUVL2_TIMEINTEGRAL'+time_string((systime(1)-tzoffset(/now)),tformat=TIME_FORM)+'.log' ;ログファイルの名前
+   LOGPATH = logdir+'EUVL2_TIMEINTEGRAL'+repstr(time_string((systime(1)-tzoffset(/now)),tformat=TIME_FORM),':','_')+'.log' ;ログファイルの名前
+;   LOGPATH = logdir+'EUVL2_TIMEINTEGRAL'+time_string((systime(1)-tzoffset(/now)),tformat=TIME_FORM)+'.log' ;ログファイルの名前
 
 ;ライブラリの関数の標準エラーをcatchしてログファイルに出力する
    err_flg=C_FALSE
@@ -317,17 +321,20 @@ pro euvl2_timeintegral, l2path=l2path, intgtime=intgtime, intgl2path=intgl2path,
       output=intgl2path ;出力ファイル名
 
       ;出力ディレクトリのパスが正しいものか確認するために、ファイルが格納されているディレクトリ名を取得する。
-      intg_l2path_elm=strsplit(intgl2path,/extract, '/') ;intgl2pathを/で分割した値
+      intg_l2path_elm=strsplit(intgl2path,/extract, '\') ;intgl2pathを/で分割した値
+;      intg_l2path_elm=strsplit(intgl2path,/extract, '/') ;intgl2pathを/で分割した値
       n_intg_l2path_elm=n_elements(intg_l2path_elm) ;l2dir_elmの要素数
       max_intg_l2path_elm = n_intg_l2path_elm - C_MAX
       n_intg_l2dir_elm=indgen(max_intg_l2path_elm) ;ディレクトリの数分の要素数の配列を作成する。
       intg_l2dir_elm =intg_l2path_elm[n_intg_l2dir_elm] ;ディレクトリの配列をディレクトリの数分作成する。
-      intg_l2_dir='/'+strjoin(intg_l2dir_elm[C_INIT:max_intg_l2path_elm - C_MAX],'/') ;出力ディレクトリ
+      intg_l2_dir=strjoin(intg_l2dir_elm[C_INIT:max_intg_l2path_elm - C_MAX],'\') ;出力ディレクトリ
+;      intg_l2_dir='/'+strjoin(intg_l2dir_elm[C_INIT:max_intg_l2path_elm - C_MAX],'/') ;出力ディレクトリ
 
    endif else begin ;出力先がディレクトリ指定の場合
       ;出力ファイル名を決定する。
       ;入力FITSファイル名を取得する。
-      l2path_elm=strsplit(l2path,/extract, '/') ;入力ファイルパスを/で分割した値
+      l2path_elm=strsplit(l2path,/extract, '\') ;入力ファイルパスを/で分割した値
+;      l2path_elm=strsplit(l2path,/extract, '/') ;入力ファイルパスを/で分割した値
       n_l2path_elm=n_elements(l2path_elm) ;l2path_elmの要素数
       l2_fits=l2path_elm[n_l2path_elm -C_MAX] ;入力FITSファイル名
 
@@ -438,6 +445,7 @@ pro euvl2_timeintegral, l2path=l2path, intgtime=intgtime, intgl2path=intgl2path,
    img_size = intarr(C_SRTN)
    timecount = C_INIT ;引数で入力した時間の内、1分積分のデータが存在し、実際に積分した時間の総計の初期値
    count = C_INIT ;積分後のデータエクステンションヘッダ（"YYYY-MM-DDThh:mm:ss_Integral"）の個数の初期値
+   maintime_sec_ave=0D ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;byHK
 
    ;時間積分を実施する。
    for i=nextend0,nextend do begin
@@ -450,8 +458,10 @@ pro euvl2_timeintegral, l2path=l2path, intgtime=intgtime, intgl2path=intgl2path,
          if(C_LORS le eitime - maintime_sec) then begin
             img_size = size(one_img)
             if((img_size[C_S1] eq C_PIX) and (img_size[C_S2] eq C_PIX) and (img_size[C_ST] eq C_FLT)) then begin
+               ;if ck_blacklist2(maintime,'D:\L2\cal\blacklist_stt.csv') ne 0 then continue;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;byHK
                intg_img = intg_img + one_img
                timecount = timecount +C_PLS
+               maintime_sec_ave=[maintime_sec_ave,maintime_sec]
             endif else begin
             ;データが型に合わない時は、時間積分に含めずメッセージを出力する。
                print,M_INF02 + string(strcompress(i,/remove_all)) + M_INF02_2
@@ -469,6 +479,7 @@ pro euvl2_timeintegral, l2path=l2path, intgtime=intgtime, intgl2path=intgl2path,
                sxaddpar, data, KEYWORD_NI, timecount, CM_NI
                ;エクステンション作成日を編集する。
                sxaddpar, data, KEYWORD_DT, time_string(systime(1),tformat=TIME_FORM), CM_DT
+               sxaddpar, data, KEYWORD_DC, time_string(mean(maintime_sec_ave),tformat=TIME_FORM),CM_DC,KEYWORD_DE;;;;;;;;;;byhk
                writefits, output, intg_img, data,/append
             endif else begin
             ;データが型に合わない時は、時間積分に含めずメッセージを出力する。
@@ -485,6 +496,7 @@ pro euvl2_timeintegral, l2path=l2path, intgtime=intgtime, intgl2path=intgl2path,
             if((img_size[C_S1] eq C_PIX) and (img_size[C_S2] eq C_PIX)  and (img_size[C_ST] eq C_FLT)) then begin
                intg_img = one_img
                timecount = C_ONE
+               maintime_sec=0.;;;;;;;;;;;;;;;;;;;;;;;byhk
             endif
             ;実際の積分終了時刻を決定する。
             ;各積分区間の終了時刻 >= 引数で入力した積分終了時刻
@@ -503,6 +515,7 @@ pro euvl2_timeintegral, l2path=l2path, intgtime=intgtime, intgl2path=intgl2path,
             sxaddpar, data, KEYWORD_NI, timecount, CM_NI
             ;エクステンション作成日を編集する。
             sxaddpar, data, KEYWORD_DT, time_string(systime(1),tformat=TIME_FORM), CM_DT
+            sxaddpar, data, KEYWORD_DC, time_string(mean(maintime_sec_ave),tformat=TIME_FORM),CM_DC,KEYWORD_DE;;;;;;;;;;byhk
             writefits, output, intg_img, data,/append
             print,M_INF01
             printf,C_LOGLUN, time_string((systime(1)-tzoffset(/now)),tformat=TIME_FORM),' ',M_INF01
@@ -519,6 +532,7 @@ pro euvl2_timeintegral, l2path=l2path, intgtime=intgtime, intgl2path=intgl2path,
          sxaddpar, data, KEYWORD_NI, timecount, CM_NI
          ;エクステンション作成日を編集する。
          sxaddpar, data, KEYWORD_DT, time_string(systime(1),tformat=TIME_FORM), CM_DT
+         sxaddpar, data, KEYWORD_DC, time_string(mean(maintime_sec_ave),tformat=TIME_FORM),CM_DC,KEYWORD_DE;;;;;;;;;;byhk
          writefits, output, intg_img, data,/append
          print,M_INF01
          printf,C_LOGLUN, time_string((systime(1)-tzoffset(/now)),tformat=TIME_FORM),' ',M_INF01
