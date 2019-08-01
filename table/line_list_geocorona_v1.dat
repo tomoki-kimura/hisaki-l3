@@ -16,8 +16,8 @@
  972.0   22.0 -250.0 +250.0 # Geocorona HLy gamma    
 1025.0   22.0 -250.0 +250.0 # Geocorona HLyB 1025A
 1168.0   22.0 -250.0 +250.0 # Geocorona NI   1168A
-1216.0   40.0 -250.0 +250.0 # Geocorona HLyA 1216A
-1304.0   22.0 -250.0 +250.0 # Geocorona O 1304A
+1216.0   60.0 -300.0 +300.0 # Geocorona HLyA 1216A
+1304.0   28.0 -250.0 +250.0 # Geocorona O 1304A
 1356.0   22.0 -250.0 +250.0 # Geocorona OI 1356A
 # 584.0   10.0 -200.0 +200.0 # Geocorona HeI 584A
 # 785.0   10.0 -200.0 +200.0 # Ghost of HLyA 785A
