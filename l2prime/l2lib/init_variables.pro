@@ -84,7 +84,7 @@ PRO init_variables, fits, extn, blk, const, dl=dl, lt_range=lt_range, dt=dt
   ;; radthr  : threshold of radiation monitor value counts/min
   ;; juploc  : flag of jupiter location 1:slit center, 2:boundary btw 20"-140", 3: bottom 140", 4:outside slit
   ;; ycpxjup : y pixel number of jupiter in original l2 data
-  blk = {ena:0,et_sta:0.0,et_end:0.0,et:0.0,ind_sta:0,ind_end:0,acm:0,$
+  blk = {ena:0,et_sta:0.0d,et_end:0.0d,et:0.0d,ind_sta:0,ind_end:0,acm:0,$
       rad_j:0.0,apr_j:0.0, lon_j:0.0,inc_ce:0.0,ph_io:0.0,ph_eu:0.0,ypol:0,$
       mode:3,hdr:ptr_new(),radmon:0.0,radloc:([512l,630l,960l,710l]),radthr:130.d,$
       juploc:0.d,ycpxjup:0.d,slit1:0.d,slit2:0.d,slit3:0.d,slit4:0.d,fwhm:0.d}

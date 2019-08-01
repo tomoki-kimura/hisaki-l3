@@ -18,7 +18,7 @@ PRO def_data_blk_sec, blk_arr, extn_arr, start_date, nd, const
 
   ; size of 1-min step array
 ;  n = fix(24*60 + const.dl/360.0*const.tj*60)
-  n = long(86400l + const.dt)
+  n = long(86400l + const.dt*2);*2: margin ;1 sec step???
 
   ; block size
   n_blk = n_elements(blk_arr)
@@ -43,7 +43,7 @@ PRO def_data_blk_sec, blk_arr, extn_arr, start_date, nd, const
     del_t2 = deletarr[i  ] mod const.dt
     if (del_t2 lt del_t1) then begin
       if iblk ge n_blk-1l then break
-      blk_arr[iblk].et_end = et_arr[i-1]
+      blk_arr[iblk].et_end = et_arr[i]
       iblk ++
       blk_arr[iblk].et_sta = et_arr[i]
     endif
@@ -57,7 +57,7 @@ PRO def_data_blk_sec, blk_arr, extn_arr, start_date, nd, const
 
     ; start index of extention for data block "i"
     for j=0L,n_ext-1L do begin
-      if (extn_arr[j].et ge blk_arr[i].et_sta) and (extn_arr[j].et le blk_arr[i].et_end) then begin
+      if (extn_arr[j].et ge blk_arr[i].et_sta) and (extn_arr[j].et lt blk_arr[i].et_end) then begin
         blk_arr[i].ind_sta = j ; record index of the first data
         break
       endif
@@ -65,10 +65,10 @@ PRO def_data_blk_sec, blk_arr, extn_arr, start_date, nd, const
 
     ; end index of extention for data block "i"
     for j=0L,n_ext-1L do begin
-      if (extn_arr[j].et ge blk_arr[i].et_sta) and (extn_arr[j].et le blk_arr[i].et_end) then begin
+      if (extn_arr[j].et ge blk_arr[i].et_sta) and (extn_arr[j].et lt blk_arr[i].et_end) then begin
         blk_arr[i].ind_end = j ; record index of the last data
       endif
-      if extn_arr[j].et gt blk_arr[i].et_end then break
+      if extn_arr[j].et ge blk_arr[i].et_end then break
     endfor
 
     ; check Block ENA/DIS

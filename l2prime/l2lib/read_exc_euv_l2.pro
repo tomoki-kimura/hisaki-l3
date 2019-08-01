@@ -1,44 +1,4 @@
 
-pro cal_caldata_l2prime, incal=incal, outcal=outcal
-
-
-  caldata=mrdfits(incal,0,phdr)
-  xcal   =mrdfits(incal,1,xhdr)
-  ycal   =mrdfits(incal,2,yhdr)
-  aeffcal=mrdfits(incal,3,aeffhdr)
-  nx=n_elements(aeffcal[*,0])
-  ny=n_elements(aeffcal[0,*])
-
-  ;tsuchiya calibration
-  exc_cal_init
-  jd_in = julday(1,1,2014)
-  exc_cal_img, jd_in, aeffcal, outdata, outxcal, outycal
-  aeffcal=outdata
-
-  iyminout=where(abs(outycal) eq min(abs(outycal)))
-  if iyminout[0] ne -1l then iymin=iyminout[0]
-  iyminin=where(abs(ycal[0,*]) eq min(abs(ycal[0,*])))
-  if iyminin[0] ne -1l then iyminin=iyminin[0]
-
-  for i=0l, ny-1l do begin
-    xcal[*,i]=outxcal[*]
-    iin=i
-    iout=i-iyminin+iyminout
-    ;    if iin  gt ny-1l then iin=ny-1l
-    ;    if iin  lt 0l    then iin=0l
-    if iout gt ny-1l then iout=ny-1l
-    if iout lt 0l    then iout=0l
-    ycal[*,iin]=outycal[iout]
-  endfor
-
-  mwrfits, !NULL, outcal, phdr, /create, /silent
-  mwrfits, aeffcal, outcal, aeffhdr, /silent
-  mwrfits, xcal   , outcal, xhdr, /silent
-  mwrfits, ycal   , outcal, yhdr, /silent
-
-  return
-end
-
 ;===================================================================
 ;   MAIN ROUTINE
 ;   Read EXCEED-EUV L2 data for Jupiter
@@ -81,6 +41,7 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
   chk_fits_pri_hdr, fits_arr, n_ext
   
   if fits_arr[0].n_ext eq -1 then return
+  if fits_arr[0].n_ext eq  1 then return
   print, '  number of extention : ',n_ext
   if n_ext eq 0 then begin
     print, 'No output data in ',st_date
@@ -88,9 +49,9 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
     return
   endif
 
-  incal=!l2cal_path+'/calib_'+st_date+'_v1.0.fits'
-  outcal=!l2_dir+'/cal/calib_'+st_date+'_v2.0.fits'
-  cal_caldata_l2prime, incal=incal, outcal=outcal
+;  incal =!l2cal_path +'/calib_'+st_date+'_v1.0.fits'
+;  outcal=!l2cal_path2+'/calib_'+st_date+'_v2.0.fits'
+;  cal_caldata_l2prime, incal=incal, outcal=outcal
 
 
   ;--- Read header of each extension
@@ -110,7 +71,7 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
   
   if keyword_set(dt) then begin
     ;--- Define data block
-    n_blk = long(86400.d/const.dt) + 2 ; (+2 --- margin)
+    n_blk = long(86400.d/const.dt) + 16 ; (14+2 --- margin,14:number of orbit per day)
     print, '  number of data block derived by dividing with dt: ',n_blk
     blk_arr = replicate(blk,n_blk)
     effexp  = strarr(n_blk,fix(const.dt/60.)+2)
@@ -127,12 +88,14 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
 
   nn1=where(blk_arr.ind_end eq fits_arr[0].n_ext-1)
   if nn1 ne -1 then begin
-    print,'last extension!'
-    !last_extn=1.
-  endif else begin
-    !last_extn=0.
-  endelse
-
+    if blk_arr[nn1].ind_end eq n_elements(extn_arr)-1 then begin
+      print,'last extension!'
+      !last_extn=1.      
+    endif else if extn_arr[blk_arr[nn1].ind_end+1].et - extn_arr[blk_arr[nn1].ind_end].et ge 60. then begin
+      print,'last extension!'
+      !last_extn=1.      
+    endif else !last_extn=0.
+  endif else !last_extn=0.
 
   ;--- Find y-pol change
   check_ypol, blk_arr
@@ -146,24 +109,6 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
     status=-1
     return
   endif
-  
-  ;-- Check Jupiter location
-;  calfile=!FITSDATADIR+'cal/calib_'+string(st_date,form='(i08)')+'_v1.0.fits'
-;  if not file_exist(calfile) then return
-;  read_cal, filename=calfile, caldata=caldata, calext=calext, numcal=numcal
-;  xx=where(calext eq 'X-coord')
-;  yy=where(calext eq 'Y-coord')
-;  xcal=reform(caldata[xx[0],*,0])
-;  ycal=reform(caldata[yy[0],0,*])
-;  print, '  jupiter location'
-;  chk_jupiter_location, im_cmp=im_cmp, blk_arr=blk_arr, const=const, jupypix=jupypix, xcal=xcal, ycal=ycal
-;  if jupypix le 0l then begin
-;    status=-1
-;    return
-;  endif
-;  offset_image, im_cmp=im_cmp, blk_arr=blk_arr, const=const, jupypix=jupypix
-;  print, '  ypix, yarcsec=', string(jupypix), ',', string(ycal[jupypix])
-  
   
   ;--- Save to fits file
   print, '  save image'
