@@ -1,10 +1,10 @@
 pro plotl3
-  set_env
+  set_env_l3
   load_spice
   loadct,39
   
   l3dir=''
-  l3=file_search('G:\L3\L3_old2\*.fits')
+  l3=file_search('D:\L3\*2016*.aurora.lv.03.fits')
   ref_year=2016
   
   cspice_utc2et,'1 1, '+string(ref_year,format='(i4)'),et
@@ -37,16 +37,16 @@ pro plotl3
   doy1=doy1[1:*]
   uv1=uv1[1:*]
   
-  get_variation_l3, /ps, doyrange=[0,600], ref_year=2016,inxarr=inxarr,inyarr=inyarr,inyerr=inyarr_err
+  ;get_variation_l3, /ps, doyrange=[0,600], ref_year=2016,inxarr=inxarr,inyarr=inyarr,inyerr=inyarr_err
   
-  !p.multi=[0,1,2]
-  plot,inxarr,inyarr,xrange=[20,30]
+  ;!p.multi=[0,1,2]
+  ;plot,inxarr,inyarr,xrange=[20,30]
   plot,doy1,uv1,xrange=[20,30]
   stop
   
-  !p.multi=0
-  plot,doy1,uv1,xrange=[20,30],color=fsc_color('red')
-  plot,inxarr,inyarr,xrange=[20,30],linestyle=1,/noerase
-  stop
-  stop
+  ;!p.multi=0
+  ;plot,doy1,uv1,xrange=[20,30],color=fsc_color('red')
+  ;plot,inxarr,inyarr,xrange=[20,30],linestyle=1,/noerase
+  ;stop
+  ;stop
 end
