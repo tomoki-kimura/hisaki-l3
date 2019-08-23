@@ -13,7 +13,7 @@ pro batch_l2prime_aur
 ;  sdate='20161001'
 ;  edate='20190101'
   
-  sdate='20180101'
+  sdate='20160101'
   edate='20190101'
 
 

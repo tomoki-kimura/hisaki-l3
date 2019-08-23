@@ -31,10 +31,11 @@ pro cal_caldata_l2prime, incal=incal, outcal=outcal
     ycal[*,iin]=outycal[iout]
   endfor
 
+  message, 'Saving '+outcal,/info
   mwrfits, !NULL, outcal, phdr, /create, /silent
-  mwrfits, aeffcal, outcal, aeffhdr, /silent
   mwrfits, xcal   , outcal, xhdr, /silent
   mwrfits, ycal   , outcal, yhdr, /silent
+  mwrfits, aeffcal, outcal, aeffhdr, /silent
 
   return
 end
@@ -92,6 +93,7 @@ PRO read_exc_euv_l2, st_date, dl=dl, lt_range=lt_range, status=status, target=ta
   outcal=!l2_dir+'/cal/calib_'+st_date+'_v2.0.fits'
   cal_caldata_l2prime, incal=incal, outcal=outcal
 
+return
 
   ;--- Read header of each extension
   print, '  check extn header'
