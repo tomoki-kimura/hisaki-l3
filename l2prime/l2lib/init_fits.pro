@@ -13,7 +13,7 @@ PRO init_fits, date, fits_arr, target=target
   dd = fix(strmid(date,6,2))
   
   for i=0,n-1 do begin
-    targets=file_search(!FITSDATADIR+'l2/*'+target+string(yy,mm,dd,format='(i4.4,i2.2,i2.2)')+'*.fits')
+    targets=file_search(!FITSDATADIR+'/*'+target+string(yy,mm,dd,format='(i4.4,i2.2,i2.2)')+'*.fits')
     fits_arr[i].file =targets[0]
 
 ;    fits_arr[i].file = !FITSDATADIR+'l2/exeuv.'+target+'.' $

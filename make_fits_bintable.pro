@@ -52,16 +52,9 @@
 ;                      - L3データのカウント値の算出方法を修正
 ;                      - L3データの時刻情報は[年、dayofyear、secofday]に修正
 ;-
-pro make_fits_bintable, $
-  l2_p=l2_path, $
-  l2cal_p=l2cal_path, $
-  tablea_p=tablea_path, $
-  out_p=out_path, $
-  planet_radii_deg=planet_radii_deg, $
-  lightyear=lightyear, waveshift=waveshift
+pro make_fits_bintable, l2_p=l2_path, l2cal_p=l2cal_path, tablea_p=tablea_path, out_p=out_path, planet_radii_deg=planet_radii_deg, lightyear=lightyear
 
   on_error,2
-
 
    ; 定数
    SPECTRESOL=16l
@@ -85,7 +78,7 @@ pro make_fits_bintable, $
    KEY_NINTTIME = 'INT_TIME';L2prime
    KEY_RADMON   = 'RADMON'
    KEY_JUPLOC   = 'JUPLOC'
-   KEY_JPFWHM     = 'JPFWHM'
+   KEY_JPFWHM   = 'JPFWHM'
    KEY_SLIT1Y   = 'SLIT1Y'
    KEY_SLIT2Y   = 'SLIT2Y'
    KEY_SLIT3Y   = 'SLIT3Y'
@@ -144,7 +137,7 @@ pro make_fits_bintable, $
    l2_name = FILE_BASENAME(l2_path)
    if stregex(tablea_path,'aurora',/fold_case) ge 0 then extname='aurora'
    if stregex(tablea_path,'torus',/fold_case) ge 0 then extname='torus'
-   if stregex(tablea_path,'geocorona',/fold_case) ge 0 then extname='geocorona'
+   if stregex(tablea_path,'geocorona',/fold_case) ge 0 then extname='torus'
    if stregex(tablea_path,'star',/fold_case) ge 0 then extname='star'
    if stregex(FILE_BASENAME(out_path),'fits$',/boolean) ne 1 then begin
       ; out_pathがディレクトリ指定の場合、ファイル名生成
@@ -259,12 +252,6 @@ pro make_fits_bintable, $
    im_pri   = mrdfits(l2_path, 0, hdr_pri, /silent)
    im_total = mrdfits(l2_path, 1, hdr_total, /silent)
 
-;   ;calibration
-;   exc_cal_init
-;   jd_in = julday(1,1,2014)
-;   exc_cal_img, jd_in, im_total, outdata, xcal, ycal
-;   im_total=outdata
-
    ; 領域情報格納用の配列を用意する。
    range_info = strarr(n_tablea_dataset)
   
@@ -281,10 +268,11 @@ pro make_fits_bintable, $
       ; convert spatial integration region in unit of Rj to in arcsec;;; TK
       buf = mrdfits(l2_path, 2, hdr, /silent)
       time  = fxpar(hdr, KEY_EXTNAME)      
-      if not keyword_set(planet_radii_deg) then planet_radii_deg=get_planet_radii(time=time,target=!NULL,/deg); deg/rp
+      ;if not keyword_set(planet_radii_deg) then planet_radii_deg=get_planet_radii(time=time,target=!NULL,/deg); deg/rp
+      planet_radii_deg=get_planet_radii(time=time,target=!NULL,/deg); deg/rp
       yrange_v *= planet_radii_deg*3600.d; arcsec
       
-      res = convert_value2pixel(l2cal_path, xrange_v, yrange_v, waveshift=waveshift)
+      res = convert_value2pixel(l2cal_path, xrange_v, yrange_v)
       x_min_p = res[0,0]
       x_max_p = res[1,0]
       y_min_p = res[0,1]
@@ -313,7 +301,9 @@ pro make_fits_bintable, $
       if i eq 0l then begin; radiation minitor ;; TK
         radiation_monitor = dblarr(value_nextend - 1)
         jupiter_location_monitor = dblarr(value_nextend - 1)
+        jupiter_location_monitorx = dblarr(value_nextend - 1)
         jupiter_jpfwhm_monitor = dblarr(value_nextend - 1)
+        jupiter_itime_monitor = dblarr(value_nextend - 1)
         jupiter_slit1_monitor = dblarr(value_nextend - 1)
         jupiter_slit2_monitor = dblarr(value_nextend - 1)
         jupiter_slit3_monitor = dblarr(value_nextend - 1)
@@ -324,16 +314,8 @@ pro make_fits_bintable, $
       ; イメージEXTENTIONごとに処理
       for j = 2, value_nextend do begin
          im = mrdfits(l2_path, j, hdr, /silent)
-;         ;tsuchiya calibration
-;         exc_cal_init
-;         jd_in = julday(1,1,2014)
-;         exc_cal_img, jd_in, im, outdata, xcal, ycal
-;         im=outdata
-
-
          ;remove geocorona;;;;;;;;;;;;;;;;;;;;;;byhk
-         if keyword_set(lightyear) then im=remove_geocor_star(im,!geocorona_list ,l2cal_path) $
-          else im=remove_geocor(im,!geocorona_list ,l2cal_path)
+         im=remove_geocor(im,!geocorona_list ,l2cal_path)
          
          if i eq 0l then begin; radiation minitor ;; TK
             crad=double(fxpar(hdr,KEY_RADMON))
@@ -341,12 +323,15 @@ pro make_fits_bintable, $
             
             jupiter_location_monitor[j-2] = double(fxpar(hdr,KEY_JUPLOC))
             jupiter_jpfwhm_monitor[j-2] = double(fxpar(hdr,KEY_JPFWHM))
+            jupiter_itime_monitor[j-2] = double(fxpar(hdr,KEY_NINTTIME))
             jupiter_slit1_monitor[j-2] = double(fxpar(hdr,KEY_SLIT1Y))
             jupiter_slit2_monitor[j-2] = double(fxpar(hdr,KEY_SLIT2Y))
             jupiter_slit3_monitor[j-2] = double(fxpar(hdr,KEY_SLIT3Y))
             jupiter_slit4_monitor[j-2] = double(fxpar(hdr,KEY_SLIT4Y))
             jupiter_jpflag_monitor[j-2] = long(fxpar(hdr,KEY_JPFLAG))
          endif
+         
+         
          
          im_target = im[x_min_p : x_max_p, y_min_p : y_max_p]
          value_extname  = fxpar(hdr, KEY_EXTNAME)
@@ -497,6 +482,8 @@ pro make_fits_bintable, $
    structure   = create_struct(structure, structure_jupiter_location_monitor)
    structure_jupiter_jpfwhm_monitor = create_struct(KEY_JPFWHM,jupiter_jpfwhm_monitor)
    structure   = create_struct(structure, structure_jupiter_jpfwhm_monitor)
+   structure_jupiter_itime_monitor = create_struct(KEY_NINTTIME,jupiter_itime_monitor)
+   structure   = create_struct(structure, structure_jupiter_itime_monitor)
    structure_jupiter_slit1_monitor = create_struct(KEY_SLIT1Y,jupiter_slit1_monitor)
    structure   = create_struct(structure, structure_jupiter_slit1_monitor)
    structure_jupiter_slit2_monitor = create_struct(KEY_SLIT2Y,jupiter_slit2_monitor)
@@ -564,6 +551,7 @@ pro make_fits_bintable, $
     if tag_name_structure[i] eq 'SECOFDAY'  then tunit[i]='sec'
     if tag_name_structure[i] eq KEY_JUPLOC  then tunit[i]='pixel' 
     if tag_name_structure[i] eq KEY_JPFWHM    then tunit[i]='pixel'
+    if tag_name_structure[i] eq KEY_NINTTIME   then tunit[i]='min'
     if tag_name_structure[i] eq KEY_SLIT1Y   then tunit[i]='pixel'
     if tag_name_structure[i] eq KEY_SLIT2Y   then tunit[i]='pixel'
     if tag_name_structure[i] eq KEY_SLIT3Y   then tunit[i]='pixel'
@@ -583,11 +571,12 @@ pro make_fits_bintable, $
      if tag_name_structure[i] eq 'SECOFDAY'  then tdisp[i]='D7'
      if tag_name_structure[i] eq KEY_RADMON  then tdisp[i]='D6.2'
      if tag_name_structure[i] eq KEY_JUPLOC  then tdisp[i]='D6.2'
-     if tag_name_structure[i] eq KEY_JPFWHM    then tdisp[i]='D6.2'
-     if tag_name_structure[i] eq KEY_SLIT1Y   then tdisp[i]='D6.2'
-     if tag_name_structure[i] eq KEY_SLIT2Y   then tdisp[i]='D6.2'
-     if tag_name_structure[i] eq KEY_SLIT3Y   then tdisp[i]='D6.2'
-     if tag_name_structure[i] eq KEY_SLIT4Y   then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_JPFWHM  then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_NINTTIME  then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_SLIT1Y  then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_SLIT2Y  then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_SLIT3Y  then tdisp[i]='D6.2'
+     if tag_name_structure[i] eq KEY_SLIT4Y  then tdisp[i]='D6.2'
      if tag_name_structure[i] eq KEY_JPFLAG  then tdisp[i]='I2'
      if stregex(tag_name_structure[i],'TPOW') ge 0l then tdisp[i]='D10.1'
      if stregex(tag_name_structure[i],'TERR') ge 0l then tdisp[i]='D10.1'
@@ -600,8 +589,7 @@ pro make_fits_bintable, $
    bin_table = mrdfits(out_path, 2, hdr_bin_table, /silent)
    if stregex(tablea_path,'aurora',/fold_case) ge 0 then extname='aurora'
    if stregex(tablea_path,'torus',/fold_case) ge 0 then extname='torus'
-   if stregex(tablea_path,'geocorona',/fold_case) ge 0 then extname='geocorona'
-   if stregex(tablea_path,'star',/fold_case) ge 0 then extname='star'
+   if stregex(tablea_path,'geocorona',/fold_case) ge 0 then extname='torus'
    extname='LineInt-'+extname
    sxaddpar, hdr_bin_table, 'EXTNAME', extname, 'extension name', after='TFIELDS'
    indcom=0l
@@ -617,6 +605,7 @@ pro make_fits_bintable, $
      if tag_name_structure[i-1l] eq KEY_RADMON then ccom='Radiation Monitor Value [counts/min]'
      if tag_name_structure[i-1l] eq KEY_JUPLOC then ccom='Y pixel of Jupiter in original L2 (pixel)'
      if tag_name_structure[i-1l] eq KEY_JPFWHM   then ccom='FWHM of Jupiter aurora (pixel)'
+     if tag_name_structure[i-1l] eq KEY_NINTTIME   then ccom='total integration time (min)'
      if tag_name_structure[i-1l] eq KEY_SLIT1Y  then ccom='Y pixel of btm 140" slit edge (pixel)'
      if tag_name_structure[i-1l] eq KEY_SLIT2Y  then ccom='Y pixel of btm  20" slit edge (pixel)'
      if tag_name_structure[i-1l] eq KEY_SLIT3Y  then ccom='Y pixel of top  20" slit edge (pixel)'
@@ -639,7 +628,7 @@ pro make_fits_bintable, $
    endfor
    sxaddpar, hdr_bin_table, KEY_DATE, time_create, COMMENT_DATE
    modfits, out_path, bin_table, hdr_bin_table, EXTEN_NO=2
-
+print,range_info
    ; ログ出力
    write_log, LOG_PATH, MSG_INF02
    p_end_time = systime(1)

@@ -3,7 +3,7 @@ function remove_geocor,im,tablea_path,l2cal_path
   MSG_ERR05 = 'msg_err11: TableG data is empty. tablea_path='
   MSG_ERR06 = 'msg_err12: TableG data record is invalid. rec num:'
 
-  ; ƒe[ƒuƒ‹(—Ìˆæî•ñ)‚Ìƒf[ƒ^‚ğæ“¾
+  ; ãƒ†ãƒ¼ãƒ–ãƒ«(é ˜åŸŸæƒ…å ±)ã®ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
   n_file_lines = file_lines(tablea_path)
   if n_file_lines eq 0 then $
     message, MSG_ERR05 + tablea_path
@@ -13,12 +13,12 @@ function remove_geocor,im,tablea_path,l2cal_path
   close, 1
   tablea_dataset_value = fltarr(1,4)
 
-  ; ƒe[ƒuƒ‹‚ÌƒŒƒR[ƒh‚ğˆ—
+  ; ãƒ†ãƒ¼ãƒ–ãƒ«ã®ãƒ¬ã‚³ãƒ¼ãƒ‰ã‚’å‡¦ç†
   for i = 0, n_elements(file_recs) - 1 do begin
     if stregex(file_recs[i], '^#',/boolean) eq 1 then continue
     rec = strsplit(file_recs[i], '[ ]+', /EXTRACT)
 
-    ; ƒf[ƒ^‚ÌŒ`®ƒ`ƒFƒbƒN
+    ; ãƒ‡ãƒ¼ã‚¿ã®å½¢å¼ãƒã‚§ãƒƒã‚¯
     if n_elements(rec) lt 4 then $
       message, MSG_ERR06 + strcompress(i+1, /remove_all)
 
@@ -29,7 +29,7 @@ function remove_geocor,im,tablea_path,l2cal_path
        stregex(strcompress(rec[3], /remove_all), tbl_data_ptn, /boolean) ne 1 then $
        message, MSG_ERR06 + strcompress(i+1, /remove_all)
 
-    ; ƒCƒ[ƒWæ“¾—Ìˆæ‚É•ÏŠ·
+    ; ã‚¤ãƒ¡ãƒ¼ã‚¸å–å¾—é ˜åŸŸã«å¤‰æ›
     rec_tablea = fltarr(1,4)
     rec_tablea[0] = float(rec[0]) - float(rec[1]/2) ; X min
     rec_tablea[1] = float(rec[0]) + float(rec[1]/2) ; X max
@@ -45,9 +45,9 @@ function remove_geocor,im,tablea_path,l2cal_path
   n_tablea_dataset_str = strcompress(string(n_tablea_dataset))
 
 
-  ; —Ìˆæ‚²‚Æ‚ÉŠeˆ—‚ğÀ{‚·‚éB
+  ; é ˜åŸŸã”ã¨ã«å„å‡¦ç†ã‚’å®Ÿæ–½ã™ã‚‹ã€‚
   for i = 0, n_tablea_dataset - 1 do begin
-    ; value=>pixel•ÏŠ·
+    ; value=>pixelå¤‰æ›
     xrange = [tablea_dataset_value[i,0], tablea_dataset_value[i,1]]
     yrange = [tablea_dataset_value[i,2], tablea_dataset_value[i,3]]
     res = convert_value2pixel(l2cal_path, xrange, yrange)

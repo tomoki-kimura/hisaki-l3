@@ -1,5 +1,3 @@
-
-
 ;----------------------------------------------------------
 ; Save L2out fits
 ; for read_exc_euv_l2.pro
@@ -27,19 +25,18 @@ PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr,effexp, dt=dt
     endif
   endfor
   
-  file_mkdir, !l2_dir+'/' + strmid(utc_sta,0,4) + '/'
+  file_mkdir, !l2p_dir+'/' + strmid(utc_sta,0,4) + '/'
   if keyword_set(dt) then begin
-    file = !L2_DIR + strmid(utc_sta,0,4) + '/' $
+    file = !L2p_DIR + strmid(utc_sta,0,4) + '/' $
        + 'exeuv.' + strmid(utc_sta,0,4) + strmid(utc_sta,5,2) + strmid(utc_sta,8,2) $
        + '_LT' + string(const.lt_sta,format='(i2.2)') + '-' + string(const.lt_end,format='(i2.2)') $
        + '_dt' + string(round(const.dt/60.),format='(i05)') + '.fits'
   endif else begin
-    file = !L2_DIR + strmid(utc_sta,0,4) + '/' $
+    file = !L2p_DIR + strmid(utc_sta,0,4) + '/' $
       + 'exeuv.' + strmid(utc_sta,0,4) + strmid(utc_sta,5,2) + strmid(utc_sta,8,2) $
       + '_LT' + string(const.lt_sta,format='(i2.2)') + '-' + string(const.lt_end,format='(i2.2)') $
       + '_d' + string(const.dl,format='(i3.3)') + '.fits'    
   endelse
-
   ;Write Primary header  
   phdr = strarr(1)
   sxaddpar, phdr, 'SIMPLE', 'T'
@@ -81,7 +78,7 @@ PRO save_fits, im_cmp, const, extn_arr, blk_arr, file, fits_arr,effexp, dt=dt
     radmtot+=blk_arr[i].radmon*blk_arr[i].acm; [counts]
   endfor
   cspice_et2utc, blk_arr[0l].et_sta, 'ISOC', 0, utcstr_sta
-  cspice_et2utc, blk_arr[-1l].et_end, 'ISOC', 0, utcstr_end
+  cspice_et2utc, blk_arr[max(where(blk_arr.ena eq 1))].et_end, 'ISOC', 0, utcstr_end ;cspice_et2utc, blk_arr[-1l].et_end, 'ISOC', 0, utcstr_end
   delta_s = (const.smax-const.smin)/float(const.n)
   delta_w = (const.wmax-const.wmin)/float(const.m)
   hdr = strarr(1)

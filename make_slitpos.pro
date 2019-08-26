@@ -58,7 +58,7 @@
 ;      Fujitsu Limited.
 ;      v1.0 2018/01/30 First Edition
 ;-
-pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern;, cp=l2_cal_path ;, md=mode, xr=xrange, yr=yrange
+pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern
   loadct,39,/SILENT;;;HK
 
    on_error,2
@@ -147,29 +147,37 @@ pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern;, cp=l2_cal_path ;
    ; 必須項目がない場合は終了
    if(err01 ne EMP_STR) then message, MSG_ERR01 + " " + err01
     
-    buff=read_csv(!dir_slit+'slit_move.csv')
+    buff=read_csv(!DIR_SLIT+'slit_move.csv')
     slitmove=buff.field1[where(buff.field2 ne '#')]
     n=-1
     
-    if not keyword_set(pattern) then pattern='*.fits'
-    file=file_search(l2_intg_path, pattern)
+    if not keyword_set(pattern) then pattern='*'
+;    file=file_search(l2_intg_path+ '*'+pattern+'*.fits')
+    file=file_search(l2_intg_path, '*'+pattern+'*.fits')
 
     tot=dblarr(1024,1024)
     ;window,1,xsize=1000,ysize=1000
     nn1='' & s1=0 & s2=0 & s3=0 & s4=0 & m=0
     
+    exc_cal_init
+    jd_in = julday(1,1,2014)
+    
     for j=0, n_elements(file)-1 do begin
       ; 積分後L2のプライマリーヘッダから時刻エクステンション
       ; の数を取得し配列を作成
       im_prim    = mrdfits(file[j], NUM_PRIM_EXTENT, prim_hdr, /silent)
-      n_intg_ext = fxpar(prim_hdr, KEY_NEXTEND)
-      if (n_intg_ext eq 0) then message, MSG_ERR05 + KEY_NEXTEND
+;      n_intg_ext = fxpar(prim_hdr, KEY_NEXTEND)
+;      if (n_intg_ext eq 0) then message, MSG_ERR05 + KEY_NEXTEND
 
       ; イメージを取得
       im = mrdfits(file[j], 1, hdr, /silent)
+;      exc_cal_img, jd_in, im, outdata, xcal, ycal
+;      im=outdata
+      
       ; イメージがfltarr(1024,1024)でない場合はループを飛ばす
       size_im = size(im, /dimension)
-      if (size_im[0] ne IMG_SIZE[0]) or (size_im[1] ne IMG_SIZE[1]) or n_intg_ext eq 1 then begin
+;      if (size_im[0] ne IMG_SIZE[0]) or (size_im[1] ne IMG_SIZE[1]) or n_intg_ext eq 1 then begin
+      if (size_im[0] ne IMG_SIZE[0]) or (size_im[1] ne IMG_SIZE[1]) then begin
         print, MSG_ERR97 + string(j)
         continue
       endif
@@ -180,22 +188,27 @@ pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern;, cp=l2_cal_path ;
         print, MSG_ERR05 + KEY_EXTNAME
         continue
       endif
-
-      if ck_blacklist(data_time,!dir_slit+'/blacklist.csv') eq -1 then continue
+      
+      
+;      ltime= fxpar(hdr,'LTESC')
+;      if ltime le 5 or ltime ge 17 then begin
+;        continue
+;      endif
+      
+      
+      if ck_blacklist(data_time,!BLACK_LIST) eq -1 then continue
       if n eq -1 then n=ck_slitmove(data_time,slitmove)
       list_n = ck_slitmove(data_time,slitmove)
       if list_n ne n or ( j eq n_elements(file)-1) then begin
         print,'output'
         fits_write,out_dir+string(m,format='(i03)')+'.fits',tot/mean(tot)
 
-        line=588;1025
+        line=584;610;1025
         file_elm=strsplit(FILE_BASENAME(file[j]),/extract, '[._]')
-        l2cal_path2=!l2cal_path+'calib_'+stregex(FILE_BASENAME(file[j]),'20[0-9]{6}',/extract)+'_v1.0.fits'
-;        l2cal_path2=!l2cal_path+'calib_'+file_elm[4]+'_v1.0.fits'
-        range_p = convert_value2pixel(l2cal_path2, [line,line+10], [-10,10])
-        geocr  = range_p[0, 0]
-;        slit_profile_b=tot[geocr:geocr+7,*]
-        slit_profile_b=tot[geocr:geocr+23,*]
+        l2cal_path2=!l2cal_path2+'calib_'+file_elm[1]+'_v2.0.fits'
+        range_p = convert_value2pixel(l2cal_path2, [line-10,line+10], [-10,10])
+        geocr  = range_p[*, 0]
+        slit_profile_b=tot[geocr[0]:geocr[1],*]
 
         slit_profile   = total(slit_profile_b,1)
         slit_profile   = slit_profile/max(slit_profile)
@@ -207,7 +220,6 @@ pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern;, cp=l2_cal_path ;
         slit4 = max(where(slit_profile ge 0.5))
         slit2 = min(where(slit_profile[slit1:slit4] lt 0.5))+slit1-1
         slit3 = max(where(slit_profile[slit1:slit4] lt 0.5))+slit1+1
-
         if (slit3-slit2)/100. lt 22. then begin
           for i=0, 3000 do begin
             if (slit3-slit2)/100. ge 22. then break
@@ -226,7 +238,6 @@ pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern;, cp=l2_cal_path ;
           stop
         endif
         
-        
         buff=min(abs(slit_profile[0:slit1+1000] - slit_profile[slit2]),min_subscript)
         slit1=min_subscript
         buff=min(abs(slit_profile[slit4-1000:*] - slit_profile[slit3]),min_subscript)
@@ -237,13 +248,13 @@ pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern;, cp=l2_cal_path ;
         s3    = [s3,slit3/100.]
         s4    = [s4,slit4/100.]
 
-        !p.multi=[0,1,2]
+        !p.multi=[0,2,3]
         plot, x2,slit_profile,xrange=[500,650],charsize=2,$
           title=string(slit1/100.,format='(f6.2)')+'  '$
                +string(slit2/100.,format='(f6.2)')+'  '$
                +string((slit3-slit2)/100.,format='(f6.2)')+'  '$
                +string(slit3/100.,format='(f6.2)')+'  '$
-               +string(slit4/100.,format='(f6.2)')
+               +string(slit4/100.,format='(f6.2)')+' '+slitmove[n]
         oplot,x1,slit_profile_l,psym=1
         oplot,x2,slit_profile,linestyle=1
         oplot,!x.crange,[0.5,0.5],color=fsc_color('gray')
@@ -253,11 +264,112 @@ pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern;, cp=l2_cal_path ;
         oplot,slit4/100.*[1,1],!y.crange,color=fsc_color('green')
 
         print,(slit3-slit2)/100.
-
-;        imgdisp_2,transpose(slit_profile_b[*,500:650]),title=slitmove[n]
-
+        imgdisp_2,transpose(slit_profile_b[*,520:620]),title=slitmove[n]+' HeI 584A'
         nn1=[nn1,slitmove[n]]
+;        imgdisp_2,transpose(tot[470:490,520:620]),title=slitmove[n]
+;        imgdisp_2,transpose(tot[520:540,520:620]),title=slitmove[n]
 
+
+
+        slit_profile_b=tot[480:500,*]
+        slit_profile   = total(slit_profile_b,1)
+        slit_profile   = slit_profile/max(slit_profile)
+        slit_profile_l = slit_profile
+        x1=indgen(n_elements(slit_profile))
+        x2=findgen(n_elements(slit_profile)*100)/100.
+        slit_profile   = INTERPOL(slit_profile, x1, x2)
+        slit1 = min(where(slit_profile ge 0.5))
+        slit4 = max(where(slit_profile ge 0.5))
+        slit2 = min(where(slit_profile[slit1:slit4] lt 0.5))+slit1-1
+        slit3 = max(where(slit_profile[slit1:slit4] lt 0.5))+slit1+1
+        if (slit3-slit2)/100. lt 22. then begin
+          for i=0, 3000 do begin
+            if (slit3-slit2)/100. ge 22. then break
+            if slit_profile[slit2] le slit_profile[slit3] then slit2=slit2-1. $
+            else slit3=slit3+1.
+          endfor
+        endif else begin
+          for i=0, 3000 do begin
+            if (slit3-slit2)/100. le 22. then break
+            if slit_profile[slit2] le slit_profile[slit3] then slit2=slit2+1. $
+            else slit3=slit3-1.
+          endfor
+        endelse
+        if (slit3-slit2)/100. ne 22. then begin
+          print, 'err slit2-3 pos'
+          stop
+        endif
+
+        buff=min(abs(slit_profile[0:slit1+1000] - slit_profile[slit2]),min_subscript)
+        slit1=min_subscript
+        buff=min(abs(slit_profile[slit4-1000:*] - slit_profile[slit3]),min_subscript)
+        slit4=min_subscript+slit4-1000
+        plot, x2,slit_profile,xrange=[500,650],charsize=2,$
+          title=string(slit1/100.,format='(f6.2)')+'  '$
+          +string(slit2/100.,format='(f6.2)')+'  '$
+          +string((slit3-slit2)/100.,format='(f6.2)')+'  '$
+          +string(slit3/100.,format='(f6.2)')+'  '$
+          +string(slit4/100.,format='(f6.2)')+' '+slitmove[n]
+        oplot,x1,slit_profile_l,psym=1
+        oplot,x2,slit_profile,linestyle=1
+        oplot,!x.crange,[0.5,0.5],color=fsc_color('gray')
+        oplot,slit1/100.*[1,1],!y.crange,color=fsc_color('green')
+        oplot,slit2/100.*[1,1],!y.crange,color=fsc_color('green')
+        oplot,slit3/100.*[1,1],!y.crange,color=fsc_color('green')
+        oplot,slit4/100.*[1,1],!y.crange,color=fsc_color('green')
+
+        imgdisp_2,transpose(tot[480:500,520:620]),title=slitmove[n]+' HLyB 1025A'
+
+
+
+        slit_profile_b=tot[530:550,*]
+        slit_profile   = total(slit_profile_b,1)
+        slit_profile   = slit_profile/max(slit_profile)
+        slit_profile_l = slit_profile
+        x1=indgen(n_elements(slit_profile))
+        x2=findgen(n_elements(slit_profile)*100)/100.
+        slit_profile   = INTERPOL(slit_profile, x1, x2)
+        slit1 = min(where(slit_profile ge 0.5))
+        slit4 = max(where(slit_profile ge 0.5))
+        slit2 = min(where(slit_profile[slit1:slit4] lt 0.5))+slit1-1
+        slit3 = max(where(slit_profile[slit1:slit4] lt 0.5))+slit1+1
+        if (slit3-slit2)/100. lt 22. then begin
+          for i=0, 3000 do begin
+            if (slit3-slit2)/100. ge 22. then break
+            if slit_profile[slit2] le slit_profile[slit3] then slit2=slit2-1. $
+            else slit3=slit3+1.
+          endfor
+        endif else begin
+          for i=0, 3000 do begin
+            if (slit3-slit2)/100. le 22. then break
+            if slit_profile[slit2] le slit_profile[slit3] then slit2=slit2+1. $
+            else slit3=slit3-1.
+          endfor
+        endelse
+        if (slit3-slit2)/100. ne 22. then begin
+          print, 'err slit2-3 pos'
+          stop
+        endif
+
+        buff=min(abs(slit_profile[0:slit1+1000] - slit_profile[slit2]),min_subscript)
+        slit1=min_subscript
+        buff=min(abs(slit_profile[slit4-1000:*] - slit_profile[slit3]),min_subscript)
+        slit4=min_subscript+slit4-1000
+        plot, x2,slit_profile,xrange=[500,650],charsize=2,$
+          title=string(slit1/100.,format='(f6.2)')+'  '$
+          +string(slit2/100.,format='(f6.2)')+'  '$
+          +string((slit3-slit2)/100.,format='(f6.2)')+'  '$
+          +string(slit3/100.,format='(f6.2)')+'  '$
+          +string(slit4/100.,format='(f6.2)')+' '+slitmove[n]
+        oplot,x1,slit_profile_l,psym=1
+        oplot,x2,slit_profile,linestyle=1
+        oplot,!x.crange,[0.5,0.5],color=fsc_color('gray')
+        oplot,slit1/100.*[1,1],!y.crange,color=fsc_color('green')
+        oplot,slit2/100.*[1,1],!y.crange,color=fsc_color('green')
+        oplot,slit3/100.*[1,1],!y.crange,color=fsc_color('green')
+        oplot,slit4/100.*[1,1],!y.crange,color=fsc_color('green')
+
+        imgdisp_2,transpose(tot[530:550,520:620]),title=slitmove[n]+' HLy gamma 972A'
         write_png,out_dir+string(m,format='(i03)')+'.png',tvrd(/true)
         tot=0
         n=list_n
@@ -272,8 +384,7 @@ pro make_slitpos, lp=l2_intg_path, od=out_dir,pattern=pattern;, cp=l2_cal_path ;
     s2 =s2[1:*]
     s3 =s3[1:*]
     s4 =s4[1:*]
-    write_csv, !dir_slit+'/slit_move2.csv' ,nn1,s1,s2,s3,s4
-    
+    write_csv, !DIR_SLIT+'\slit_move2.csv' ,nn1,s1,s2,s3,s4
     
     ;処理時間計算終了
     p_end_time = systime(1)

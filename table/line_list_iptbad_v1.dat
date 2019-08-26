@@ -1,0 +1,19 @@
+################################################################################
+# This is a line list for high-level data product of line intensity variations.
+# Spectral region for line intensity extraction should be defined as central 
+# wavelength and width of lines: e.g., 584 A with 20 A width => range [574:594]
+# Spacial region for extraction of line intensity should be defined as 
+# anglar range from the central pixel in the H axis in the FOV coordinate system 
+# If the barycenter data exists, the central pixel is substituted by it.
+# i.e., along -X axis in the S/C coordinate system.
+# Last modified by T Kimua 2013/12/16
+################################################################################
+# wavelength(A) width(A) angular_start(asec) anglar_end(asec) #comment
+ 865.0   60.0 -300.0  300.0 #SII-1046/SIV-1073-1063/SIII-1077  830- 880A (428-466pix)
+1062.0   48.0 -300.0  300.0 #SII-1046/SIV-1073-1063/SIII-1077 1040-1081A (428-466pix)
+1100.0   20.0 -300.0  300.0 #SII-1102-1097/SIV-1089           1090-1110A (402-420pix)
+1124.0   10.0 -300.0  300.0 #SII-1125/SIII-1129               1119-1129A (384-393pix)
+1167.0   10.0 -300.0  300.0 #SII-1168/HeI-584/NI-1168         1162-1172A (345-354pix)
+1189.0   22.0 -300.0  300.0 #SIII-1190-1194-1201              1178-1200A (319-339pix)
+1256.0   26.0 -300.0  300.0 #SII-1251-1254-1260               1245-1267A (257-277pix)
+1409.0   28.0 -300.0  300.0 #SIV-1413 SIII-1402               1401-1421A (pix)

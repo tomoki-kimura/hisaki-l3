@@ -30,6 +30,11 @@ PRO chk_fits_ext, const, extn_arr, fits_arr
 ;  endfor
   
   ;隣接するL2 imageの時間間隔が90sec以上離れている場合は、そのデータから2枚分のL2は採用しない(HV増加・減少中が含まれるため)
+  if !last_extn eq 1. then begin;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;byHK
+    extn_arr[0].rejflg = 1
+    extn_arr[1].rejflg = 1    
+  endif
+  
   det1 = extn_arr[1].et   - extn_arr[0].et
   if det1 gt 90.0 then begin
     extn_arr[0].rejflg = 1

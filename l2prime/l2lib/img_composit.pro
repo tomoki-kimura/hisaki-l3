@@ -50,12 +50,13 @@ print,fits_arr.n_ext
     ;tsuchiya calibration
     exc_cal_init
     jd_in = julday(1,1,2014)
-    exc_cal_img, jd_in, im, outdata, xcal, ycal
-    im=outdata
+;    exc_cal_img, jd_in, im, outdata, xcal, ycal
+;    im=outdata
 
 
     blk_arr[i].hdr=ptr_new(hd)
     e_cnt=0
+    ave_rad_val=0.
     for j=blk_arr[i].ind_sta,blk_arr[i].ind_end do begin
 
 ;      printf, lun, i, j, extn_arr[j].ltesc, extn_arr[j].lt_ena, extn_arr[j].rejflg  
@@ -101,16 +102,14 @@ print,fits_arr.n_ext
         continue    ; Local time selection
       endif
       
-      
       ; filtering based on radiation monitor
       if radval ge blk_arr[i].radthr then begin
         outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'radmon2',log=log
         continue
       endif
       
-      
       ;;; skip if jupiter located outside the slit ;; TK
-      ret=ck_aurpos(fxpar(hd,'EXTNAME'),!SLIT_POS)
+      ret=ck_aurpos2(fxpar(hd,'EXTNAME'),!SLIT_POS)
       jupypix=ret.yc
       if jupypix eq -1l then begin
         outputlist,2,hd,extn_arr[j],fits_arr[extn_arr[j].fn].n_ext,'no peak',log=log
@@ -123,6 +122,9 @@ print,fits_arr.n_ext
       blk_arr[i].slit3=ret.slit3
       blk_arr[i].slit4=ret.slit4
       blk_arr[i].fwhm=ret.fwhm
+      
+      ave_rad_val+=radval
+      
       if not keyword_set(start_extname) then start_extname=fxpar(hd,'EXTNAME')
       if strlen(start_extname) lt 1l then start_extname=fxpar(hd,'EXTNAME')
 
@@ -140,18 +142,18 @@ print,fits_arr.n_ext
     if blk_arr[i].acm ne 0 then begin
       im_cmp[*,*,i] = im_cmp[*,*,i]/blk_arr[i].acm;   [count/min/pixel]
       
-      ; radiation background monitor
-      radloc=blk_arr[i].radloc
-      if keyword_set(radloc) then begin
-        ix0=radloc[0]
-        ix1=radloc[2]
-        iy0=radloc[1]
-        iy1=radloc[3]
-        buf = total(im_cmp[ix0:ix1,iy0:iy1,i]); counts/min
-        blk_arr[i].radmon=buf; counts/min
-      endif
+      ; radiation background monitor      
+;      radloc=blk_arr[i].radloc;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;modify0523hk
+;      if keyword_set(radloc) then begin
+;        ix0=radloc[0]
+;        ix1=radloc[2]
+;        iy0=radloc[1]
+;        iy1=radloc[3]
+;        buf = total(im_cmp[ix0:ix1,iy0:iy1,i]); counts/min
+;        blk_arr[i].radmon=buf; counts/min
+;      endif
       ;print, fxpar(hd,'EXTNAME'), 'cmp radmon', blk_arr[i].radmon
-
+      blk_arr[i].radmon=ave_rad_val/blk_arr[i].acm
       
       ;; reverse y-pixel if the Y-axis polarization is south
       if blk_arr[i].ypol eq 1 then begin

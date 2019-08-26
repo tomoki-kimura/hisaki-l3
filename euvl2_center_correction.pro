@@ -145,7 +145,7 @@ pro euvl2_center_correction, p=l2path, yc=yclong, cp=corrl2path
 
 ;ログファイルの名前を決める。
    logdir  = log_setting() ;ログファイルを出力するディレクトリ名を取得する
-   LOGPATH = logdir+'EUVL2_CENTER_CORRECTION'+time_string((systime(1)-tzoffset(/now)),tformat=TIME_FORM)+'.log' ;ログファイルの名前
+   LOGPATH = logdir+'EUVL2_CENTER_CORRECTION'+repstr(time_string((systime(1)-tzoffset(/now)),tformat=TIME_FORM),':','_')+'.log' ;ログファイルの名前
 
 ;ライブラリの関数の標準エラーをcatchしてログファイルに出力する
    err_flg=C_FALSE
@@ -237,12 +237,14 @@ pro euvl2_center_correction, p=l2path, yc=yclong, cp=corrl2path
       output=corrl2path ;出力ファイル名
 
       ;出力ディレクトリのパスが正しいものか確認するために、ファイルが格納されているディレクトリ名を取得する。
-      corr_l2path_elm=strsplit(corrl2path,/extract, '/') ;corrl2pathを/で分割した値
+      corr_l2path_elm=strsplit(corrl2path,/extract, '\') ;corrl2pathを/で分割した値
+;      corr_l2path_elm=strsplit(corrl2path,/extract, '/') ;corrl2pathを/で分割した値
       n_corr_l2path_elm=n_elements(corr_l2path_elm) ;l2dir_elmの要素数
       max_corr_l2path_elm = n_corr_l2path_elm - C_MAX
       n_corr_l2dir_elm=indgen(max_corr_l2path_elm) ;ディレクトリの数分の要素数の配列を作成する。
       corr_l2dir_elm =corr_l2path_elm[n_corr_l2dir_elm] ;ディレクトリの配列をディレクトリの数分作成する。
-      corr_l2_dir='/'+strjoin(corr_l2dir_elm[C_INIT:max_corr_l2path_elm - C_MAX],'/') ;出力ディレクトリ
+      corr_l2_dir=strjoin(corr_l2dir_elm[C_INIT:max_corr_l2path_elm - C_MAX],'\') ;出力ディレクトリ
+;      corr_l2_dir='/'+strjoin(corr_l2dir_elm[C_INIT:max_corr_l2path_elm - C_MAX],'/') ;出力ディレクトリ
 
    endif else begin ;出力先がディレクトリ指定の場合
       ;出力ファイル名を決定する。
@@ -416,7 +418,8 @@ pro euvl2_center_correction, p=l2path, yc=yclong, cp=corrl2path
          endif
       endif
       ;補正したデータエクステンションを出力ファイルに書き出す
-      sxaddpar, dat, KEYWORD_YR, center_dif, CM_YR
+      sxaddpar, dat, KEYWORD_YR, center_dif[0], CM_YR;;;hk
+;      sxaddpar, dat, KEYWORD_YR, center_dif, CM_YR
       ;エクステンション作成日を編集する。
       sxaddpar, dat, KEYWORD_DT, time_string(systime(1),tformat=TIME_FORM), CM_DT
       writefits, output, datimg, dat,/append
